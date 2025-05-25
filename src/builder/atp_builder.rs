@@ -1,8 +1,8 @@
-use crate::data::{ AtpToken, Dla, Dlb, Dlc, Dlf, Dll, Raw, Rfw };
+use crate::data::{ AtpToken };
 
-use crate::data::{ Ate, Atb, Tbs, Tls, Trs };
+use crate::data::tokens::{ Ate, Atb, Tbs, Tls, Trs, Dla, Dlb, Dlc, Dlf, Dll, Raw, Rfw };
 
-use super::atp_processor::AtpProcessor;
+use super::atp_processor::{ AtpProcessor, AtpProcessorMethods };
 
 pub struct Builder {
     tokens: Vec<AtpToken>,
@@ -14,10 +14,12 @@ impl Builder {
         }
     }
 
-    pub fn build(&self) -> AtpProcessor {
-        AtpProcessor {
-            tokens: self.tokens.clone(),
-        }
+    pub fn build(&self) -> (AtpProcessor, String) {
+        let mut processor = AtpProcessor::new();
+
+        let identifier = processor.add_transform(&self.tokens);
+
+        (processor, identifier)
     }
 }
 

@@ -1,6 +1,7 @@
 use std::{ fs::OpenOptions, io::{ BufRead, BufReader } };
 
-use crate::data::{ Atb, Ate, AtpToken, Dla, Dlb, Dlc, Dlf, Dll, Raw, Rfw, Tbs, Tls, Trs };
+use crate::data::tokens::{ Atb, Ate, Dla, Dlb, Dlc, Dlf, Dll, Raw, Rfw, Tbs, Tls, Trs };
+use crate::data::AtpToken;
 
 fn parse_atb(tokens: Vec<String>) -> Atb {
     Atb { text: tokens[1].clone() }
