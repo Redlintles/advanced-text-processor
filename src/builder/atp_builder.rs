@@ -36,7 +36,7 @@ impl Builder {
 
 impl Builder {
     pub fn trim_both(mut self) -> Self {
-        self.tokens.push(Tbs::new());
+        self.tokens.push(AtpToken::Tbs(Tbs::new()));
         self
     }
 
