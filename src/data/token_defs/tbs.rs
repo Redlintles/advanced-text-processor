@@ -25,4 +25,8 @@ impl TokenMethods for Tbs {
     fn get_string_repr() -> String {
         "tbs".to_string()
     }
+
+    fn parse(&self, input: &str) -> String {
+        String::from(input.trim())
+    }
 }
