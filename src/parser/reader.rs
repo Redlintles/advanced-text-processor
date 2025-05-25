@@ -1,43 +1,8 @@
 use std::{ fs::OpenOptions, io::{ BufRead, BufReader } };
 
-use crate::data::token_defs::ate::Ate;
-use crate::data::token_defs::atb::Atb;
-use crate::data::token_defs::trs::Trs;
-use crate::data::token_defs::tls::Tls;
-use crate::data::token_defs::tbs::Tbs;
-use crate::data::token_defs::raw::Raw;
-use crate::data::token_defs::rfw::Rfw;
-use crate::data::token_defs::dlf::Dlf;
-use crate::data::token_defs::dll::Dll;
-use crate::data::token_defs::dlb::Dlb;
-use crate::data::token_defs::dla::Dla;
-use crate::data::token_defs::dlc::Dlc;
-use crate::data::AtpToken;
+use crate::data::token_defs::*;
 
-fn parse_atb(tokens: Vec<String>) -> Atb {
-    Atb { text: tokens[1].clone() }
-}
-fn parse_ate(tokens: Vec<String>) -> Ate {
-    Ate { text: tokens[1].clone() }
-}
-fn parse_raw(tokens: Vec<String>) -> Raw {
-    Raw { pattern: tokens[1].clone(), text_to_replace: tokens[2].clone() }
-}
-fn parse_rfw(tokens: Vec<String>) -> Rfw {
-    Rfw { pattern: tokens[1].clone(), text_to_replace: tokens[2].clone() }
-}
-fn parse_dla(tokens: Vec<String>) -> Dla {
-    Dla { index: tokens[1].clone().parse().expect("Parsing from string to usize failed!") }
-}
-fn parse_dlb(tokens: Vec<String>) -> Dlb {
-    Dlb { index: tokens[1].clone().parse().expect("Parsing from string to usize failed!") }
-}
-fn parse_dlc(tokens: Vec<String>) -> Dlc {
-    Dlc {
-        start_index: tokens[1].clone().parse().expect("Parsing from string to usize failed!"),
-        end_index: tokens[1].clone().parse().expect("Parsing from string to usize failed!"),
-    }
-}
+use crate::data::{ AtpToken, TokenMethods };
 
 pub fn read_from_file(path: &str) -> Vec<AtpToken> {
     let mut result: Vec<AtpToken> = Vec::new();
@@ -54,18 +19,18 @@ pub fn read_from_file(path: &str) -> Vec<AtpToken> {
         let chunks = shell_words::split(&line_text).unwrap();
 
         let token: AtpToken = match &chunks {
-            x if x[0] == "atb" => AtpToken::Atb(parse_atb(chunks.clone())),
-            x if x[0] == "ate" => AtpToken::Ate(parse_ate(chunks.clone())),
-            x if x[0] == "raw" => AtpToken::Raw(parse_raw(chunks.clone())),
-            x if x[0] == "rfw" => AtpToken::Rfw(parse_rfw(chunks.clone())),
-            x if x[0] == "dla" => AtpToken::Dla(parse_dla(chunks.clone())),
-            x if x[0] == "dlb" => AtpToken::Dlb(parse_dlb(chunks.clone())),
-            x if x[0] == "dlc" => AtpToken::Dlc(parse_dlc(chunks.clone())),
-            x if x[0] == "tbs" => AtpToken::Tbs(Tbs {}),
-            x if x[0] == "trs" => AtpToken::Trs(Trs {}),
-            x if x[0] == "tls" => AtpToken::Tls(Tls {}),
-            x if x[0] == "dll" => AtpToken::Dll(Dll {}),
-            x if x[0] == "dlf" => AtpToken::Dlf(Dlf {}),
+            x if x[0] == "atb" => AtpToken::Atb(atb::Atb::token_from_vec_params(chunks).unwrap()),
+            x if x[0] == "ate" => AtpToken::Ate(ate::Ate::token_from_vec_params(chunks).unwrap()),
+            x if x[0] == "raw" => AtpToken::Raw(raw::Raw::token_from_vec_params(chunks).unwrap()),
+            x if x[0] == "rfw" => AtpToken::Rfw(rfw::Rfw::token_from_vec_params(chunks).unwrap()),
+            x if x[0] == "dla" => AtpToken::Dla(dla::Dla::token_from_vec_params(chunks).unwrap()),
+            x if x[0] == "dlb" => AtpToken::Dlb(dlb::Dlb::token_from_vec_params(chunks).unwrap()),
+            x if x[0] == "dlc" => AtpToken::Dlc(dlc::Dlc::token_from_vec_params(chunks).unwrap()),
+            x if x[0] == "tbs" => AtpToken::Tbs(tbs::Tbs::new()),
+            x if x[0] == "trs" => AtpToken::Trs(trs::Trs::new()),
+            x if x[0] == "tls" => AtpToken::Tls(tls::Tls::new()),
+            x if x[0] == "dll" => AtpToken::Dll(dll::Dll::new()),
+            x if x[0] == "dlf" => AtpToken::Dlf(dlf::Dlf::new()),
 
             _ => panic!("Erro de parsing"),
         };
