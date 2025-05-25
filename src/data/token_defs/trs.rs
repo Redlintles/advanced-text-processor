@@ -1,21 +1,21 @@
-use crate::data::{ TokenMethods, AtpToken };
+use crate::data::{ TokenMethods };
 
 // Trim right side
 #[derive(Clone, Copy)]
 pub struct Trs {}
 
 impl TokenMethods for Trs {
-    fn token_from_vec_params(line: Vec<String>) -> Result<AtpToken, String> {
+    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
         // "trs;"
 
         if line[0] == "trs" {
-            return Ok(AtpToken::Trs(Trs {}));
+            return Ok(Trs {});
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> AtpToken {
-        AtpToken::Trs(Trs {})
+    fn new() -> Self {
+        Trs {}
     }
 
     fn token_to_atp_line(&self) -> String {

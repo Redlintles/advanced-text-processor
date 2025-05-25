@@ -1,7 +1,6 @@
 use regex::Regex;
 
-use crate::data::{ AtpToken, TokenMethods };
-
+use crate::data::{ TokenMethods };
 // Replace first with
 #[derive(Clone)]
 pub struct Rfw {
@@ -19,17 +18,17 @@ impl Rfw {
 }
 
 impl TokenMethods for Rfw {
-    fn token_from_vec_params(line: Vec<String>) -> Result<AtpToken, String> {
+    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
         // "rfw;"
 
         if line[0] == "rfw" {
-            return Ok(AtpToken::Rfw(Rfw::params(line[1].clone(), line[2].clone())));
+            return Ok(Rfw::params(line[1].clone(), line[2].clone()));
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> AtpToken {
-        AtpToken::Rfw(Rfw { pattern: "".to_string(), text_to_replace: "".to_string() })
+    fn new() -> Self {
+        Rfw { pattern: "".to_string(), text_to_replace: "".to_string() }
     }
 
     fn token_to_atp_line(&self) -> String {

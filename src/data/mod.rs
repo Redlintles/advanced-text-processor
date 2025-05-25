@@ -28,10 +28,10 @@ pub enum AtpToken {
     Dll(Dll),
     Dlc(Dlc),
 }
-pub trait TokenMethods {
-    fn token_from_vec_params(line: Vec<String>) -> Result<AtpToken, String>;
+pub trait TokenMethods: Sized {
+    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String>;
     fn token_to_atp_line(&self) -> String;
     fn get_string_repr() -> String;
-    fn new() -> AtpToken;
+    fn new() -> Self;
     fn parse(&self, input: &str) -> String;
 }

@@ -1,5 +1,4 @@
-use crate::data::{ AtpToken, TokenMethods };
-
+use crate::data::{ TokenMethods };
 // add to end
 #[derive(Clone)]
 pub struct Ate {
@@ -15,17 +14,17 @@ impl Ate {
 }
 
 impl TokenMethods for Ate {
-    fn token_from_vec_params(line: Vec<String>) -> Result<AtpToken, String> {
+    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
         // "ate;"
 
         if line[0] == "ate" {
-            return Ok(AtpToken::Ate(Ate::params(line[1].clone())));
+            return Ok(Ate::params(line[1].clone()));
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> AtpToken {
-        AtpToken::Ate(Ate { text: "".to_string() })
+    fn new() -> Self {
+        Ate { text: "".to_string() }
     }
 
     fn token_to_atp_line(&self) -> String {

@@ -1,7 +1,6 @@
 use regex::Regex;
 
-use crate::data::{ AtpToken, TokenMethods };
-
+use crate::data::{ TokenMethods };
 // Replace all with
 #[derive(Clone)]
 pub struct Raw {
@@ -19,17 +18,17 @@ impl Raw {
 }
 
 impl TokenMethods for Raw {
-    fn token_from_vec_params(line: Vec<String>) -> Result<AtpToken, String> {
+    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
         // "raw;"
 
         if line[0] == "raw" {
-            return Ok(AtpToken::Raw(Raw::params(line[1].clone(), line[2].clone())));
+            return Ok(Raw::params(line[1].clone(), line[2].clone()));
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> AtpToken {
-        AtpToken::Raw(Raw { pattern: "".to_string(), text_to_replace: "".to_string() })
+    fn new() -> Self {
+        Raw { pattern: "".to_string(), text_to_replace: "".to_string() }
     }
 
     fn token_to_atp_line(&self) -> String {

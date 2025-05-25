@@ -1,5 +1,4 @@
-use crate::data::{ AtpToken, TokenMethods };
-
+use crate::data::{ TokenMethods };
 // Delete Chunk
 #[derive(Clone, Copy)]
 pub struct Dlc {
@@ -17,24 +16,22 @@ impl Dlc {
 }
 
 impl TokenMethods for Dlc {
-    fn token_from_vec_params(line: Vec<String>) -> Result<AtpToken, String> {
+    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
         // "dlc;"
 
         if line[0] == "dlc" {
             return Ok(
-                AtpToken::Dlc(
-                    Dlc::params(
-                        line[1].clone().parse().expect("Parse from string to usize failed"),
-                        line[2].clone().parse().expect("Parse from string to usize failed")
-                    )
+                Dlc::params(
+                    line[1].clone().parse().expect("Parse from string to usize failed"),
+                    line[2].clone().parse().expect("Parse from string to usize failed")
                 )
             );
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> AtpToken {
-        AtpToken::Dlc(Dlc { start_index: 0 as usize, end_index: 0 as usize })
+    fn new() -> Self {
+        Dlc { start_index: 0 as usize, end_index: 0 as usize }
     }
 
     fn token_to_atp_line(&self) -> String {
