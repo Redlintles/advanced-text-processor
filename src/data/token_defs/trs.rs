@@ -25,4 +25,8 @@ impl TokenMethods for Trs {
     fn get_string_repr() -> String {
         "trs".to_string()
     }
+
+    fn parse(&self, input: &str) -> String {
+        String::from(input.trim_end())
+    }
 }
