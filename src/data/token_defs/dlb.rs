@@ -39,4 +39,19 @@ impl TokenMethods for Dlb {
     fn get_string_repr() -> String {
         "dlb".to_string()
     }
+
+    fn parse(&self, input: &str) -> String {
+        let mut s = String::from(input);
+
+        if
+            let Some(byte_index) = s
+                .char_indices()
+                .nth(self.index)
+                .map(|(i, _)| i)
+        {
+            s.drain(..=byte_index);
+        }
+
+        s
+    }
 }
