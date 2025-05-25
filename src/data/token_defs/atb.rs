@@ -35,4 +35,10 @@ impl TokenMethods for Atb {
     fn get_string_repr() -> String {
         "atb".to_string()
     }
+
+    fn parse(&self, input: &str) -> String {
+        let mut s = String::from(input);
+        s.push_str(&self.text);
+        s
+    }
 }
