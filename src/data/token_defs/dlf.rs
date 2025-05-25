@@ -25,4 +25,10 @@ impl TokenMethods for Dlf {
     fn get_string_repr() -> String {
         "dlf".to_string()
     }
+
+    fn parse(&self, input: &str) -> String {
+        let mut s = String::from(input);
+        s.drain(..1);
+        s
+    }
 }
