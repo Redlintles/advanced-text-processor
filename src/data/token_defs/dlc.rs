@@ -44,4 +44,18 @@ impl TokenMethods for Dlc {
     fn get_string_repr() -> String {
         "dlc".to_string()
     }
+    fn parse(&self, input: &str) -> String {
+        let start_index = input
+            .char_indices()
+            .nth(self.start_index)
+            .map(|(i, _)| i)
+            .unwrap_or(input.len());
+        let end_index = input
+            .char_indices()
+            .nth(self.end_index)
+            .map(|(i, _)| i)
+            .unwrap_or(input.len());
+
+        String::from(&input[start_index..end_index])
+    }
 }
