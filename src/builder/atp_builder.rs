@@ -1,6 +1,17 @@
-use crate::data::{ AtpToken };
+use crate::data::{ AtpToken, TokenMethods };
 
-use crate::data::tokens::{ Ate, Atb, Tbs, Tls, Trs, Dla, Dlb, Dlc, Dlf, Dll, Raw, Rfw };
+use crate::data::token_defs::ate::Ate;
+use crate::data::token_defs::atb::Atb;
+use crate::data::token_defs::trs::Trs;
+use crate::data::token_defs::tls::Tls;
+use crate::data::token_defs::tbs::Tbs;
+use crate::data::token_defs::raw::Raw;
+use crate::data::token_defs::rfw::Rfw;
+use crate::data::token_defs::dlf::Dlf;
+use crate::data::token_defs::dll::Dll;
+use crate::data::token_defs::dlb::Dlb;
+use crate::data::token_defs::dla::Dla;
+use crate::data::token_defs::dlc::Dlc;
 
 use super::atp_processor::{ AtpProcessor, AtpProcessorMethods };
 
@@ -25,7 +36,7 @@ impl Builder {
 
 impl Builder {
     pub fn trim_both(mut self) -> Self {
-        self.tokens.push(AtpToken::Tbs(Tbs {}));
+        self.tokens.push(Tbs::new());
         self
     }
 

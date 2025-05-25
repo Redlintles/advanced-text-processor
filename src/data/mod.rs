@@ -1,6 +1,17 @@
-pub mod tokens;
+pub mod token_defs;
 
-use tokens::{ Ate, Atb, Tbs, Tls, Trs, Dla, Dlb, Dlc, Dlf, Dll, Raw, Rfw };
+use token_defs::ate::Ate;
+use token_defs::atb::Atb;
+use token_defs::trs::Trs;
+use token_defs::tls::Tls;
+use token_defs::tbs::Tbs;
+use token_defs::raw::Raw;
+use token_defs::rfw::Rfw;
+use token_defs::dlf::Dlf;
+use token_defs::dll::Dll;
+use token_defs::dlb::Dlb;
+use token_defs::dla::Dla;
+use token_defs::dlc::Dlc;
 
 #[derive(Clone)]
 pub enum AtpToken {
@@ -16,4 +27,10 @@ pub enum AtpToken {
     Dlf(Dlf),
     Dll(Dll),
     Dlc(Dlc),
+}
+pub trait TokenMethods {
+    fn token_from_vec_params(line: Vec<String>) -> Result<AtpToken, String>;
+    fn token_to_atp_line(&self) -> String;
+    fn get_string_repr() -> String;
+    fn new() -> AtpToken;
 }

@@ -1,6 +1,17 @@
 use std::{ fs::OpenOptions, io::{ BufRead, BufReader } };
 
-use crate::data::tokens::{ Atb, Ate, Dla, Dlb, Dlc, Dlf, Dll, Raw, Rfw, Tbs, Tls, Trs };
+use crate::data::token_defs::ate::Ate;
+use crate::data::token_defs::atb::Atb;
+use crate::data::token_defs::trs::Trs;
+use crate::data::token_defs::tls::Tls;
+use crate::data::token_defs::tbs::Tbs;
+use crate::data::token_defs::raw::Raw;
+use crate::data::token_defs::rfw::Rfw;
+use crate::data::token_defs::dlf::Dlf;
+use crate::data::token_defs::dll::Dll;
+use crate::data::token_defs::dlb::Dlb;
+use crate::data::token_defs::dla::Dla;
+use crate::data::token_defs::dlc::Dlc;
 use crate::data::AtpToken;
 
 fn parse_atb(tokens: Vec<String>) -> Atb {
