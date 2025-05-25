@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use uuid::Uuid;
 
-use crate::{ data::AtpToken, parser::{ parse_token, writer::write_to_file } };
+use crate::data::AtpToken;
+
+use crate::parser::parser::parse_token;
+use crate::parser::writer::write_to_file;
 
 pub struct AtpProcessor {
     transforms: HashMap<String, Vec<AtpToken>>,
