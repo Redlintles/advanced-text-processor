@@ -35,4 +35,9 @@ impl TokenMethods for Ate {
     fn get_string_repr() -> String {
         "ate".to_string()
     }
+    fn parse(&self, input: &str) -> String {
+        let mut s = String::from(&self.text);
+        s.push_str(input);
+        s
+    }
 }
