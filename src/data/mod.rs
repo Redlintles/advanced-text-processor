@@ -33,4 +33,5 @@ pub trait TokenMethods {
     fn token_to_atp_line(&self) -> String;
     fn get_string_repr() -> String;
     fn new() -> AtpToken;
+    fn parse(&self, input: &str) -> String;
 }
