@@ -1,26 +1,24 @@
 use std::{ fs::OpenOptions, io::Write };
 
-use crate::data::AtpToken;
+use crate::data::{ AtpToken, TokenMethods };
 
 pub fn write_to_file(path: &str, tokens: &Vec<AtpToken>) {
     let mut file = OpenOptions::new().create(true).write(true).truncate(true).open(path).unwrap();
 
     for token in tokens.iter() {
         let line = match token {
-            AtpToken::Atb(obj) => format!("atb \"{}\";\n", obj.text),
-            AtpToken::Ate(obj) => format!("ate \"{}\";\n", obj.text),
-            AtpToken::Dla(obj) => format!("dla {};\n", obj.index),
-            AtpToken::Dlb(obj) => format!("dlb {};\n", obj.index),
-            AtpToken::Dlc(obj) => format!("dlc {} {};\n", obj.start_index, obj.end_index),
-            AtpToken::Dlf(_) => format!("dlf;\n"),
-            AtpToken::Dll(_) => format!("dll;\n"),
-            AtpToken::Raw(obj) =>
-                format!("raw r\"{}\" \"{}\";\n", obj.pattern, obj.text_to_replace),
-            AtpToken::Rfw(obj) =>
-                format!("rfw r\"{}\" \"{}\";\n", obj.pattern, obj.text_to_replace),
-            AtpToken::Tbs(_) => format!("tbs;\n"),
-            AtpToken::Tls(_) => format!("tls;\n"),
-            AtpToken::Trs(_) => format!("trs;\n"),
+            AtpToken::Atb(obj) => obj.token_to_atp_line(),
+            AtpToken::Ate(obj) => obj.token_to_atp_line(),
+            AtpToken::Dla(obj) => obj.token_to_atp_line(),
+            AtpToken::Dlb(obj) => obj.token_to_atp_line(),
+            AtpToken::Dlc(obj) => obj.token_to_atp_line(),
+            AtpToken::Dlf(obj) => obj.token_to_atp_line(),
+            AtpToken::Dll(obj) => obj.token_to_atp_line(),
+            AtpToken::Raw(obj) => obj.token_to_atp_line(),
+            AtpToken::Rfw(obj) => obj.token_to_atp_line(),
+            AtpToken::Tbs(obj) => obj.token_to_atp_line(),
+            AtpToken::Tls(obj) => obj.token_to_atp_line(),
+            AtpToken::Trs(obj) => obj.token_to_atp_line(),
         };
 
         match file.write(line.as_bytes()) {
