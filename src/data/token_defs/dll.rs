@@ -25,4 +25,13 @@ impl TokenMethods for Dll {
     fn get_string_repr() -> String {
         "dll".to_string()
     }
+    fn parse(&self, input: &str) -> String {
+        let mut s = String::from(input);
+
+        if let Some((x, _)) = s.char_indices().rev().next() {
+            s.drain(x..);
+        }
+
+        s
+    }
 }
