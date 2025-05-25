@@ -1,3 +1,5 @@
+use regex::Regex;
+
 use crate::data::{ AtpToken, TokenMethods };
 
 // Replace all with
@@ -36,5 +38,13 @@ impl TokenMethods for Raw {
 
     fn get_string_repr() -> String {
         "raw".to_string()
+    }
+
+    fn parse(&self, input: &str) -> String {
+        let re = Regex::new(&self.pattern).unwrap();
+
+        let result = re.replace_all(input, &self.text_to_replace);
+
+        result.to_string()
     }
 }
