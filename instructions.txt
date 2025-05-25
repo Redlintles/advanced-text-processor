@@ -1,0 +1,12 @@
+// 1.atb = add to beginning;
+// 2.ate = add to end;
+// 3.raw = replace all with;
+// 4.rfw = replace first with;
+// 5.dlc = delete chunk;
+// 6.dll = delete last;
+// 7.dlf = delete first;
+// 8.dlb = delete before;
+// 9.dla = delete after;
+// 10.tbs = trim both sides;
+// 11.tls = trim left side;
+// 12.trs = trim right side;
