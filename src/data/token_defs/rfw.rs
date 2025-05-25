@@ -1,3 +1,5 @@
+use regex::Regex;
+
 use crate::data::{ AtpToken, TokenMethods };
 
 // Replace first with
@@ -36,5 +38,12 @@ impl TokenMethods for Rfw {
 
     fn get_string_repr() -> String {
         "rfw".to_string()
+    }
+    fn parse(&self, input: &str) -> String {
+        let re = Regex::new(&self.pattern).unwrap();
+
+        let result = re.replace(input, &self.text_to_replace);
+
+        result.to_string()
     }
 }
