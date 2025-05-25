@@ -3,7 +3,7 @@ use std::{ fs::OpenOptions, io::Write };
 use crate::data::AtpToken;
 
 pub fn write_to_file(path: &str, tokens: &Vec<AtpToken>) {
-    let mut file = OpenOptions::new().create(true).append(true).open(path).unwrap();
+    let mut file = OpenOptions::new().create(true).write(true).truncate(true).open(path).unwrap();
 
     for token in tokens.iter() {
         let line = match token {
