@@ -41,6 +41,6 @@ impl TokenMethods for Rtl {
     }
 
     fn token_to_atp_line(&self) -> String {
-        format!("rtl {}", self.times)
+        format!("rtl {};\n", self.times)
     }
 }
