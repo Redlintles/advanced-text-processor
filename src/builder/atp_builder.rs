@@ -81,4 +81,8 @@ impl AtpBuilder {
         self.tokens.push(AtpToken::Rtr(rtr::Rtr { times }));
         self
     }
+    pub fn repeat(mut self, times: usize) -> Self {
+        self.tokens.push(AtpToken::Rpt(rpt::Rpt { times }));
+        self
+    }
 }

@@ -28,6 +28,7 @@ pub fn write_to_file(path: &str, tokens: &Vec<AtpToken>) -> Result<(), String> {
             AtpToken::Trs(obj) => obj.token_to_atp_line(),
             AtpToken::Rtl(obj) => obj.token_to_atp_line(),
             AtpToken::Rtr(obj) => obj.token_to_atp_line(),
+            AtpToken::Rpt(obj) => obj.token_to_atp_line(),
         };
 
         match file.write(line.as_bytes()) {

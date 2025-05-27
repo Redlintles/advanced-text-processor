@@ -14,6 +14,7 @@ use token_defs::dlb::Dlb;
 use token_defs::dla::Dla;
 use token_defs::dlc::Dlc;
 use token_defs::rtl::Rtl;
+use token_defs::rpt::Rpt;
 
 #[derive(Clone)]
 pub enum AtpToken {
@@ -31,6 +32,7 @@ pub enum AtpToken {
     Dlc(Dlc),
     Rtl(Rtl),
     Rtr(Rtr),
+    Rpt(Rpt),
 }
 pub trait TokenMethods: Sized {
     fn token_from_vec_params(line: Vec<String>) -> Result<Self, String>;

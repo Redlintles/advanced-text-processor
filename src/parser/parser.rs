@@ -16,5 +16,6 @@ pub fn parse_token(token: AtpToken, input: &str) -> String {
         AtpToken::Dlc(x) => x.parse(input),
         AtpToken::Rtl(x) => x.parse(input),
         AtpToken::Rtr(x) => x.parse(input),
+        AtpToken::Rpt(x) => x.parse(input),
     }
 }
