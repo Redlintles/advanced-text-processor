@@ -12,12 +12,12 @@ pub struct AtpProcessor {
 }
 
 pub trait AtpProcessorMethods {
-    fn write_to_file(&self, id: &String, path: &str) -> ();
+    fn write_to_file(&self, id: &str, path: &str) -> Result<(), String>;
 
     fn add_transform(&mut self, tokens: &Vec<AtpToken>) -> String;
-    fn process_string(&self, id: &String, string: &str) -> String;
+    fn process_string(&self, id: &str, string: &str) -> String;
     // Step By Step
-    fn process_sbs_string(&self, id: &String, string: &str) -> String;
+    fn process_sbs_string(&self, id: &str, string: &str) -> String;
 }
 
 impl AtpProcessor {
@@ -27,14 +27,23 @@ impl AtpProcessor {
 }
 
 impl AtpProcessorMethods for AtpProcessor {
-    fn write_to_file(&self, id: &String, path: &str) -> () {
-        write_to_file(path, &self.transforms.get(id).unwrap());
+    fn write_to_file(&self, id: &str, path: &str) -> Result<(), String> {
+        let tokens = self.transforms
+            .get(id)
+            .expect("Token array not found, is id a valid transform identifier");
+
+        match write_to_file(path, tokens) {
+            Ok(_) => Ok(()),
+            Err(x) => Err(x),
+        }
     }
 
-    fn process_string(&self, id: &String, string: &str) -> String {
+    fn process_string(&self, id: &str, string: &str) -> String {
         let mut result = String::from(string);
 
-        let tokens = self.transforms.get(id).unwrap();
+        let tokens = self.transforms
+            .get(id)
+            .expect("Token array not found, is id a valid transform identifier");
 
         for token in tokens.into_iter() {
             result = parse_token(token.clone(), result.as_str());
@@ -43,12 +52,14 @@ impl AtpProcessorMethods for AtpProcessor {
         result.to_string()
     }
 
-    fn process_sbs_string(&self, id: &String, string: &str) -> String {
+    fn process_sbs_string(&self, id: &str, string: &str) -> String {
         let mut result = String::from(string);
 
         let mut counter: i64 = 0;
 
-        let tokens = self.transforms.get(id).unwrap();
+        let tokens = self.transforms
+            .get(id)
+            .expect("Token array not found, is id a valid transform identifier");
 
         for token in tokens.into_iter() {
             let temp = parse_token(token.clone(), result.as_str());

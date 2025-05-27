@@ -40,7 +40,9 @@ impl TokenMethods for Raw {
     }
 
     fn parse(&self, input: &str) -> String {
-        let re = Regex::new(&self.pattern).unwrap();
+        let re = Regex::new(&self.pattern).expect(
+            "An ATP parsing error ocurred: RFW not able to create regex object"
+        );
 
         let result = re.replace_all(input, &self.text_to_replace);
 

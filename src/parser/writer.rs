@@ -1,9 +1,16 @@
-use std::{ fs::OpenOptions, io::Write };
+use std::{ fs::OpenOptions, io::{ Write } };
 
 use crate::data::{ AtpToken, TokenMethods };
 
-pub fn write_to_file(path: &str, tokens: &Vec<AtpToken>) {
-    let mut file = OpenOptions::new().create(true).write(true).truncate(true).open(path).unwrap();
+pub fn write_to_file(path: &str, tokens: &Vec<AtpToken>) -> Result<(), String> {
+    let mut file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .truncate(true)
+        .open(path)
+        .map_err(|x| x.to_string())?;
+
+    let mut success = true;
 
     for token in tokens.iter() {
         let line = match token {
@@ -23,7 +30,14 @@ pub fn write_to_file(path: &str, tokens: &Vec<AtpToken>) {
 
         match file.write(line.as_bytes()) {
             Ok(_) => (),
-            Err(_) => panic!("Erro ao escrever no arquivo"),
+            Err(_) => {
+                success = false;
+            }
         }
+    }
+
+    match success {
+        true => Ok(()),
+        false => Err("An unexpected error ocurred!".to_string()),
     }
 }
