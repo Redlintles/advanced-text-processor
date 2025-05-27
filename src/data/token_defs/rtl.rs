@@ -30,14 +30,18 @@ impl TokenMethods for Rtl {
         Err("Parsing Error".to_string())
     }
     fn parse(&self, input: &str) -> String {
-        let mut s = input.to_string();
-
-        for _ in 0..self.times {
-            let c = s.remove(0);
-            s.push_str(&c.to_string());
+        if input.is_empty() {
+            return String::new();
         }
 
-        s
+        let chars: Vec<char> = input.chars().collect();
+        let len = chars.len();
+        let times = self.times % len;
+
+        chars[times..]
+            .iter()
+            .chain(&chars[..times])
+            .collect()
     }
 
     fn token_to_atp_line(&self) -> String {
