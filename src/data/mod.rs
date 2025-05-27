@@ -2,6 +2,7 @@ pub mod token_defs;
 
 use token_defs::ate::Ate;
 use token_defs::atb::Atb;
+use token_defs::rtr::Rtr;
 use token_defs::trs::Trs;
 use token_defs::tls::Tls;
 use token_defs::tbs::Tbs;
@@ -29,6 +30,7 @@ pub enum AtpToken {
     Dll(Dll),
     Dlc(Dlc),
     Rtl(Rtl),
+    Rtr(Rtr),
 }
 pub trait TokenMethods: Sized {
     fn token_from_vec_params(line: Vec<String>) -> Result<Self, String>;
