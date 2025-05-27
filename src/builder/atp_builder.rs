@@ -4,12 +4,12 @@ use crate::data::token_defs::*;
 
 use super::atp_processor::{ AtpProcessor, AtpProcessorMethods };
 
-pub struct Builder {
+pub struct AtpBuilder {
     tokens: Vec<AtpToken>,
 }
-impl Builder {
-    pub fn new() -> Builder {
-        Builder {
+impl AtpBuilder {
+    pub fn new() -> AtpBuilder {
+        AtpBuilder {
             tokens: Vec::new(),
         }
     }
@@ -23,7 +23,7 @@ impl Builder {
     }
 }
 
-impl Builder {
+impl AtpBuilder {
     pub fn trim_both(mut self) -> Self {
         self.tokens.push(AtpToken::Tbs(tbs::Tbs::new()));
         self
