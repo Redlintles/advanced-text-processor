@@ -1,11 +1,11 @@
 use crate::data::TokenMethods;
 #[derive(Clone)]
 pub struct Rtl {
-    pub times: i32,
+    pub times: usize,
 }
 
 impl Rtl {
-    fn params(times: i32) -> Rtl {
+    fn params(times: usize) -> Rtl {
         Rtl {
             times,
         }
@@ -25,7 +25,7 @@ impl TokenMethods for Rtl {
 
     fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
         if line[0] == "rtl" {
-            return Ok(Rtl::params(line[1].parse().expect("Parsing from string to i32 failed")));
+            return Ok(Rtl::params(line[1].parse().expect("Parsing from string to usize failed")));
         }
         Err("Parsing Error".to_string())
     }

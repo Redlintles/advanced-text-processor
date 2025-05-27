@@ -73,11 +73,11 @@ impl AtpBuilder {
         self.tokens.push(AtpToken::Rfw(rfw::Rfw { pattern, text_to_replace }));
         self
     }
-    pub fn rotate_left(mut self, times: i32) -> Self {
+    pub fn rotate_left(mut self, times: usize) -> Self {
         self.tokens.push(AtpToken::Rtl(rtl::Rtl { times }));
         self
     }
-    pub fn rotate_right(mut self, times: i32) -> Self {
+    pub fn rotate_right(mut self, times: usize) -> Self {
         self.tokens.push(AtpToken::Rtr(rtr::Rtr { times }));
         self
     }
