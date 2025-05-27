@@ -40,6 +40,8 @@ pub fn read_from_file(path: &str) -> Vec<AtpToken> {
                 AtpToken::Dlb(dlb::Dlb::token_from_vec_params(chunks).expect(parse_err_msg)),
             x if x[0] == "dlc" =>
                 AtpToken::Dlc(dlc::Dlc::token_from_vec_params(chunks).expect(parse_err_msg)),
+            x if x[0] == "rtl" =>
+                AtpToken::Rtl(rtl::Rtl::token_from_vec_params(chunks).expect(parse_err_msg)),
             x if x[0] == "tbs" => AtpToken::Tbs(tbs::Tbs::new()),
             x if x[0] == "trs" => AtpToken::Trs(trs::Trs::new()),
             x if x[0] == "tls" => AtpToken::Tls(tls::Tls::new()),

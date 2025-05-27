@@ -12,6 +12,7 @@ use crate::data::token_defs::dll::Dll;
 use crate::data::token_defs::dlb::Dlb;
 use crate::data::token_defs::dla::Dla;
 use crate::data::token_defs::dlc::Dlc;
+use crate::data::token_defs::rtl::Rtl;
 
 use super::atp_processor::{ AtpProcessor, AtpProcessorMethods };
 
@@ -65,23 +66,26 @@ impl Builder {
         self
     }
     pub fn delete_after(mut self, index: usize) -> Self {
-        self.tokens.push(AtpToken::Dla(Dla { index: index }));
+        self.tokens.push(AtpToken::Dla(Dla { index }));
         self
     }
     pub fn delete_before(mut self, index: usize) -> Self {
-        self.tokens.push(AtpToken::Dlb(Dlb { index: index }));
+        self.tokens.push(AtpToken::Dlb(Dlb { index }));
         self
     }
     pub fn delete_chunk(mut self, start_index: usize, end_index: usize) -> Self {
-        self.tokens.push(AtpToken::Dlc(Dlc { start_index: start_index, end_index: end_index }));
+        self.tokens.push(AtpToken::Dlc(Dlc { start_index, end_index }));
         self
     }
     pub fn replace_all_with(mut self, pattern: String, text_to_replace: String) -> Self {
-        self.tokens.push(AtpToken::Raw(Raw { pattern: pattern, text_to_replace: text_to_replace }));
+        self.tokens.push(AtpToken::Raw(Raw { pattern, text_to_replace }));
         self
     }
     pub fn replace_first_with(mut self, pattern: String, text_to_replace: String) -> Self {
-        self.tokens.push(AtpToken::Rfw(Rfw { pattern: pattern, text_to_replace: text_to_replace }));
+        self.tokens.push(AtpToken::Rfw(Rfw { pattern, text_to_replace }));
         self
+    }
+    pub fn rotate_left(mut self, times: i32) {
+        self.tokens.push(AtpToken::Rtl(Rtl { times }));
     }
 }
