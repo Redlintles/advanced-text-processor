@@ -1,3 +1,5 @@
+use regex::Regex;
+
 use crate::data::{ AtpToken, TokenMethods };
 
 use crate::data::token_defs::*;
@@ -37,12 +39,12 @@ impl AtpBuilder {
         self.tokens.push(AtpToken::Trs(trs::Trs {}));
         self
     }
-    pub fn add_to_end(mut self, text: String) -> Self {
-        self.tokens.push(AtpToken::Ate(ate::Ate { text: text }));
+    pub fn add_to_end(mut self, text: &str) -> Self {
+        self.tokens.push(AtpToken::Ate(ate::Ate { text: text.to_string() }));
         self
     }
-    pub fn add_to_beginning(mut self, text: String) -> Self {
-        self.tokens.push(AtpToken::Atb(atb::Atb { text: text }));
+    pub fn add_to_beginning(mut self, text: &str) -> Self {
+        self.tokens.push(AtpToken::Atb(atb::Atb { text: text.to_string() }));
         self
     }
     pub fn delete_first(mut self) -> Self {
@@ -65,12 +67,22 @@ impl AtpBuilder {
         self.tokens.push(AtpToken::Dlc(dlc::Dlc { start_index, end_index }));
         self
     }
-    pub fn replace_all_with(mut self, pattern: String, text_to_replace: String) -> Self {
-        self.tokens.push(AtpToken::Raw(raw::Raw { pattern, text_to_replace }));
+    pub fn replace_all_with(mut self, pattern: &str, text_to_replace: &str) -> Self {
+        self.tokens.push(
+            AtpToken::Raw(raw::Raw {
+                pattern: Regex::new(pattern).expect("Failed creating regex"),
+                text_to_replace: text_to_replace.to_string(),
+            })
+        );
         self
     }
-    pub fn replace_first_with(mut self, pattern: String, text_to_replace: String) -> Self {
-        self.tokens.push(AtpToken::Rfw(rfw::Rfw { pattern, text_to_replace }));
+    pub fn replace_first_with(mut self, pattern: &str, text_to_replace: &str) -> Self {
+        self.tokens.push(
+            AtpToken::Rfw(rfw::Rfw {
+                pattern: Regex::new(pattern).expect("Failed creating regex"),
+                text_to_replace: text_to_replace.to_string(),
+            })
+        );
         self
     }
     pub fn rotate_left(mut self, times: usize) -> Self {
