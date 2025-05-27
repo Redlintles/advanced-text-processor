@@ -4,14 +4,14 @@ use crate::data::{ TokenMethods };
 // Replace first with
 #[derive(Clone)]
 pub struct Rfw {
-    pub pattern: String,
+    pub pattern: Regex,
     pub text_to_replace: String,
 }
 
 impl Rfw {
     fn params(pattern: String, text_to_replace: String) -> Self {
         Rfw {
-            pattern,
+            pattern: Regex::new(&pattern).expect("Failed creating regex"),
             text_to_replace,
         }
     }
@@ -28,7 +28,10 @@ impl TokenMethods for Rfw {
     }
 
     fn new() -> Self {
-        Rfw { pattern: "".to_string(), text_to_replace: "".to_string() }
+        Rfw {
+            pattern: Regex::new("").expect("Failed creating regex"),
+            text_to_replace: "".to_string(),
+        }
     }
 
     fn token_to_atp_line(&self) -> String {
@@ -39,12 +42,6 @@ impl TokenMethods for Rfw {
         "rfw".to_string()
     }
     fn parse(&self, input: &str) -> String {
-        let re = Regex::new(&self.pattern).expect(
-            "An ATP parsing error ocurred: RFW not able to create regex object"
-        );
-
-        let result = re.replace(input, &self.text_to_replace);
-
-        result.to_string()
+        self.pattern.replace(input, &self.text_to_replace).to_string()
     }
 }
