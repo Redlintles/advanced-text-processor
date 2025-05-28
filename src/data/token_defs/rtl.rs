@@ -1,4 +1,4 @@
-use crate::data::TokenMethods;
+use crate::data::{ TokenFactory, TokenMethods };
 #[derive(Clone)]
 pub struct Rtl {
     pub times: usize,
@@ -13,22 +13,6 @@ impl Rtl {
 }
 
 impl TokenMethods for Rtl {
-    fn new() -> Self {
-        Rtl {
-            times: 0,
-        }
-    }
-
-    fn get_string_repr() -> String {
-        "rtl".to_string()
-    }
-
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
-        if line[0] == "rtl" {
-            return Ok(Rtl::params(line[1].parse().expect("Parsing from string to usize failed")));
-        }
-        Err("Parsing Error".to_string())
-    }
     fn parse(&self, input: &str) -> String {
         if input.is_empty() {
             return String::new();
@@ -46,5 +30,23 @@ impl TokenMethods for Rtl {
 
     fn token_to_atp_line(&self) -> String {
         format!("rtl {};\n", self.times)
+    }
+}
+
+impl TokenFactory<Rtl> for Rtl {
+    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+        if line[0] == "rtl" {
+            return Ok(Rtl::params(line[1].parse().expect("Parsing from string to usize failed")));
+        }
+        Err("Parsing Error".to_string())
+    }
+
+    fn get_string_repr() -> String {
+        "rtl".to_string()
+    }
+    fn new() -> Self {
+        Rtl {
+            times: 0,
+        }
     }
 }

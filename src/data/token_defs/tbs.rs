@@ -1,10 +1,20 @@
-use crate::data::{ TokenMethods };
+use crate::data::{ TokenFactory, TokenMethods };
 
 // Trim both sides
 #[derive(Clone)]
 pub struct Tbs {}
 
 impl TokenMethods for Tbs {
+    fn token_to_atp_line(&self) -> String {
+        "tbs;\n".to_string()
+    }
+
+    fn parse(&self, input: &str) -> String {
+        String::from(input.trim())
+    }
+}
+
+impl TokenFactory<Tbs> for Tbs {
     fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
         // "tbs;"
 
@@ -18,15 +28,7 @@ impl TokenMethods for Tbs {
         Tbs {}
     }
 
-    fn token_to_atp_line(&self) -> String {
-        "tbs;\n".to_string()
-    }
-
     fn get_string_repr() -> String {
         "tbs".to_string()
-    }
-
-    fn parse(&self, input: &str) -> String {
-        String::from(input.trim())
     }
 }

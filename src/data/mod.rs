@@ -34,10 +34,13 @@ pub enum AtpToken {
     Rtr(Rtr),
     Rpt(Rpt),
 }
-pub trait TokenMethods: Sized {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String>;
+pub trait TokenMethods {
     fn token_to_atp_line(&self) -> String;
-    fn get_string_repr() -> String;
-    fn new() -> Self;
     fn parse(&self, input: &str) -> String;
+}
+
+pub trait TokenFactory<T: TokenMethods>: Sized {
+    fn token_from_vec_params(line: Vec<String>) -> Result<T, String>;
+    fn get_string_repr() -> String;
+    fn new() -> Self where Self: Sized;
 }

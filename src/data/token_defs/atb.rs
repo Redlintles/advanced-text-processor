@@ -1,4 +1,4 @@
-use crate::data::{ TokenMethods };
+use crate::data::{ TokenFactory, TokenMethods };
 
 // add to beginning
 #[derive(Clone)]
@@ -15,6 +15,18 @@ impl Atb {
 }
 
 impl TokenMethods for Atb {
+    fn token_to_atp_line(&self) -> String {
+        format!("atb {};\n", self.text)
+    }
+
+    fn parse(&self, input: &str) -> String {
+        let mut s = String::from(input);
+        s.push_str(&self.text);
+        s
+    }
+}
+
+impl TokenFactory<Atb> for Atb {
     fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
         // "atb;"
 
@@ -28,17 +40,7 @@ impl TokenMethods for Atb {
         Atb { text: "".to_string() }
     }
 
-    fn token_to_atp_line(&self) -> String {
-        format!("atb {};\n", self.text)
-    }
-
     fn get_string_repr() -> String {
         "atb".to_string()
-    }
-
-    fn parse(&self, input: &str) -> String {
-        let mut s = String::from(input);
-        s.push_str(&self.text);
-        s
     }
 }

@@ -1,4 +1,4 @@
-use crate::data::{ TokenMethods };
+use crate::data::{ TokenFactory, TokenMethods };
 // Delete before
 #[derive(Clone, Copy)]
 pub struct Dlb {
@@ -14,27 +14,8 @@ impl Dlb {
 }
 
 impl TokenMethods for Dlb {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
-        // "dlb;"
-
-        if line[0] == "dlb" {
-            return Ok(
-                Dlb::params(line[1].clone().parse().expect("Parse from string to usize failed"))
-            );
-        }
-        Err("Parsing Error".to_string())
-    }
-
-    fn new() -> Self {
-        Dlb { index: 0 as usize }
-    }
-
     fn token_to_atp_line(&self) -> String {
         format!("dlb {};\n", self.index)
-    }
-
-    fn get_string_repr() -> String {
-        "dlb".to_string()
     }
 
     fn parse(&self, input: &str) -> String {
@@ -50,5 +31,26 @@ impl TokenMethods for Dlb {
         }
 
         s
+    }
+}
+
+impl TokenFactory<Dlb> for Dlb {
+    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+        // "dlb;"
+
+        if line[0] == "dlb" {
+            return Ok(
+                Dlb::params(line[1].clone().parse().expect("Parse from string to usize failed"))
+            );
+        }
+        Err("Parsing Error".to_string())
+    }
+
+    fn new() -> Self {
+        Dlb { index: 0 as usize }
+    }
+
+    fn get_string_repr() -> String {
+        "dlb".to_string()
     }
 }

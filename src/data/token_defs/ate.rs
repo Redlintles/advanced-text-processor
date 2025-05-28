@@ -1,4 +1,4 @@
-use crate::data::{ TokenMethods };
+use crate::data::{ TokenFactory, TokenMethods };
 // add to end
 #[derive(Clone)]
 pub struct Ate {
@@ -14,6 +14,18 @@ impl Ate {
 }
 
 impl TokenMethods for Ate {
+    fn token_to_atp_line(&self) -> String {
+        format!("ate {};\n", self.text)
+    }
+
+    fn parse(&self, input: &str) -> String {
+        let mut s = String::from(&self.text);
+        s.push_str(input);
+        s
+    }
+}
+
+impl TokenFactory<Ate> for Ate {
     fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
         // "ate;"
 
@@ -27,16 +39,7 @@ impl TokenMethods for Ate {
         Ate { text: "".to_string() }
     }
 
-    fn token_to_atp_line(&self) -> String {
-        format!("ate {};\n", self.text)
-    }
-
     fn get_string_repr() -> String {
         "ate".to_string()
-    }
-    fn parse(&self, input: &str) -> String {
-        let mut s = String::from(&self.text);
-        s.push_str(input);
-        s
     }
 }

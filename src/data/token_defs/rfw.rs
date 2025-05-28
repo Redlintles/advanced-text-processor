@@ -1,6 +1,6 @@
 use regex::Regex;
 
-use crate::data::{ TokenMethods };
+use crate::data::{ TokenFactory, TokenMethods };
 // Replace first with
 #[derive(Clone)]
 pub struct Rfw {
@@ -18,6 +18,16 @@ impl Rfw {
 }
 
 impl TokenMethods for Rfw {
+    fn token_to_atp_line(&self) -> String {
+        format!("rfw {} {};\n", self.pattern, self.text_to_replace)
+    }
+
+    fn parse(&self, input: &str) -> String {
+        self.pattern.replace(input, &self.text_to_replace).to_string()
+    }
+}
+
+impl TokenFactory<Rfw> for Rfw {
     fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
         // "rfw;"
 
@@ -33,15 +43,7 @@ impl TokenMethods for Rfw {
             text_to_replace: "".to_string(),
         }
     }
-
-    fn token_to_atp_line(&self) -> String {
-        format!("rfw {} {};\n", self.pattern, self.text_to_replace)
-    }
-
     fn get_string_repr() -> String {
         "rfw".to_string()
-    }
-    fn parse(&self, input: &str) -> String {
-        self.pattern.replace(input, &self.text_to_replace).to_string()
     }
 }
