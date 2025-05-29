@@ -63,7 +63,14 @@ impl AtpProcessorMethods for AtpProcessor {
 
         for token in tokens.iter() {
             let temp = parse_token(token, result.as_str());
-            println!("[{}] => [{}]: {} => {}", counter, counter + 1, result, temp);
+            println!(
+                "Step: [{}] => [{}]\nInstruction: {}\nBefore: {}\nAfter: {}\n",
+                counter,
+                counter + 1,
+                token.token_to_atp_line(),
+                result,
+                temp
+            );
 
             result = String::from(temp);
 
