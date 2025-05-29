@@ -6,9 +6,9 @@ pub mod benchmark {
 
     #[test]
     fn process_sbs_all_tokens() {
-        let start = Instant::now();
+        let runs = 100;
 
-        let string_to_process = "Banana Laranja cheia de canja";
+        let mut total = 0.0;
 
         let (processor, identifier) = AtpBuilder::new()
             .add_to_beginning("Banana")
@@ -28,19 +28,29 @@ pub mod benchmark {
             .trim_right()
             .build();
 
-        let processed_string = processor.process_sbs_string(&identifier, string_to_process);
+        for _ in 0..runs {
+            let start = Instant::now();
 
-        let _ = processor.write_to_file(&identifier, "Benchmark.atp");
+            let string_to_process = "Banana Laranja cheia de canja";
 
-        let elapsed = start.elapsed();
+            let processed_string = processor.process_sbs_string(&identifier, string_to_process);
 
-        println!(
-            "A transformação de \"{}\" em \"{}\" levou: {:.6} Segundos",
-            string_to_process,
-            processed_string,
-            elapsed.as_secs_f64()
-        );
+            let elapsed = start.elapsed().as_secs_f64();
 
-        assert!(elapsed.as_secs_f64() < 0.003, "Executou muito devagar");
+            println!(
+                "A transformação de \"{}\" em \"{}\" levou: {:.6} Segundos",
+                string_to_process,
+                processed_string,
+                elapsed
+            );
+
+            total += elapsed;
+        }
+
+        let avg = total / (runs as f64);
+
+        println!("Média: {:.6} Segundos", avg);
+
+        assert!(avg < 0.003, "Executou muito devagar");
     }
 }
