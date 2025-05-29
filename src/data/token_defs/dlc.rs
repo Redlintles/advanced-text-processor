@@ -38,7 +38,10 @@ impl TokenMethods for Dlc {
             .map(|(i, _)| i)
             .unwrap_or(input.len());
 
-        String::from(&input[start_index..end_index])
+        let before = &input[..start_index.min(input.len())];
+        let after = &input[end_index.min(input.len())..];
+
+        format!("{}{}", before, after)
     }
     fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         // "dlc;"
