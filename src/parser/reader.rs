@@ -30,7 +30,7 @@ pub fn read_from_file(path: &str) -> Vec<Box<dyn TokenMethods>> {
 
         let mut token = token_factory();
 
-        token.token_from_vec_params(chunks);
+        token.token_from_vec_params(chunks).expect("Parsing error, Invalid Token");
 
         result.push(token);
     }
