@@ -1,13 +1,11 @@
-use regex::Regex;
-
-use crate::data::{ AtpToken, TokenMethods };
+use crate::data::{ TokenMethods };
 
 use crate::data::token_defs::*;
 
 use super::atp_processor::{ AtpProcessor, AtpProcessorMethods };
 
 pub struct AtpBuilder {
-    tokens: Vec<AtpToken>,
+    tokens: Vec<Box<dyn TokenMethods>>,
 }
 impl AtpBuilder {
     pub fn new() -> AtpBuilder {
@@ -16,10 +14,10 @@ impl AtpBuilder {
         }
     }
 
-    pub fn build(&self) -> (AtpProcessor, String) {
+    pub fn build(self) -> (AtpProcessor, String) {
         let mut processor = AtpProcessor::new();
 
-        let identifier = processor.add_transform(&self.tokens);
+        let identifier = processor.add_transform(self.tokens);
 
         (processor, identifier)
     }
@@ -27,74 +25,69 @@ impl AtpBuilder {
 
 impl AtpBuilder {
     pub fn trim_both(mut self) -> Self {
-        self.tokens.push(AtpToken::Tbs(tbs::Tbs::new()));
+        self.tokens.push(Box::new(tbs::Tbs::new()));
         self
     }
 
     pub fn trim_left(mut self) -> Self {
-        self.tokens.push(AtpToken::Tls(tls::Tls {}));
+        self.tokens.push(Box::new(tls::Tls::new()));
         self
     }
     pub fn trim_right(mut self) -> Self {
-        self.tokens.push(AtpToken::Trs(trs::Trs {}));
+        self.tokens.push(Box::new(trs::Trs::new()));
         self
     }
     pub fn add_to_end(mut self, text: &str) -> Self {
-        self.tokens.push(AtpToken::Ate(ate::Ate { text: text.to_string() }));
+        self.tokens.push(Box::new(ate::Ate::params(text.to_string())));
         self
     }
     pub fn add_to_beginning(mut self, text: &str) -> Self {
-        self.tokens.push(AtpToken::Atb(atb::Atb { text: text.to_string() }));
+        self.tokens.push(Box::new(atb::Atb::params(text.to_string())));
         self
     }
     pub fn delete_first(mut self) -> Self {
-        self.tokens.push(AtpToken::Dlf(dlf::Dlf {}));
+        self.tokens.push(Box::new(dlf::Dlf::new()));
         self
     }
     pub fn delete_last(mut self) -> Self {
-        self.tokens.push(AtpToken::Dll(dll::Dll {}));
+        self.tokens.push(Box::new(dll::Dll::new()));
         self
     }
     pub fn delete_after(mut self, index: usize) -> Self {
-        self.tokens.push(AtpToken::Dla(dla::Dla { index }));
+        self.tokens.push(Box::new(dla::Dla::params(index)));
         self
     }
     pub fn delete_before(mut self, index: usize) -> Self {
-        self.tokens.push(AtpToken::Dlb(dlb::Dlb { index }));
+        self.tokens.push(Box::new(dlb::Dlb::params(index)));
         self
     }
     pub fn delete_chunk(mut self, start_index: usize, end_index: usize) -> Self {
-        self.tokens.push(AtpToken::Dlc(dlc::Dlc { start_index, end_index }));
+        self.tokens.push(Box::new(dlc::Dlc::params(start_index, end_index)));
         self
     }
     pub fn replace_all_with(mut self, pattern: &str, text_to_replace: &str) -> Self {
         self.tokens.push(
-            AtpToken::Raw(raw::Raw {
-                pattern: Regex::new(pattern).expect("Failed creating regex"),
-                text_to_replace: text_to_replace.to_string(),
-            })
+            Box::new(raw::Raw::params(pattern.to_string(), text_to_replace.to_string()))
         );
+
         self
     }
     pub fn replace_first_with(mut self, pattern: &str, text_to_replace: &str) -> Self {
         self.tokens.push(
-            AtpToken::Rfw(rfw::Rfw {
-                pattern: Regex::new(pattern).expect("Failed creating regex"),
-                text_to_replace: text_to_replace.to_string(),
-            })
+            Box::new(rfw::Rfw::params(pattern.to_string(), text_to_replace.to_string()))
         );
         self
     }
     pub fn rotate_left(mut self, times: usize) -> Self {
-        self.tokens.push(AtpToken::Rtl(rtl::Rtl { times }));
+        self.tokens.push(Box::new(rtl::Rtl::params(times)));
         self
     }
     pub fn rotate_right(mut self, times: usize) -> Self {
-        self.tokens.push(AtpToken::Rtr(rtr::Rtr { times }));
+        self.tokens.push(Box::new(rtr::Rtr::params(times)));
         self
     }
     pub fn repeat(mut self, times: usize) -> Self {
-        self.tokens.push(AtpToken::Rpt(rpt::Rpt { times }));
+        self.tokens.push(Box::new(rpt::Rpt::params(times)));
         self
     }
 }
