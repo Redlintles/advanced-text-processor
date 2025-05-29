@@ -24,8 +24,8 @@ impl TokenMethods for Atb {
     }
 
     fn parse(&self, input: &str) -> String {
-        let mut s = String::from(input);
-        s.push_str(&self.text);
+        let mut s = String::from(&self.text);
+        s.push_str(input);
         s
     }
     fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
