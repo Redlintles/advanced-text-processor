@@ -1,7 +1,13 @@
-use crate::data::{ TokenFactory, TokenMethods };
+use crate::data::{ TokenMethods };
 // Delete first
 #[derive(Clone, Copy)]
 pub struct Dlf {}
+
+impl Dlf {
+    pub fn new() -> Self {
+        Dlf {}
+    }
+}
 
 impl TokenMethods for Dlf {
     fn token_to_atp_line(&self) -> String {
@@ -13,22 +19,16 @@ impl TokenMethods for Dlf {
         s.drain(..1);
         s
     }
-}
-
-impl TokenFactory<Dlf> for Dlf {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         // "dlf;"
 
         if line[0] == "dlf" {
-            return Ok(Dlf {});
+            return Ok(());
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> Self {
-        Dlf {}
-    }
-    fn get_string_repr() -> String {
+    fn get_string_repr(&self) -> String {
         "dlf".to_string()
     }
 }

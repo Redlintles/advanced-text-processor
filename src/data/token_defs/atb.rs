@@ -1,4 +1,4 @@
-use crate::data::{ TokenFactory, TokenMethods };
+use crate::data::{ TokenMethods };
 
 // add to beginning
 #[derive(Clone)]
@@ -12,6 +12,10 @@ impl Atb {
             text,
         }
     }
+
+    fn new() -> Self {
+        Atb { text: "".to_string() }
+    }
 }
 
 impl TokenMethods for Atb {
@@ -24,23 +28,17 @@ impl TokenMethods for Atb {
         s.push_str(&self.text);
         s
     }
-}
-
-impl TokenFactory<Atb> for Atb {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         // "atb;"
 
         if line[0] == "atb" {
-            return Ok(Atb::params(line[1].clone()));
+            self.text = line[1].clone();
+            return Ok(());
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> Self {
-        Atb { text: "".to_string() }
-    }
-
-    fn get_string_repr() -> String {
+    fn get_string_repr(&self) -> String {
         "atb".to_string()
     }
 }

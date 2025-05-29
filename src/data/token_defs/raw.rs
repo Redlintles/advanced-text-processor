@@ -1,11 +1,20 @@
 use regex::Regex;
 
-use crate::data::{ TokenFactory, TokenMethods };
+use crate::data::{ TokenMethods };
 // Replace all with
 #[derive(Clone)]
 pub struct Raw {
     pub pattern: Regex,
     pub text_to_replace: String,
+}
+
+impl Raw {
+    pub fn new() -> Self {
+        Raw {
+            pattern: Regex::new("").unwrap(),
+            text_to_replace: "_".to_string(),
+        }
+    }
 }
 
 impl Raw {
@@ -25,26 +34,18 @@ impl TokenMethods for Raw {
     fn parse(&self, input: &str) -> String {
         self.pattern.replace_all(input, &self.text_to_replace).to_string()
     }
-}
-
-impl TokenFactory<Raw> for Raw {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         // "raw;"
 
         if line[0] == "raw" {
-            return Ok(Raw::params(line[1].clone(), line[2].clone()));
+            self.pattern = Regex::new(&line[1]).expect("Failed Creating Regex");
+            self.text_to_replace = line[2].clone();
+            return Ok(());
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> Self {
-        Raw {
-            pattern: Regex::new("").expect("Failed creating regex"),
-            text_to_replace: "".to_string(),
-        }
-    }
-
-    fn get_string_repr() -> String {
+    fn get_string_repr(&self) -> String {
         "raw".to_string()
     }
 }

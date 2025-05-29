@@ -37,10 +37,6 @@ pub enum AtpToken {
 pub trait TokenMethods {
     fn token_to_atp_line(&self) -> String;
     fn parse(&self, input: &str) -> String;
-}
-
-pub trait TokenFactory<T: TokenMethods>: Sized {
-    fn token_from_vec_params(line: Vec<String>) -> Result<T, String>;
-    fn get_string_repr() -> String;
-    fn new() -> Self where Self: Sized;
+    fn get_string_repr(&self) -> String;
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String>;
 }

@@ -1,4 +1,4 @@
-use crate::data::{ TokenFactory, TokenMethods };
+use crate::data::{ TokenMethods };
 #[derive(Clone)]
 pub struct Rpt {
     pub times: usize,
@@ -7,6 +7,12 @@ pub struct Rpt {
 impl Rpt {
     pub fn params(times: usize) -> Self {
         Rpt { times }
+    }
+
+    pub fn new() -> Self {
+        return Rpt {
+            times: 0,
+        };
     }
 }
 
@@ -18,22 +24,16 @@ impl TokenMethods for Rpt {
     fn parse(&self, input: &str) -> String {
         input.repeat(self.times)
     }
-}
-
-impl TokenFactory<Rpt> for Rpt {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         if line[0] == "rpt" {
-            return Ok(Rpt { times: line[1].parse().expect("Parsing from string to usize failed") });
+            self.times = line[1].parse().expect("Parsing from string to usize failed");
+            return Ok(());
         }
 
         Err("Parsing Error".to_string())
     }
-    fn new() -> Self {
-        Rpt {
-            times: 0,
-        }
-    }
-    fn get_string_repr() -> String {
+
+    fn get_string_repr(&self) -> String {
         "rpt".to_string()
     }
 }

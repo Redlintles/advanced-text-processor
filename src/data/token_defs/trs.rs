@@ -1,8 +1,14 @@
-use crate::data::{ TokenFactory, TokenMethods };
+use crate::data::{ TokenMethods };
 
 // Trim right side
 #[derive(Clone, Copy)]
 pub struct Trs {}
+
+impl Trs {
+    pub fn new() -> Self {
+        Trs {}
+    }
+}
 
 impl TokenMethods for Trs {
     fn token_to_atp_line(&self) -> String {
@@ -12,22 +18,16 @@ impl TokenMethods for Trs {
     fn parse(&self, input: &str) -> String {
         String::from(input.trim_end())
     }
-}
-
-impl TokenFactory<Trs> for Trs {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         // "trs;"
 
         if line[0] == "trs" {
-            return Ok(Trs {});
+            return Ok(());
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> Self {
-        Trs {}
-    }
-    fn get_string_repr() -> String {
+    fn get_string_repr(&self) -> String {
         "trs".to_string()
     }
 }

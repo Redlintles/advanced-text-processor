@@ -1,6 +1,6 @@
 use regex::Regex;
 
-use crate::data::{ TokenFactory, TokenMethods };
+use crate::data::{ TokenMethods };
 // Replace first with
 #[derive(Clone)]
 pub struct Rfw {
@@ -9,10 +9,16 @@ pub struct Rfw {
 }
 
 impl Rfw {
-    fn params(pattern: String, text_to_replace: String) -> Self {
+    pub fn params(pattern: String, text_to_replace: String) -> Self {
         Rfw {
             pattern: Regex::new(&pattern).expect("Failed creating regex"),
             text_to_replace,
+        }
+    }
+    pub fn new() -> Self {
+        Rfw {
+            pattern: Regex::new("").unwrap(),
+            text_to_replace: "_".to_string(),
         }
     }
 }
@@ -25,25 +31,18 @@ impl TokenMethods for Rfw {
     fn parse(&self, input: &str) -> String {
         self.pattern.replace(input, &self.text_to_replace).to_string()
     }
-}
-
-impl TokenFactory<Rfw> for Rfw {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         // "rfw;"
 
         if line[0] == "rfw" {
-            return Ok(Rfw::params(line[1].clone(), line[2].clone()));
+            self.pattern = Regex::new(&line[1]).expect("Failed Creating Regex");
+            self.text_to_replace = line[2].clone();
+            return Ok(());
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> Self {
-        Rfw {
-            pattern: Regex::new("").expect("Failed creating regex"),
-            text_to_replace: "".to_string(),
-        }
-    }
-    fn get_string_repr() -> String {
+    fn get_string_repr(&self) -> String {
         "rfw".to_string()
     }
 }

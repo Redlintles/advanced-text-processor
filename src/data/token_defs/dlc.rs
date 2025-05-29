@@ -1,4 +1,4 @@
-use crate::data::{ TokenFactory, TokenMethods };
+use crate::data::{ TokenMethods };
 // Delete Chunk
 #[derive(Clone, Copy)]
 pub struct Dlc {
@@ -11,6 +11,12 @@ impl Dlc {
         Dlc {
             start_index,
             end_index,
+        }
+    }
+    fn new() -> Self {
+        Dlc {
+            start_index: 0,
+            end_index: 0,
         }
     }
 }
@@ -34,27 +40,18 @@ impl TokenMethods for Dlc {
 
         String::from(&input[start_index..end_index])
     }
-}
-
-impl TokenFactory<Dlc> for Dlc {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         // "dlc;"
 
         if line[0] == "dlc" {
-            return Ok(
-                Dlc::params(
-                    line[1].clone().parse().expect("Parse from string to usize failed"),
-                    line[2].clone().parse().expect("Parse from string to usize failed")
-                )
-            );
+            self.start_index = line[1].clone().parse().expect("Parse from string to usize failed");
+            self.end_index = line[2].clone().parse().expect("Parse from string to usize failed");
+            return Ok(());
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> Self {
-        Dlc { start_index: 0 as usize, end_index: 0 as usize }
-    }
-    fn get_string_repr() -> String {
+    fn get_string_repr(&self) -> String {
         "dlc".to_string()
     }
 }

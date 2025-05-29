@@ -1,4 +1,4 @@
-use crate::data::{ TokenFactory, TokenMethods };
+use crate::data::{ TokenMethods };
 // Delete after
 #[derive(Clone, Copy)]
 pub struct Dla {
@@ -10,6 +10,9 @@ impl Dla {
         Dla {
             index,
         }
+    }
+    fn new() -> Self {
+        Dla { index: 0 }
     }
 }
 
@@ -32,25 +35,17 @@ impl TokenMethods for Dla {
 
         s
     }
-}
-
-impl TokenFactory<Dla> for Dla {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         // "dla;"
 
         if line[0] == "dla" {
-            return Ok(
-                Dla::params(line[1].clone().parse().expect("Parse from string to usize failed"))
-            );
+            self.index = line[1].clone().parse().expect("Parse from string to usize failed");
+            return Ok(());
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> Self {
-        Dla { index: 0 as usize }
-    }
-
-    fn get_string_repr() -> String {
+    fn get_string_repr(&self) -> String {
         "dla".to_string()
     }
 }

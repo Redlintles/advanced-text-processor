@@ -1,8 +1,14 @@
-use crate::data::{ TokenFactory, TokenMethods };
+use crate::data::{ TokenMethods };
 
 // Delete last
 #[derive(Clone, Copy)]
 pub struct Dll {}
+
+impl Dll {
+    pub fn new() -> Self {
+        Dll {}
+    }
+}
 
 impl TokenMethods for Dll {
     fn token_to_atp_line(&self) -> String {
@@ -18,23 +24,16 @@ impl TokenMethods for Dll {
 
         s
     }
-}
-
-impl TokenFactory<Dll> for Dll {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         // "dll;"
 
         if line[0] == "dll" {
-            return Ok(Dll {});
+            return Ok(());
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> Self {
-        Dll {}
-    }
-
-    fn get_string_repr() -> String {
+    fn get_string_repr(&self) -> String {
         "dll".to_string()
     }
 }

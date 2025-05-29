@@ -1,4 +1,4 @@
-use crate::data::{ TokenFactory, TokenMethods };
+use crate::data::{ TokenMethods };
 // add to end
 #[derive(Clone)]
 pub struct Ate {
@@ -10,6 +10,9 @@ impl Ate {
         Ate {
             text,
         }
+    }
+    fn new() -> Self {
+        Ate { text: "".to_string() }
     }
 }
 
@@ -23,23 +26,17 @@ impl TokenMethods for Ate {
         s.push_str(input);
         s
     }
-}
-
-impl TokenFactory<Ate> for Ate {
-    fn token_from_vec_params(line: Vec<String>) -> Result<Self, String> {
+    fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         // "ate;"
 
         if line[0] == "ate" {
-            return Ok(Ate::params(line[1].clone()));
+            self.text = line[1].clone();
+            return Ok(());
         }
         Err("Parsing Error".to_string())
     }
 
-    fn new() -> Self {
-        Ate { text: "".to_string() }
-    }
-
-    fn get_string_repr() -> String {
+    fn get_string_repr(&self) -> String {
         "ate".to_string()
     }
 }
