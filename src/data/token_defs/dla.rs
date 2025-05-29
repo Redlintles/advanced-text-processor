@@ -6,12 +6,12 @@ pub struct Dla {
 }
 
 impl Dla {
-    fn params(index: usize) -> Self {
+    pub fn params(index: usize) -> Self {
         Dla {
             index,
         }
     }
-    fn new() -> Self {
+    pub fn new() -> Self {
         Dla { index: 0 }
     }
 }

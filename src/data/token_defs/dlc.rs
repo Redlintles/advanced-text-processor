@@ -7,13 +7,13 @@ pub struct Dlc {
 }
 
 impl Dlc {
-    fn params(start_index: usize, end_index: usize) -> Self {
+    pub fn params(start_index: usize, end_index: usize) -> Self {
         Dlc {
             start_index,
             end_index,
         }
     }
-    fn new() -> Self {
+    pub fn new() -> Self {
         Dlc {
             start_index: 0,
             end_index: 0,

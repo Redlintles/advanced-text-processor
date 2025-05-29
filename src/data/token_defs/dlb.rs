@@ -6,12 +6,12 @@ pub struct Dlb {
 }
 
 impl Dlb {
-    fn params(index: usize) -> Self {
+    pub fn params(index: usize) -> Self {
         Dlb {
             index,
         }
     }
-    fn new() -> Self {
+    pub fn new() -> Self {
         Dlb { index: 0 }
     }
 }

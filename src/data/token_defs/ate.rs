@@ -6,12 +6,12 @@ pub struct Ate {
 }
 
 impl Ate {
-    fn params(text: String) -> Self {
+    pub fn params(text: String) -> Self {
         Ate {
             text,
         }
     }
-    fn new() -> Self {
+    pub fn new() -> Self {
         Ate { text: "".to_string() }
     }
 }

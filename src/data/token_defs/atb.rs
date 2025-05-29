@@ -7,13 +7,13 @@ pub struct Atb {
 }
 
 impl Atb {
-    fn params(text: String) -> Self {
+    pub fn params(text: String) -> Self {
         Atb {
             text,
         }
     }
 
-    fn new() -> Self {
+    pub fn new() -> Self {
         Atb { text: "".to_string() }
     }
 }
