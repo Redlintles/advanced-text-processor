@@ -15,10 +15,7 @@ impl Raw {
             text_to_replace: "_".to_string(),
         }
     }
-}
-
-impl Raw {
-    fn params(pattern: String, text_to_replace: String) -> Self {
+    pub fn params(pattern: String, text_to_replace: String) -> Self {
         Raw {
             text_to_replace,
             pattern: Regex::new(&pattern).expect("Failed creating regex"),
