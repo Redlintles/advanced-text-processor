@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use uuid::Uuid;
+use colored::*;
 
 use crate::data::{ TokenMethods };
 
@@ -70,21 +71,28 @@ impl AtpProcessorMethods for AtpProcessor {
         let mut result = String::from(string);
 
         let mut counter: i64 = 0;
+        let dashes = 10;
 
         let tokens = self.transforms
             .get(id)
             .expect("Token array not found, is id a valid transform identifier");
 
+        println!("PROCESSING STEP BY STEP:\n{}\n", "-".repeat(dashes));
+
         for token in tokens.iter() {
             let temp = parse_token(token, result.as_str());
             println!(
                 "Step: [{}] => [{}]\nInstruction: {}\nBefore: {}\nAfter: {}\n",
-                counter,
-                counter + 1,
-                token.token_to_atp_line(),
-                result,
-                temp
+                counter.to_string().blue(),
+                (counter + 1).to_string().blue(),
+                token.token_to_atp_line().yellow(),
+                result.red(),
+                temp.green()
             );
+
+            if (counter as usize) < tokens.len() {
+                println!("{}\n", "-".repeat(dashes));
+            }
 
             result = String::from(temp);
 
