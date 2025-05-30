@@ -5,6 +5,7 @@ use uuid::Uuid;
 use crate::data::{ TokenMethods };
 
 use crate::parser::parser::parse_token;
+use crate::parser::reader::read_from_file;
 use crate::parser::writer::write_to_file;
 
 pub struct AtpProcessor {
@@ -13,7 +14,7 @@ pub struct AtpProcessor {
 
 pub trait AtpProcessorMethods {
     fn write_to_file(&self, id: &str, path: &str) -> Result<(), String>;
-
+    fn read_from_file(&mut self, path: &str) -> Result<String, String>;
     fn add_transform(&mut self, tokens: Vec<Box<dyn TokenMethods>>) -> String;
     fn process_string(&self, id: &str, string: &str) -> String;
     // Step By Step
@@ -35,6 +36,19 @@ impl AtpProcessorMethods for AtpProcessor {
         match write_to_file(path, tokens) {
             Ok(_) => Ok(()),
             Err(x) => Err(x),
+        }
+    }
+
+    fn read_from_file(&mut self, path: &str) -> Result<String, String> {
+        match read_from_file(path) {
+            Ok(tokens) => {
+                let identifier = Uuid::new_v4();
+
+                self.transforms.insert(identifier.to_string(), tokens);
+
+                return Ok(identifier.to_string());
+            }
+            Err(e) => Err(e),
         }
     }
 
