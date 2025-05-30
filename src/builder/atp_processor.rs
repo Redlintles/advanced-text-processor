@@ -17,9 +17,10 @@ pub trait AtpProcessorMethods {
     fn write_to_file(&self, id: &str, path: &str) -> Result<(), String>;
     fn read_from_file(&mut self, path: &str) -> Result<String, String>;
     fn add_transform(&mut self, tokens: Vec<Box<dyn TokenMethods>>) -> String;
-    fn process_string(&self, id: &str, string: &str) -> String;
-    // Step By Step
-    fn process_sbs_string(&self, id: &str, string: &str) -> String;
+    fn process_all(&self, id: &str, input: &str) -> String;
+    fn process_all_with_debug(&self, id: &str, input: &str) -> String;
+    fn process_single(&self, token: Box<dyn TokenMethods>, input: &str) -> String;
+    fn process_single_with_debug(&self, token: Box<dyn TokenMethods>, input: &str) -> String;
 }
 
 impl AtpProcessor {
@@ -53,8 +54,8 @@ impl AtpProcessorMethods for AtpProcessor {
         }
     }
 
-    fn process_string(&self, id: &str, string: &str) -> String {
-        let mut result = String::from(string);
+    fn process_all(&self, id: &str, input: &str) -> String {
+        let mut result = String::from(input);
 
         let tokens = self.transforms
             .get(id)
@@ -67,8 +68,8 @@ impl AtpProcessorMethods for AtpProcessor {
         result.to_string()
     }
 
-    fn process_sbs_string(&self, id: &str, string: &str) -> String {
-        let mut result = String::from(string);
+    fn process_all_with_debug(&self, id: &str, input: &str) -> String {
+        let mut result = String::from(input);
 
         let mut counter: i64 = 0;
         let dashes = 10;
@@ -107,5 +108,23 @@ impl AtpProcessorMethods for AtpProcessor {
         self.transforms.insert(identifier.to_string(), tokens.clone());
 
         identifier.to_string()
+    }
+
+    fn process_single(&self, token: Box<dyn TokenMethods>, input: &str) -> String {
+        token.parse(input)
+    }
+
+    fn process_single_with_debug(&self, token: Box<dyn TokenMethods>, input: &str) -> String {
+        let output = token.parse(input);
+        println!(
+            "Step: [{}] => [{}]\nInstruction: {}\nBefore: {}\nAfter: {}\n",
+            (0).to_string().blue(),
+            (1).to_string().blue(),
+            token.token_to_atp_line().yellow(),
+            input.red(),
+            output.green()
+        );
+
+        output
     }
 }
