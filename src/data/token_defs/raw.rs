@@ -1,9 +1,6 @@
 use regex::Regex;
 
-use crate::{
-    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
-    data::TokenMethods,
-};
+use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
 // Replace all with
 #[derive(Clone)]
 pub struct Raw {
@@ -55,7 +52,7 @@ impl BytecodeTokenMethods for Raw {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == TokenOpCodes::ReplaceAllWith {
+        if instruction.op_code == Raw::new().get_opcode() {
             if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
                 self.pattern = Regex::new(&instruction.operands[0].clone()).expect(
                     "Parse error, Could not create regex"
@@ -72,8 +69,11 @@ impl BytecodeTokenMethods for Raw {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: TokenOpCodes::ReplaceAllWith,
+            op_code: Raw::new().get_opcode(),
             operands: [self.pattern.to_string(), self.text_to_replace.to_string()].to_vec(),
         }
+    }
+    fn get_opcode(&self) -> u8 {
+        0x0b
     }
 }
