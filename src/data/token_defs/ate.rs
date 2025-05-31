@@ -1,7 +1,4 @@
-use crate::{
-    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
-    data::TokenMethods,
-};
+use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
 // add to end
 #[derive(Clone)]
 pub struct Ate {
@@ -49,7 +46,7 @@ impl BytecodeTokenMethods for Ate {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == TokenOpCodes::AddToEnd {
+        if instruction.op_code == Ate::new().get_opcode() {
             if !instruction.operands[0].is_empty() {
                 self.text = instruction.operands[0].clone();
                 return Ok(());
@@ -63,8 +60,11 @@ impl BytecodeTokenMethods for Ate {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: TokenOpCodes::AddToEnd,
+            op_code: Ate::new().get_opcode(),
             operands: [self.text.clone()].to_vec(),
         }
+    }
+    fn get_opcode(&self) -> u8 {
+        0x02
     }
 }
