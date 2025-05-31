@@ -1,4 +1,7 @@
-use crate::data::{ TokenMethods };
+use crate::{
+    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
+    data::TokenMethods,
+};
 #[derive(Clone)]
 pub struct Rtl {
     pub times: usize,
@@ -47,5 +50,33 @@ impl TokenMethods for Rtl {
 
     fn get_string_repr(&self) -> String {
         "rtl".to_string()
+    }
+}
+
+impl BytecodeTokenMethods for Rtl {
+    fn token_from_bytecode_instruction(
+        &mut self,
+        instruction: BytecodeInstruction
+    ) -> Result<(), String> {
+        if instruction.op_code == TokenOpCodes::RotateLeft {
+            if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
+                self.times = instruction.operands[0]
+                    .clone()
+                    .parse()
+                    .expect("Parse error: Failed parsing string to usize");
+                return Ok(());
+            }
+
+            return Err("An ATP Bytecode parsing error ocurred: Invalid Operands".to_string());
+        }
+
+        Err("An ATP Bytecode parsing error ocurred: Invalid Token".to_string())
+    }
+
+    fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
+        BytecodeInstruction {
+            op_code: TokenOpCodes::RotateLeft,
+            operands: [self.times.to_string()].to_vec(),
+        }
     }
 }
