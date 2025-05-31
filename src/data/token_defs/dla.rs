@@ -1,7 +1,4 @@
-use crate::{
-    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
-    data::TokenMethods,
-};
+use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
 // Delete after
 #[derive(Clone, Copy)]
 pub struct Dla {
@@ -58,7 +55,7 @@ impl BytecodeTokenMethods for Dla {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == TokenOpCodes::DeleteAfter {
+        if instruction.op_code == Dla::new().get_opcode() {
             if !instruction.operands[0].is_empty() {
                 self.index = instruction.operands[0]
                     .clone()
@@ -75,8 +72,12 @@ impl BytecodeTokenMethods for Dla {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: TokenOpCodes::DeleteAfter,
+            op_code: Dla::new().get_opcode(),
             operands: [self.index.to_string()].to_vec(),
         }
+    }
+
+    fn get_opcode(&self) -> u8 {
+        0x09
     }
 }
