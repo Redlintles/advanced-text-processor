@@ -1,4 +1,7 @@
-use crate::data::{ TokenMethods };
+use crate::{
+    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
+    data::TokenMethods,
+};
 // Delete after
 #[derive(Clone, Copy)]
 pub struct Dla {
@@ -47,5 +50,33 @@ impl TokenMethods for Dla {
 
     fn get_string_repr(&self) -> String {
         "dla".to_string()
+    }
+}
+
+impl BytecodeTokenMethods for Dla {
+    fn token_from_bytecode_instruction(
+        &mut self,
+        instruction: BytecodeInstruction
+    ) -> Result<(), String> {
+        if instruction.op_code == TokenOpCodes::DeleteAfter {
+            if !instruction.operands[0].is_empty() {
+                self.index = instruction.operands[0]
+                    .clone()
+                    .parse()
+                    .expect("Parse from string to usize failed");
+                return Ok(());
+            }
+
+            return Err("An ATP Bytecode parsing error ocurred: Invalid Operands".to_string());
+        }
+
+        Err("An ATP Bytecode parsing error ocurred: Invalid Token".to_string())
+    }
+
+    fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
+        BytecodeInstruction {
+            op_code: TokenOpCodes::DeleteAfter,
+            operands: [self.index.to_string()].to_vec(),
+        }
     }
 }
