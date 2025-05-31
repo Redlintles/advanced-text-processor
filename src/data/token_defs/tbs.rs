@@ -1,4 +1,7 @@
-use crate::data::{ TokenMethods };
+use crate::{
+    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
+    data::TokenMethods,
+};
 
 // Trim both sides
 #[derive(Clone)]
@@ -29,5 +32,25 @@ impl TokenMethods for Tbs {
 
     fn get_string_repr(&self) -> String {
         "tbs".to_string()
+    }
+}
+
+impl BytecodeTokenMethods for Tbs {
+    fn token_from_bytecode_instruction(
+        &mut self,
+        instruction: BytecodeInstruction
+    ) -> Result<(), String> {
+        if instruction.op_code == TokenOpCodes::TrimBothSides {
+            return Ok(());
+        }
+
+        Err("An ATP Bytecode parsing error ocurred: Invalid Token".to_string())
+    }
+
+    fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
+        BytecodeInstruction {
+            op_code: TokenOpCodes::TrimBothSides,
+            operands: [].to_vec(),
+        }
     }
 }
