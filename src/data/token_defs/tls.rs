@@ -1,4 +1,7 @@
-use crate::data::{ TokenMethods };
+use crate::{
+    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
+    data::TokenMethods,
+};
 // Trim left side
 #[derive(Clone, Copy)]
 pub struct Tls {}
@@ -26,5 +29,25 @@ impl TokenMethods for Tls {
     }
     fn get_string_repr(&self) -> String {
         "tls".to_string()
+    }
+}
+
+impl BytecodeTokenMethods for Tls {
+    fn token_from_bytecode_instruction(
+        &mut self,
+        instruction: BytecodeInstruction
+    ) -> Result<(), String> {
+        if instruction.op_code == TokenOpCodes::TrimLeftSide {
+            return Ok(());
+        }
+
+        Err("An ATP Bytecode parsing error ocurred: Invalid Token".to_string())
+    }
+
+    fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
+        BytecodeInstruction {
+            op_code: TokenOpCodes::TrimLeftSide,
+            operands: [].to_vec(),
+        }
     }
 }
