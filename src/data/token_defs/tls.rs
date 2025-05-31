@@ -1,7 +1,4 @@
-use crate::{
-    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
-    data::TokenMethods,
-};
+use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
 // Trim left side
 #[derive(Clone, Copy)]
 pub struct Tls {}
@@ -37,7 +34,7 @@ impl BytecodeTokenMethods for Tls {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == TokenOpCodes::TrimLeftSide {
+        if instruction.op_code == Tls::new().get_opcode() {
             return Ok(());
         }
 
@@ -46,8 +43,11 @@ impl BytecodeTokenMethods for Tls {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: TokenOpCodes::TrimLeftSide,
+            op_code: Tls::new().get_opcode(),
             operands: [].to_vec(),
         }
+    }
+    fn get_opcode(&self) -> u8 {
+        0x06
     }
 }
