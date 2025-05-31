@@ -1,7 +1,4 @@
-use crate::{
-    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
-    data::TokenMethods,
-};
+use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
 #[derive(Clone)]
 pub struct Rtr {
     pub times: usize,
@@ -57,7 +54,7 @@ impl BytecodeTokenMethods for Rtr {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == TokenOpCodes::RotateRight {
+        if instruction.op_code == Rtr::new().get_opcode() {
             if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
                 self.times = instruction.operands[0]
                     .clone()
@@ -74,8 +71,11 @@ impl BytecodeTokenMethods for Rtr {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: TokenOpCodes::RotateRight,
+            op_code: Rtr::new().get_opcode(),
             operands: [self.times.to_string()].to_vec(),
         }
+    }
+    fn get_opcode(&self) -> u8 {
+        0x0f
     }
 }
