@@ -1,4 +1,7 @@
-use crate::data::{ TokenMethods };
+use crate::{
+    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
+    data::TokenMethods,
+};
 // Delete Chunk
 #[derive(Clone, Copy)]
 pub struct Dlc {
@@ -56,5 +59,37 @@ impl TokenMethods for Dlc {
 
     fn get_string_repr(&self) -> String {
         "dlc".to_string()
+    }
+}
+
+impl BytecodeTokenMethods for Dlc {
+    fn token_from_bytecode_instruction(
+        &mut self,
+        instruction: BytecodeInstruction
+    ) -> Result<(), String> {
+        if instruction.op_code == TokenOpCodes::DeleteChunk {
+            if !instruction.operands[0].is_empty() {
+                self.start_index = instruction.operands[0]
+                    .clone()
+                    .parse()
+                    .expect("Parse from string to usize failed");
+                self.end_index = instruction.operands[1]
+                    .clone()
+                    .parse()
+                    .expect("Parse from string to usize failed");
+                return Ok(());
+            }
+
+            return Err("An ATP Bytecode parsing error ocurred: Invalid Operands".to_string());
+        }
+
+        Err("An ATP Bytecode parsing error ocurred: Invalid Token".to_string())
+    }
+
+    fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
+        BytecodeInstruction {
+            op_code: TokenOpCodes::DeleteChunk,
+            operands: [self.start_index.to_string(), self.end_index.to_string()].to_vec(),
+        }
     }
 }
