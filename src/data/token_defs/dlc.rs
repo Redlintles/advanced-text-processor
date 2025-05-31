@@ -1,7 +1,4 @@
-use crate::{
-    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
-    data::TokenMethods,
-};
+use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
 // Delete Chunk
 #[derive(Clone, Copy)]
 pub struct Dlc {
@@ -67,7 +64,7 @@ impl BytecodeTokenMethods for Dlc {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == TokenOpCodes::DeleteChunk {
+        if instruction.op_code == Dlc::new().get_opcode() {
             if !instruction.operands[0].is_empty() {
                 self.start_index = instruction.operands[0]
                     .clone()
@@ -88,8 +85,11 @@ impl BytecodeTokenMethods for Dlc {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: TokenOpCodes::DeleteChunk,
+            op_code: Dlc::new().get_opcode(),
             operands: [self.start_index.to_string(), self.end_index.to_string()].to_vec(),
         }
+    }
+    fn get_opcode(&self) -> u8 {
+        0x08
     }
 }
