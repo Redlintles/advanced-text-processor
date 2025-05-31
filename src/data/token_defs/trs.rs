@@ -1,7 +1,4 @@
-use crate::{
-    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
-    data::TokenMethods,
-};
+use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
 
 // Trim right side
 #[derive(Clone, Copy)]
@@ -40,7 +37,7 @@ impl BytecodeTokenMethods for Trs {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == TokenOpCodes::TrimRightSide {
+        if instruction.op_code == Trs::new().get_opcode() {
             return Ok(());
         }
 
@@ -49,8 +46,11 @@ impl BytecodeTokenMethods for Trs {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: TokenOpCodes::TrimRightSide,
+            op_code: Trs::new().get_opcode(),
             operands: [].to_vec(),
         }
+    }
+    fn get_opcode(&self) -> u8 {
+        0x07
     }
 }
