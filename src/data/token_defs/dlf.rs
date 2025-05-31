@@ -1,4 +1,7 @@
-use crate::data::{ TokenMethods };
+use crate::{
+    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
+    data::TokenMethods,
+};
 // Delete first
 #[derive(Clone, Copy)]
 pub struct Dlf {}
@@ -30,5 +33,25 @@ impl TokenMethods for Dlf {
 
     fn get_string_repr(&self) -> String {
         "dlf".to_string()
+    }
+}
+
+impl BytecodeTokenMethods for Dlf {
+    fn token_from_bytecode_instruction(
+        &mut self,
+        instruction: BytecodeInstruction
+    ) -> Result<(), String> {
+        if instruction.op_code == TokenOpCodes::DeleteFirst {
+            return Ok(());
+        }
+
+        Err("An ATP Bytecode parsing error ocurred: Invalid Token".to_string())
+    }
+
+    fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
+        BytecodeInstruction {
+            op_code: TokenOpCodes::DeleteFirst,
+            operands: [].to_vec(),
+        }
     }
 }
