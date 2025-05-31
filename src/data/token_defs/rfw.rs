@@ -1,6 +1,9 @@
 use regex::Regex;
 
-use crate::data::{ TokenMethods };
+use crate::{
+    bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods, TokenOpCodes },
+    data::TokenMethods,
+};
 // Replace first with
 #[derive(Clone)]
 pub struct Rfw {
@@ -44,5 +47,33 @@ impl TokenMethods for Rfw {
 
     fn get_string_repr(&self) -> String {
         "rfw".to_string()
+    }
+}
+
+impl BytecodeTokenMethods for Rfw {
+    fn token_from_bytecode_instruction(
+        &mut self,
+        instruction: BytecodeInstruction
+    ) -> Result<(), String> {
+        if instruction.op_code == TokenOpCodes::ReplaceFirstWith {
+            if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
+                self.pattern = Regex::new(&instruction.operands[0].clone()).expect(
+                    "Parse error, Could not create regex"
+                );
+                self.text_to_replace = instruction.operands[1].clone();
+                return Ok(());
+            }
+
+            return Err("An ATP Bytecode parsing error ocurred: Invalid Operands".to_string());
+        }
+
+        Err("An ATP Bytecode parsing error ocurred: Invalid Token".to_string())
+    }
+
+    fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
+        BytecodeInstruction {
+            op_code: TokenOpCodes::ReplaceFirstWith,
+            operands: [self.pattern.to_string(), self.text_to_replace.to_string()].to_vec(),
+        }
     }
 }
