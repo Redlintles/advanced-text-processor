@@ -1,5 +1,3 @@
-use std::default;
-
 use crate::data::TokenMethods;
 
 #[cfg(feature = "bytecode")]
