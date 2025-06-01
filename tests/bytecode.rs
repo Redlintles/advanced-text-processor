@@ -27,7 +27,7 @@ pub mod bytecode {
             })
         ];
 
-        let _ = write_bytecode_to_file(path.to_str().unwrap(), tokens);
+        let _ = write_bytecode_to_file(path, tokens);
 
         let mut opened_file = File::open(path).unwrap();
 
