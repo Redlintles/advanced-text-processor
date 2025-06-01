@@ -11,8 +11,10 @@ impl Rpt {
     pub fn params(times: usize) -> Self {
         Rpt { times }
     }
+}
 
-    pub fn new() -> Self {
+impl Default for Rpt {
+    fn default() -> Self {
         return Rpt {
             times: 0,
         };

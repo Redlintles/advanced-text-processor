@@ -14,7 +14,10 @@ impl Dla {
             index,
         }
     }
-    pub fn new() -> Self {
+}
+
+impl Default for Dla {
+    fn default() -> Self {
         Dla { index: 0 }
     }
 }

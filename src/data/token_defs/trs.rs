@@ -7,9 +7,9 @@ use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 #[derive(Clone, Copy)]
 pub struct Trs {}
 
-impl Trs {
-    pub fn new() -> Self {
-        Trs {}
+impl Default for Trs {
+    fn default() -> Self {
+        return Trs {};
     }
 }
 

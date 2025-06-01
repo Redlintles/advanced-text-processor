@@ -1,3 +1,5 @@
+use std::default;
+
 use crate::data::TokenMethods;
 
 #[cfg(feature = "bytecode")]
@@ -16,7 +18,10 @@ impl Dlc {
             end_index,
         }
     }
-    pub fn new() -> Self {
+}
+
+impl Default for Dlc {
+    fn default() -> Self {
         Dlc {
             start_index: 0,
             end_index: 0,

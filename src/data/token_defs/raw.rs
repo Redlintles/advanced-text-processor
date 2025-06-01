@@ -12,16 +12,19 @@ pub struct Raw {
 }
 
 impl Raw {
-    pub fn new() -> Self {
-        Raw {
-            pattern: Regex::new("").unwrap(),
-            text_to_replace: "_".to_string(),
-        }
-    }
     pub fn params(pattern: String, text_to_replace: String) -> Self {
         Raw {
             text_to_replace,
             pattern: Regex::new(&pattern).expect("Failed creating regex"),
+        }
+    }
+}
+
+impl Default for Raw {
+    fn default() -> Self {
+        Raw {
+            pattern: Regex::new("").unwrap(),
+            text_to_replace: "_".to_string(),
         }
     }
 }

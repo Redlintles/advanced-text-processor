@@ -5,9 +5,10 @@ use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 // Trim left side
 #[derive(Clone, Copy)]
 pub struct Tls {}
-impl Tls {
-    pub fn new() -> Self {
-        Tls {}
+
+impl Default for Tls {
+    fn default() -> Self {
+        return Tls {};
     }
 }
 

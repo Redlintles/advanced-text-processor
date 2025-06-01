@@ -14,7 +14,10 @@ impl Ate {
             text,
         }
     }
-    pub fn new() -> Self {
+}
+
+impl Default for Ate {
+    fn default() -> Self {
         Ate { text: "".to_string() }
     }
 }

@@ -13,11 +13,13 @@ impl Rtl {
             times,
         }
     }
+}
 
-    pub fn new() -> Self {
-        Rtl {
+impl Default for Rtl {
+    fn default() -> Self {
+        return Rtl {
             times: 0,
-        }
+        };
     }
 }
 

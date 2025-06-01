@@ -13,10 +13,13 @@ impl Rtr {
             times,
         }
     }
-    pub fn new() -> Self {
-        Rtr {
+}
+
+impl Default for Rtr {
+    fn default() -> Self {
+        return Rtr {
             times: 0,
-        }
+        };
     }
 }
 

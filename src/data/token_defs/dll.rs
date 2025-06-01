@@ -7,8 +7,8 @@ use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 #[derive(Clone, Copy)]
 pub struct Dll {}
 
-impl Dll {
-    pub fn new() -> Self {
+impl Default for Dll {
+    fn default() -> Self {
         Dll {}
     }
 }

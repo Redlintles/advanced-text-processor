@@ -18,7 +18,10 @@ impl Rfw {
             text_to_replace,
         }
     }
-    pub fn new() -> Self {
+}
+
+impl Default for Rfw {
+    fn default() -> Self {
         Rfw {
             pattern: Regex::new("").unwrap(),
             text_to_replace: "_".to_string(),

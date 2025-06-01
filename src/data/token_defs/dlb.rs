@@ -14,7 +14,10 @@ impl Dlb {
             index,
         }
     }
-    pub fn new() -> Self {
+}
+
+impl Default for Dlb {
+    fn default() -> Self {
         Dlb { index: 0 }
     }
 }

@@ -6,8 +6,8 @@ use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 #[derive(Clone, Copy)]
 pub struct Dlf {}
 
-impl Dlf {
-    pub fn new() -> Self {
+impl Default for Dlf {
+    fn default() -> Self {
         Dlf {}
     }
 }

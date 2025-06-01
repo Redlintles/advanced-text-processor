@@ -15,8 +15,10 @@ impl Atb {
             text,
         }
     }
+}
 
-    pub fn new() -> Self {
+impl Default for Atb {
+    fn default() -> Self {
         Atb { text: "".to_string() }
     }
 }
