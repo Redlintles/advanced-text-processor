@@ -62,7 +62,7 @@ impl AtpProcessorMethods for AtpProcessor {
             .expect("Token array not found, is id a valid transform identifier");
 
         for token in tokens.iter() {
-            result = parse_token(token, result.as_str());
+            result = parse_token(token.as_ref(), result.as_str());
         }
 
         result.to_string()
@@ -80,7 +80,7 @@ impl AtpProcessorMethods for AtpProcessor {
         println!("PROCESSING STEP BY STEP:\n{}\n", "-".repeat(dashes));
 
         for (counter, token) in (0_i64..).zip(tokens.iter()) {
-            let temp = parse_token(token, result.as_str());
+            let temp = parse_token(token.as_ref(), result.as_str());
             println!(
                 "Step: [{}] => [{}]\nInstruction: {}\nBefore: {}\nAfter: {}\n",
                 counter.to_string().blue(),
