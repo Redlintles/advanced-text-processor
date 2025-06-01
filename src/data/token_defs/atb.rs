@@ -50,7 +50,7 @@ impl BytecodeTokenMethods for Atb {
     ) -> Result<(), String> {
         if instruction.op_code == Atb::new().get_opcode() {
             if !instruction.operands[0].is_empty() {
-                self.text = instruction.operands[0].clone();
+                self.text = instruction.operands[1].clone();
                 return Ok(());
             }
 

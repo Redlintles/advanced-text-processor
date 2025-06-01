@@ -45,7 +45,7 @@ impl BytecodeTokenMethods for Rpt {
     ) -> Result<(), String> {
         if instruction.op_code == Rpt::new().get_opcode() {
             if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
-                self.times = instruction.operands[0]
+                self.times = instruction.operands[1]
                     .clone()
                     .parse()
                     .expect("Parse error: Failed parsing string to usize");
