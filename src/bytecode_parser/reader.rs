@@ -8,6 +8,11 @@ use super::{
 };
 
 pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<Box<dyn BytecodeTokenMethods>>, String> {
+    if path.extension().expect("Unable to get file extension") != "atpbc" {
+        return Err(
+            "An ATPBC Reading error ocurred: Only .atpbc files are allowed to be read".to_string()
+        );
+    }
     let mut result: Vec<Box<dyn BytecodeTokenMethods>> = Vec::new();
 
     let file = match OpenOptions::new().read(true).open(path) {

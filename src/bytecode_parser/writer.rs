@@ -6,8 +6,10 @@ pub fn write_bytecode_to_file(
     path: &Path,
     tokens: Vec<Box<dyn BytecodeTokenMethods>>
 ) -> Result<(), String> {
-    if path.extension() != "atpbc" {
-        return Err("An ATPBC writing error ocurred: new file must have .atpbc Extensions");
+    if path.extension().expect("Unable to get file extension") != "atpbc" {
+        return Err(
+            "An ATPBC writing error ocurred: new file must have .atpbc Extensions".to_string()
+        );
     }
     let mut file = match OpenOptions::new().create(true).truncate(true).write(true).open(path) {
         Ok(x) => x,
