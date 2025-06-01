@@ -3,7 +3,7 @@ use crate::data::TokenMethods;
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 // Delete Chunk
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct Dlc {
     pub start_index: usize,
     pub end_index: usize,
@@ -14,15 +14,6 @@ impl Dlc {
         Dlc {
             start_index,
             end_index,
-        }
-    }
-}
-
-impl Default for Dlc {
-    fn default() -> Self {
-        Dlc {
-            start_index: 0,
-            end_index: 0,
         }
     }
 }

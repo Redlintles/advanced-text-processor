@@ -5,10 +5,10 @@ use colored::*;
 
 use crate::data::{ TokenMethods };
 
-use crate::parser::parser::parse_token;
-use crate::parser::reader::read_from_file;
-use crate::parser::writer::write_to_file;
-
+use crate::text_parser::parser::parse_token;
+use crate::text_parser::reader::read_from_file;
+use crate::text_parser::writer::write_to_file;
+#[derive(Default)]
 pub struct AtpProcessor {
     transforms: HashMap<String, Vec<Box<dyn TokenMethods>>>,
 }
@@ -48,7 +48,7 @@ impl AtpProcessorMethods for AtpProcessor {
 
                 self.transforms.insert(identifier.to_string(), tokens);
 
-                return Ok(identifier.to_string());
+                Ok(identifier.to_string())
             }
             Err(e) => Err(e),
         }
@@ -71,7 +71,6 @@ impl AtpProcessorMethods for AtpProcessor {
     fn process_all_with_debug(&self, id: &str, input: &str) -> String {
         let mut result = String::from(input);
 
-        let mut counter: i64 = 0;
         let dashes = 10;
 
         let tokens = self.transforms
@@ -80,7 +79,7 @@ impl AtpProcessorMethods for AtpProcessor {
 
         println!("PROCESSING STEP BY STEP:\n{}\n", "-".repeat(dashes));
 
-        for token in tokens.iter() {
+        for (counter, token) in (0_i64..).zip(tokens.iter()) {
             let temp = parse_token(token, result.as_str());
             println!(
                 "Step: [{}] => [{}]\nInstruction: {}\nBefore: {}\nAfter: {}\n",
@@ -95,9 +94,7 @@ impl AtpProcessorMethods for AtpProcessor {
                 println!("{}\n", "-".repeat(dashes));
             }
 
-            result = String::from(temp);
-
-            counter += 1;
+            result = temp;
         }
 
         result.to_string()

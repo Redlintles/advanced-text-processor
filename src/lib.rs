@@ -1,5 +1,5 @@
 pub mod data;
-pub mod parser;
+pub mod text_parser;
 pub mod builder;
 
 #[cfg(feature = "bytecode")]

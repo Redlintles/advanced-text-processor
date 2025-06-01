@@ -3,7 +3,7 @@ use crate::data::TokenMethods;
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 // add to end
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Ate {
     pub text: String,
 }
@@ -13,12 +13,6 @@ impl Ate {
         Ate {
             text,
         }
-    }
-}
-
-impl Default for Ate {
-    fn default() -> Self {
-        Ate { text: "".to_string() }
     }
 }
 

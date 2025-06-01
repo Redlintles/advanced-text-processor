@@ -4,14 +4,8 @@ use crate::data::TokenMethods;
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 
 // Trim right side
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct Trs {}
-
-impl Default for Trs {
-    fn default() -> Self {
-        return Trs {};
-    }
-}
 
 impl TokenMethods for Trs {
     fn token_to_atp_line(&self) -> String {

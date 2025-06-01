@@ -3,14 +3,8 @@ use crate::data::TokenMethods;
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 // Delete first
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct Dlf {}
-
-impl Default for Dlf {
-    fn default() -> Self {
-        Dlf {}
-    }
-}
 
 impl TokenMethods for Dlf {
     fn token_to_atp_line(&self) -> String {

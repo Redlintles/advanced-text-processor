@@ -4,7 +4,7 @@ use crate::data::TokenMethods;
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 
 // add to beginning
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Atb {
     pub text: String,
 }
@@ -14,12 +14,6 @@ impl Atb {
         Atb {
             text,
         }
-    }
-}
-
-impl Default for Atb {
-    fn default() -> Self {
-        Atb { text: "".to_string() }
     }
 }
 

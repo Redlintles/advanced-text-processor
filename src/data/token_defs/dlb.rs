@@ -3,7 +3,7 @@ use crate::data::TokenMethods;
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 // Delete before
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct Dlb {
     pub index: usize,
 }
@@ -13,12 +13,6 @@ impl Dlb {
         Dlb {
             index,
         }
-    }
-}
-
-impl Default for Dlb {
-    fn default() -> Self {
-        Dlb { index: 0 }
     }
 }
 

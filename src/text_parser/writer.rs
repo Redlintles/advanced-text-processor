@@ -15,7 +15,7 @@ pub fn write_to_file(path: &str, tokens: &Vec<Box<dyn TokenMethods>>) -> Result<
     for token in tokens.iter() {
         let line = token.token_to_atp_line();
 
-        match file.write(line.as_bytes()) {
+        match file.write_all(line.as_bytes()) {
             Ok(_) => (),
             Err(_) => {
                 success = false;

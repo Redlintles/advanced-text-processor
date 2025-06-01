@@ -4,14 +4,8 @@ use crate::data::TokenMethods;
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 
 // Delete last
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct Dll {}
-
-impl Default for Dll {
-    fn default() -> Self {
-        Dll {}
-    }
-}
 
 impl TokenMethods for Dll {
     fn token_to_atp_line(&self) -> String {
@@ -21,7 +15,7 @@ impl TokenMethods for Dll {
     fn parse(&self, input: &str) -> String {
         let mut s = String::from(input);
 
-        if let Some((x, _)) = s.char_indices().rev().next() {
+        if let Some((x, _)) = s.char_indices().next_back() {
             s.drain(x..);
         }
 

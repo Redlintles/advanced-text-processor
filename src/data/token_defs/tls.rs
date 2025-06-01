@@ -3,14 +3,8 @@ use crate::data::TokenMethods;
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 // Trim left side
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub struct Tls {}
-
-impl Default for Tls {
-    fn default() -> Self {
-        return Tls {};
-    }
-}
 
 impl TokenMethods for Tls {
     fn token_to_atp_line(&self) -> String {

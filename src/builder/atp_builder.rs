@@ -3,7 +3,7 @@ use crate::data::{ TokenMethods };
 use crate::data::token_defs::*;
 
 use super::atp_processor::{ AtpProcessor, AtpProcessorMethods };
-
+#[derive(Default)]
 pub struct AtpBuilder {
     tokens: Vec<Box<dyn TokenMethods>>,
 }

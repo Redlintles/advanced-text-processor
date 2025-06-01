@@ -2,7 +2,7 @@ use crate::data::TokenMethods;
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Rtr {
     pub times: usize,
 }
@@ -12,14 +12,6 @@ impl Rtr {
         Rtr {
             times,
         }
-    }
-}
-
-impl Default for Rtr {
-    fn default() -> Self {
-        return Rtr {
-            times: 0,
-        };
     }
 }
 

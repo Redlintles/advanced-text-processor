@@ -1,4 +1,5 @@
 #[cfg(test)]
+#[cfg(feature = "bytecode")]
 pub mod bytecode {
     use std::path::Path;
 
