@@ -5,6 +5,11 @@ use crate::data::{ TokenMethods };
 use super::get_supported_tokens;
 
 pub fn read_from_file(path: &Path) -> Result<Vec<Box<dyn TokenMethods>>, String> {
+    if path.extension().expect("Unable to get file extension") != "atp" {
+        return Err(
+            "An ATP Reading error ocurred: Only .atp files are allowed to be read".to_string()
+        );
+    }
     let mut result: Vec<Box<dyn TokenMethods>> = Vec::new();
 
     let file = match OpenOptions::new().read(true).open(path) {
