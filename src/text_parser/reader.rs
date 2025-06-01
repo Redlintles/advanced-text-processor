@@ -1,10 +1,10 @@
-use std::{ fs::OpenOptions, io::{ BufRead, BufReader } };
+use std::{ fs::OpenOptions, io::{ BufRead, BufReader }, path::Path };
 
 use crate::data::{ TokenMethods };
 
 use super::get_supported_tokens;
 
-pub fn read_from_file(path: &str) -> Result<Vec<Box<dyn TokenMethods>>, String> {
+pub fn read_from_file(path: &Path) -> Result<Vec<Box<dyn TokenMethods>>, String> {
     let mut result: Vec<Box<dyn TokenMethods>> = Vec::new();
 
     let file = match OpenOptions::new().read(true).open(path) {

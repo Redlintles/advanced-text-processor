@@ -1,8 +1,8 @@
-use std::{ fs::OpenOptions, io::{ Write } };
+use std::{ fs::OpenOptions, io::Write, path::Path };
 
 use crate::data::{ TokenMethods };
 
-pub fn write_to_file(path: &str, tokens: &Vec<Box<dyn TokenMethods>>) -> Result<(), String> {
+pub fn write_to_file(path: &Path, tokens: &Vec<Box<dyn TokenMethods>>) -> Result<(), String> {
     let mut file = OpenOptions::new()
         .create(true)
         .write(true)

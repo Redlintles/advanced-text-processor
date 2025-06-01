@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::path::Path;
 
 use uuid::Uuid;
 use colored::*;
@@ -35,14 +36,14 @@ impl AtpProcessorMethods for AtpProcessor {
             .get(id)
             .expect("Token array not found, is id a valid transform identifier");
 
-        match write_to_file(path, tokens) {
+        match write_to_file(Path::new(path), tokens) {
             Ok(_) => Ok(()),
             Err(x) => Err(x),
         }
     }
 
     fn read_from_file(&mut self, path: &str) -> Result<String, String> {
-        match read_from_file(path) {
+        match read_from_file(Path::new(path)) {
             Ok(tokens) => {
                 let identifier = Uuid::new_v4();
 

@@ -3,7 +3,7 @@ use std::{ fs::OpenOptions, io::Write };
 use super::BytecodeTokenMethods;
 
 pub fn write_bytecode_to_file(
-    path: &str,
+    path: &Path,
     tokens: Vec<Box<dyn BytecodeTokenMethods>>
 ) -> Result<(), String> {
     let mut file = match OpenOptions::new().create(true).truncate(true).write(true).open(path) {
