@@ -1,4 +1,4 @@
-use std::{ fs::OpenOptions, io::Write };
+use std::{ fs::OpenOptions, io::Write, path::Path };
 
 use super::BytecodeTokenMethods;
 
@@ -6,6 +6,9 @@ pub fn write_bytecode_to_file(
     path: &Path,
     tokens: Vec<Box<dyn BytecodeTokenMethods>>
 ) -> Result<(), String> {
+    if path.extension() != "atpbc" {
+        return Err("An ATPBC writing error ocurred: new file must have .atpbc Extensions");
+    }
     let mut file = match OpenOptions::new().create(true).truncate(true).write(true).open(path) {
         Ok(x) => x,
         Err(_) => {
