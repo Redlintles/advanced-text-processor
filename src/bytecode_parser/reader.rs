@@ -1,7 +1,7 @@
 use std::{ fs::OpenOptions, io::{ BufRead, BufReader }, path::Path };
 
 use super::{
-    get_supported_bytecode_tokens,
+    get_map_bytecode_to_bytecode_token,
     token_from_hex_string,
     BytecodeInstruction,
     BytecodeTokenMethods,
@@ -53,7 +53,7 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<Box<dyn BytecodeTokenM
             operands: chunks,
         };
 
-        let op_code_map = get_supported_bytecode_tokens();
+        let op_code_map = get_map_bytecode_to_bytecode_token();
 
         let mapped_token = match op_code_map.get(&(parsed_op_code as u8)) {
             Some(x) => x,
