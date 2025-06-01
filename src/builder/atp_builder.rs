@@ -25,16 +25,16 @@ impl AtpBuilder {
 
 impl AtpBuilder {
     pub fn trim_both(mut self) -> Self {
-        self.tokens.push(Box::new(tbs::Tbs::new()));
+        self.tokens.push(Box::new(tbs::Tbs::default()));
         self
     }
 
     pub fn trim_left(mut self) -> Self {
-        self.tokens.push(Box::new(tls::Tls::new()));
+        self.tokens.push(Box::new(tls::Tls::default()));
         self
     }
     pub fn trim_right(mut self) -> Self {
-        self.tokens.push(Box::new(trs::Trs::new()));
+        self.tokens.push(Box::new(trs::Trs::default()));
         self
     }
     pub fn add_to_end(mut self, text: &str) -> Self {
@@ -46,11 +46,11 @@ impl AtpBuilder {
         self
     }
     pub fn delete_first(mut self) -> Self {
-        self.tokens.push(Box::new(dlf::Dlf::new()));
+        self.tokens.push(Box::new(dlf::Dlf::default()));
         self
     }
     pub fn delete_last(mut self) -> Self {
-        self.tokens.push(Box::new(dll::Dll::new()));
+        self.tokens.push(Box::new(dll::Dll::default()));
         self
     }
     pub fn delete_after(mut self, index: usize) -> Self {
