@@ -32,7 +32,7 @@ impl BytecodeTokenMethods for Tls {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Tls::new().get_opcode() {
+        if instruction.op_code == Tls::default().get_opcode() {
             return Ok(());
         }
 
@@ -41,7 +41,7 @@ impl BytecodeTokenMethods for Tls {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Tls::new().get_opcode(),
+            op_code: Tls::default().get_opcode(),
             operands: [].to_vec(),
         }
     }

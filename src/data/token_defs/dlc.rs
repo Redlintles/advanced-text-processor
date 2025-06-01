@@ -61,7 +61,7 @@ impl BytecodeTokenMethods for Dlc {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Dlc::new().get_opcode() {
+        if instruction.op_code == Dlc::default().get_opcode() {
             if !instruction.operands[0].is_empty() {
                 self.start_index = instruction.operands[0]
                     .clone()
@@ -82,7 +82,7 @@ impl BytecodeTokenMethods for Dlc {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Dlc::new().get_opcode(),
+            op_code: Dlc::default().get_opcode(),
             operands: [self.start_index.to_string(), self.end_index.to_string()].to_vec(),
         }
     }

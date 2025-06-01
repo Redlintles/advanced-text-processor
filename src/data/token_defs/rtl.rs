@@ -18,7 +18,7 @@ impl Rtl {
 impl TokenMethods for Rtl {
     fn parse(&self, input: &str) -> String {
         if input.is_empty() {
-            return String::new();
+            return String::default();
         }
 
         let chars: Vec<char> = input.chars().collect();
@@ -52,7 +52,7 @@ impl BytecodeTokenMethods for Rtl {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Rtl::new().get_opcode() {
+        if instruction.op_code == Rtl::default().get_opcode() {
             if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
                 self.times = instruction.operands[0]
                     .clone()
@@ -69,7 +69,7 @@ impl BytecodeTokenMethods for Rtl {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Rtl::new().get_opcode(),
+            op_code: Rtl::default().get_opcode(),
             operands: [self.times.to_string()].to_vec(),
         }
     }

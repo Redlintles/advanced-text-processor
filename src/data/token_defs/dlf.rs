@@ -35,7 +35,7 @@ impl BytecodeTokenMethods for Dlf {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Dlf::new().get_opcode() {
+        if instruction.op_code == Dlf::default().get_opcode() {
             return Ok(());
         }
 
@@ -44,7 +44,7 @@ impl BytecodeTokenMethods for Dlf {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Dlf::new().get_opcode(),
+            op_code: Dlf::default().get_opcode(),
             operands: [].to_vec(),
         }
     }

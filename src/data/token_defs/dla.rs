@@ -55,7 +55,7 @@ impl BytecodeTokenMethods for Dla {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Dla::new().get_opcode() {
+        if instruction.op_code == Dla::default().get_opcode() {
             if !instruction.operands[0].is_empty() {
                 self.index = instruction.operands[0]
                     .clone()
@@ -72,7 +72,7 @@ impl BytecodeTokenMethods for Dla {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Dla::new().get_opcode(),
+            op_code: Dla::default().get_opcode(),
             operands: [self.index.to_string()].to_vec(),
         }
     }

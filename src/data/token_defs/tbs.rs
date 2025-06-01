@@ -33,7 +33,7 @@ impl BytecodeTokenMethods for Tbs {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Tbs::new().get_opcode() {
+        if instruction.op_code == Tbs::default().get_opcode() {
             return Ok(());
         }
 
@@ -42,7 +42,7 @@ impl BytecodeTokenMethods for Tbs {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Tbs::new().get_opcode(),
+            op_code: Tbs::default().get_opcode(),
             operands: [].to_vec(),
         }
     }

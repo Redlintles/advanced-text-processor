@@ -48,7 +48,7 @@ impl BytecodeTokenMethods for Atb {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Atb::new().get_opcode() {
+        if instruction.op_code == Atb::default().get_opcode() {
             if !instruction.operands[0].is_empty() {
                 self.text = instruction.operands[1].clone();
                 return Ok(());
@@ -62,7 +62,7 @@ impl BytecodeTokenMethods for Atb {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Atb::new().get_opcode(),
+            op_code: Atb::default().get_opcode(),
             operands: [self.text.clone()].to_vec(),
         }
     }

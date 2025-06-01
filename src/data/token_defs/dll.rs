@@ -40,7 +40,7 @@ impl BytecodeTokenMethods for Dll {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Dll::new().get_opcode() {
+        if instruction.op_code == Dll::default().get_opcode() {
             return Ok(());
         }
 
@@ -49,7 +49,7 @@ impl BytecodeTokenMethods for Dll {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Dll::new().get_opcode(),
+            op_code: Dll::default().get_opcode(),
             operands: [].to_vec(),
         }
     }

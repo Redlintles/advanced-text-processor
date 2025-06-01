@@ -34,7 +34,7 @@ impl BytecodeTokenMethods for Trs {
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Trs::new().get_opcode() {
+        if instruction.op_code == Trs::default().get_opcode() {
             return Ok(());
         }
 
@@ -43,7 +43,7 @@ impl BytecodeTokenMethods for Trs {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Trs::new().get_opcode(),
+            op_code: Trs::default().get_opcode(),
             operands: [].to_vec(),
         }
     }
