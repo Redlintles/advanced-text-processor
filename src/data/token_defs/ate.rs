@@ -1,4 +1,7 @@
-use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
+use crate::data::TokenMethods;
+
+#[cfg(feature = "bytecode")]
+use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 // add to end
 #[derive(Clone)]
 pub struct Ate {
@@ -40,7 +43,7 @@ impl TokenMethods for Ate {
         "ate".to_string()
     }
 }
-
+#[cfg(feature = "bytecode")]
 impl BytecodeTokenMethods for Ate {
     fn token_from_bytecode_instruction(
         &mut self,

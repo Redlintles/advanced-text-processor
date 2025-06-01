@@ -1,4 +1,7 @@
-use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
+use crate::data::TokenMethods;
+
+#[cfg(feature = "bytecode")]
+use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 
 // Trim right side
 #[derive(Clone, Copy)]
@@ -31,7 +34,7 @@ impl TokenMethods for Trs {
         "trs".to_string()
     }
 }
-
+#[cfg(feature = "bytecode")]
 impl BytecodeTokenMethods for Trs {
     fn token_from_bytecode_instruction(
         &mut self,

@@ -1,6 +1,9 @@
 use regex::Regex;
 
-use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
+use crate::data::TokenMethods;
+
+#[cfg(feature = "bytecode")]
+use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 // Replace all with
 #[derive(Clone)]
 pub struct Raw {
@@ -46,7 +49,7 @@ impl TokenMethods for Raw {
         "raw".to_string()
     }
 }
-
+#[cfg(feature = "bytecode")]
 impl BytecodeTokenMethods for Raw {
     fn token_from_bytecode_instruction(
         &mut self,

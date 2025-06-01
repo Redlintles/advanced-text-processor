@@ -1,4 +1,7 @@
-use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
+use crate::data::TokenMethods;
+
+#[cfg(feature = "bytecode")]
+use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 #[derive(Clone)]
 pub struct Rtr {
     pub times: usize,
@@ -48,7 +51,7 @@ impl TokenMethods for Rtr {
         Err("Parsing Error".to_string())
     }
 }
-
+#[cfg(feature = "bytecode")]
 impl BytecodeTokenMethods for Rtr {
     fn token_from_bytecode_instruction(
         &mut self,

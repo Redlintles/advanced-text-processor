@@ -1,4 +1,7 @@
-use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
+use crate::data::TokenMethods;
+
+#[cfg(feature = "bytecode")]
+use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 
 // Delete last
 #[derive(Clone, Copy)]
@@ -37,7 +40,7 @@ impl TokenMethods for Dll {
         "dll".to_string()
     }
 }
-
+#[cfg(feature = "bytecode")]
 impl BytecodeTokenMethods for Dll {
     fn token_from_bytecode_instruction(
         &mut self,

@@ -1,4 +1,7 @@
-use crate::{ bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods }, data::TokenMethods };
+use crate::data::TokenMethods;
+
+#[cfg(feature = "bytecode")]
+use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 #[derive(Clone)]
 pub struct Rtl {
     pub times: usize,
@@ -49,7 +52,7 @@ impl TokenMethods for Rtl {
         "rtl".to_string()
     }
 }
-
+#[cfg(feature = "bytecode")]
 impl BytecodeTokenMethods for Rtl {
     fn token_from_bytecode_instruction(
         &mut self,
