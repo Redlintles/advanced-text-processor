@@ -1,20 +1,16 @@
 use std::{ fs::OpenOptions, io::Write, path::Path };
 
-use crate::{ data::TokenMethods, text_parser::reader::read_from_file };
+use crate::{
+    token_data::TokenMethods,
+    text_parser::reader::read_from_file,
+    utils::validations::check_file_path,
+};
 
 use super::{ reader::read_bytecode_from_file, token_to_bytecode_token_convert };
 
 pub fn atp_text_to_bytecode_file(input_file: &Path, output_file: &Path) -> Result<(), String> {
-    if input_file.extension().expect("Unable to get file extension") != "atp" {
-        return Err(
-            "An Atp Transforming error ocurred: Only atp file extensions are allowed".to_string()
-        );
-    }
-    if output_file.extension().expect("Unable to get file extension") != "atpbc" {
-        return Err(
-            "An Atp Transforming error ocurred: Only atpbc file extensions are allowed".to_string()
-        );
-    }
+    check_file_path(input_file, Some("atp"))?;
+    check_file_path(output_file, Some("atpbc"))?;
 
     let tokens: Vec<Box<dyn TokenMethods>> = read_from_file(input_file)?;
 
@@ -42,16 +38,9 @@ pub fn atp_text_to_bytecode_file(input_file: &Path, output_file: &Path) -> Resul
 }
 
 pub fn atp_bytecode_to_atp_file(input_file: &Path, output_file: &Path) -> Result<(), String> {
-    if input_file.extension().expect("Unable to get file extension") != "atpbc" {
-        return Err(
-            "An Atp Transforming error ocurred: Only atpbc file extensions are allowed".to_string()
-        );
-    }
-    if output_file.extension().expect("Unable to get file extension") != "atp" {
-        return Err(
-            "An Atp Transforming error ocurred: Only atp file extensions are allowed".to_string()
-        );
-    }
+    check_file_path(input_file, Some("atpbc"))?;
+    check_file_path(output_file, Some("atp"))?;
+
     let tokens = read_bytecode_from_file(input_file)?;
 
     let mut new_file = OpenOptions::new()

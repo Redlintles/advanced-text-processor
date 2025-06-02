@@ -1,5 +1,7 @@
 use std::{ fs::OpenOptions, io::{ BufRead, BufReader }, path::Path };
 
+use crate::utils::validations::check_file_path;
+
 use super::{
     get_map_bytecode_to_bytecode_token,
     token_from_hex_string,
@@ -8,11 +10,7 @@ use super::{
 };
 
 pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<Box<dyn BytecodeTokenMethods>>, String> {
-    if path.extension().expect("Unable to get file extension") != "atpbc" {
-        return Err(
-            "An ATPBC Reading error ocurred: Only .atpbc files are allowed to be read".to_string()
-        );
-    }
+    check_file_path(path, Some("atpbc"))?;
     let mut result: Vec<Box<dyn BytecodeTokenMethods>> = Vec::new();
 
     let file = match OpenOptions::new().read(true).open(path) {

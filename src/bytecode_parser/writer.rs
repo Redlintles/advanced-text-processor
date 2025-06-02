@@ -1,16 +1,15 @@
 use std::{ fs::OpenOptions, io::Write, path::Path };
 
+use crate::utils::validations::check_file_path;
+
 use super::BytecodeTokenMethods;
 
 pub fn write_bytecode_to_file(
     path: &Path,
     tokens: Vec<Box<dyn BytecodeTokenMethods>>
 ) -> Result<(), String> {
-    if path.extension().expect("Unable to get file extension") != "atpbc" {
-        return Err(
-            "An ATPBC writing error ocurred: new file must have .atpbc Extensions".to_string()
-        );
-    }
+    check_file_path(path, Some("atpbc"))?;
+
     let mut file = match OpenOptions::new().create(true).truncate(true).write(true).open(path) {
         Ok(x) => x,
         Err(_) => {
