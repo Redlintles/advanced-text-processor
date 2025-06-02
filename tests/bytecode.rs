@@ -1,16 +1,12 @@
 #[cfg(test)]
-#[cfg(feature = "bytecode")]
+#[cfg(feature = "test_access")]
 pub mod bytecode {
-    use std::path::Path;
+    use std::{ fs::File, io::Read, path::Path };
 
     #[test]
     fn test_write_bytecode_to_file() {
-        use std::io::Read;
-        use std::fs::File;
-        use atp_project::{
-            bytecode_parser::{ writer::write_bytecode_to_file, BytecodeTokenMethods },
-            data::token_defs::{ atb::Atb, rpt::Rpt, ate::Ate },
-        };
+        use atp_project::bytecode_parser::{ writer::write_bytecode_to_file, BytecodeTokenMethods };
+        use atp_project::token_data::token_defs::{ atb::Atb, rpt::Rpt, ate::Ate };
         let file = tempfile::NamedTempFile::new().expect("Error opening archive");
 
         let path = file.path();
@@ -48,7 +44,7 @@ pub mod bytecode {
         use atp_project::{
             builder::atp_processor::{ AtpProcessor, AtpProcessorMethods },
             bytecode_parser::reader::read_bytecode_from_file,
-            data::TokenMethods,
+            token_data::TokenMethods,
         };
         let result = match read_bytecode_from_file(Path::new("banana.atpbc")) {
             Ok(x) => x,
