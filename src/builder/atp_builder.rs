@@ -67,14 +67,20 @@ impl AtpBuilder {
     }
     pub fn replace_all_with(mut self, pattern: &str, text_to_replace: &str) -> Self {
         self.tokens.push(
-            Box::new(raw::Raw::params(pattern.to_string(), text_to_replace.to_string()))
+            Box::new(match raw::Raw::params(pattern.to_string(), text_to_replace.to_string()) {
+                Ok(x) => x,
+                Err(e) => panic!("{}", e),
+            })
         );
 
         self
     }
     pub fn replace_first_with(mut self, pattern: &str, text_to_replace: &str) -> Self {
         self.tokens.push(
-            Box::new(rfw::Rfw::params(pattern.to_string(), text_to_replace.to_string()))
+            Box::new(match rfw::Rfw::params(pattern.to_string(), text_to_replace.to_string()) {
+                Ok(x) => x,
+                Err(e) => panic!("{}", e),
+            })
         );
         self
     }

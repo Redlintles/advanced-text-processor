@@ -12,11 +12,12 @@ pub struct Rfw {
 }
 
 impl Rfw {
-    pub fn params(pattern: String, text_to_replace: String) -> Self {
-        Rfw {
-            pattern: Regex::new(&pattern).expect("Failed creating regex"),
+    pub fn params(pattern: String, text_to_replace: String) -> Result<Self, String> {
+        let pattern = Regex::new(&pattern).map_err(|x| x.to_string())?;
+        Ok(Rfw {
             text_to_replace,
-        }
+            pattern,
+        })
     }
 }
 
@@ -41,7 +42,7 @@ impl TokenMethods for Rfw {
         // "rfw;"
 
         if line[0] == "rfw" {
-            self.pattern = Regex::new(&line[1]).expect("Failed Creating Regex");
+            self.pattern = Regex::new(&line[1]).map_err(|x| x.to_string())?;
             self.text_to_replace = line[2].clone();
             return Ok(());
         }
@@ -60,9 +61,9 @@ impl BytecodeTokenMethods for Rfw {
     ) -> Result<(), String> {
         if instruction.op_code == Rfw::default().get_opcode() {
             if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
-                self.pattern = Regex::new(&instruction.operands[0].clone()).expect(
-                    "Parse error, Could not create regex"
-                );
+                self.pattern = Regex::new(&instruction.operands[0].clone()).map_err(|x|
+                    x.to_string()
+                )?;
                 self.text_to_replace = instruction.operands[1].clone();
                 return Ok(());
             }
