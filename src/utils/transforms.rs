@@ -1,5 +1,10 @@
 pub fn string_to_usize(chunk: &str) -> Result<usize, String> {
-    match chunk.parse() {
+    let mut parsed_chunk = String::from(chunk);
+    if chunk.ends_with(";") {
+        parsed_chunk.pop();
+    }
+
+    match parsed_chunk.parse() {
         Ok(v) => Ok(v),
         Err(_) => { Err("Parsing from string to usize failed".to_string()) }
     }
@@ -24,9 +29,11 @@ use crate::{
 pub fn token_to_bytecode_token(
     token: &Box<dyn TokenMethods>
 ) -> Result<Box<dyn BytecodeTokenMethods>, String> {
-    let mut line = token.token_to_atp_line();
+    let mut line = token.token_to_atp_line().trim().to_string();
 
-    line.pop();
+    if line.ends_with(";") {
+        line = line.trim_end_matches(";").to_string();
+    }
 
     let chunks = match shell_words::split(&line) {
         Ok(x) => x,
@@ -57,9 +64,13 @@ pub fn bytecode_token_to_token(
 ) -> Result<Box<dyn TokenMethods>, String> {
     use super::mapping::get_supported_default_tokens;
 
-    let mut line = token.token_to_atp_line();
+    let mut line = token.token_to_atp_line().trim().to_string();
 
-    line.pop();
+    println!("DEBUG TRANSFORM: {:?}", line);
+
+    if line.ends_with(";") {
+        line = line.trim_end_matches(";").to_string();
+    }
 
     let chunks = shell_words::split(&line).map_err(|e| e.to_string())?;
 
@@ -74,6 +85,7 @@ pub fn bytecode_token_to_token(
 
     let mut new_token = factory();
 
+    println!("DEBUG TRANSFORM: {:?}", chunks);
     new_token.token_from_vec_params(chunks)?;
 
     Ok(new_token)
