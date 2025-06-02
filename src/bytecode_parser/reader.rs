@@ -1,13 +1,8 @@
 use std::{ fs::OpenOptions, io::{ BufRead, BufReader }, path::Path };
 
-use crate::utils::validations::check_file_path;
+use crate::utils::{ mapping::get_mapping_bytecode_to_token, validations::check_file_path };
 
-use super::{
-    get_map_bytecode_to_bytecode_token,
-    token_from_hex_string,
-    BytecodeInstruction,
-    BytecodeTokenMethods,
-};
+use super::{ token_from_hex_string, BytecodeInstruction, BytecodeTokenMethods };
 
 pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<Box<dyn BytecodeTokenMethods>>, String> {
     check_file_path(path, Some("atpbc"))?;
@@ -56,7 +51,7 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<Box<dyn BytecodeTokenM
             operands: chunks,
         };
 
-        let op_code_map = get_map_bytecode_to_bytecode_token();
+        let op_code_map = get_mapping_bytecode_to_token();
 
         let mapped_token = match op_code_map.get(&(parsed_op_code as u8)) {
             Some(x) => x,

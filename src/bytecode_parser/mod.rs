@@ -1,25 +1,4 @@
-use std::collections::HashMap;
-
-use crate::token_data::{
-    token_defs::{
-        atb::Atb,
-        ate::Ate,
-        dla::Dla,
-        dlb::Dlb,
-        dlc::Dlc,
-        dlf::Dlf,
-        dll::Dll,
-        raw::Raw,
-        rfw::Rfw,
-        rpt::Rpt,
-        rtl::Rtl,
-        rtr::Rtr,
-        tbs::Tbs,
-        tls::Tls,
-        trs::Trs,
-    },
-    TokenMethods,
-};
+use crate::{ token_data::{ TokenMethods }, utils::mapping::get_supported_bytecode_tokens };
 
 pub mod writer;
 pub mod reader;
@@ -75,7 +54,7 @@ pub fn token_to_bytecode_token_convert(
         }
     };
 
-    let string_token_map = get_map_str_to_bytecode_token();
+    let string_token_map = get_supported_bytecode_tokens();
 
     let factory = match string_token_map.get(&token.get_string_repr()) {
         Some(x) => x,
@@ -89,50 +68,4 @@ pub fn token_to_bytecode_token_convert(
     new_token.token_from_vec_params(chunks)?;
 
     Ok(new_token)
-}
-
-pub fn get_map_bytecode_to_bytecode_token() -> HashMap<u8, fn() -> Box<dyn BytecodeTokenMethods>> {
-    let mut bytecode_to_token: HashMap<u8, fn() -> Box<dyn BytecodeTokenMethods>> = HashMap::new();
-
-    bytecode_to_token.insert(0x01, || Box::new(Atb::default()));
-    bytecode_to_token.insert(0x02, || Box::new(Ate::default()));
-    bytecode_to_token.insert(0x03, || Box::new(Dlf::default()));
-    bytecode_to_token.insert(0x04, || Box::new(Dll::default()));
-    bytecode_to_token.insert(0x05, || Box::new(Tbs::default()));
-    bytecode_to_token.insert(0x06, || Box::new(Tls::default()));
-    bytecode_to_token.insert(0x07, || Box::new(Trs::default()));
-    bytecode_to_token.insert(0x08, || Box::new(Dlc::default()));
-    bytecode_to_token.insert(0x09, || Box::new(Dla::default()));
-    bytecode_to_token.insert(0x0a, || Box::new(Dlb::default()));
-    bytecode_to_token.insert(0x0b, || Box::new(Raw::default()));
-    bytecode_to_token.insert(0x0c, || Box::new(Rfw::default()));
-    bytecode_to_token.insert(0x0d, || Box::new(Rpt::default()));
-    bytecode_to_token.insert(0x0e, || Box::new(Rtl::default()));
-    bytecode_to_token.insert(0x0f, || Box::new(Rtr::default()));
-
-    bytecode_to_token
-}
-
-pub fn get_map_str_to_bytecode_token() -> HashMap<String, fn() -> Box<dyn BytecodeTokenMethods>> {
-    let mut string_to_token: HashMap<
-        String,
-        fn() -> Box<dyn BytecodeTokenMethods>
-    > = HashMap::new();
-    string_to_token.insert("atb".to_string(), || Box::new(Atb::default()));
-    string_to_token.insert("ate".to_string(), || Box::new(Ate::default()));
-    string_to_token.insert("dlf".to_string(), || Box::new(Dlf::default()));
-    string_to_token.insert("dll".to_string(), || Box::new(Dll::default()));
-    string_to_token.insert("tbs".to_string(), || Box::new(Tbs::default()));
-    string_to_token.insert("tls".to_string(), || Box::new(Tls::default()));
-    string_to_token.insert("trs".to_string(), || Box::new(Trs::default()));
-    string_to_token.insert("dlc".to_string(), || Box::new(Dlc::default()));
-    string_to_token.insert("dla".to_string(), || Box::new(Dla::default()));
-    string_to_token.insert("dlb".to_string(), || Box::new(Dlb::default()));
-    string_to_token.insert("raw".to_string(), || Box::new(Raw::default()));
-    string_to_token.insert("rfw".to_string(), || Box::new(Rfw::default()));
-    string_to_token.insert("rpt".to_string(), || Box::new(Rpt::default()));
-    string_to_token.insert("rtl".to_string(), || Box::new(Rtl::default()));
-    string_to_token.insert("rtr".to_string(), || Box::new(Rtr::default()));
-
-    string_to_token
 }
