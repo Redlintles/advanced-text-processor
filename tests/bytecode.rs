@@ -64,7 +64,7 @@ pub mod bytecode {
 
         let identifier = processor.add_transform(tokens);
 
-        let output = processor.process_all_with_debug(&identifier, input);
+        let output = processor.process_all_with_debug(&identifier, input).unwrap();
 
         assert_eq!(output, expected_output);
     }

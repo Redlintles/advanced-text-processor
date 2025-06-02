@@ -18,7 +18,7 @@ pub mod processor {
             .build();
         let input = "Carimbo verde de deus";
 
-        let output = processor.process_all(&identifier, input);
+        let output = processor.process_all(&identifier, input).unwrap();
 
         let expected_output =
             "BananaCarimbo verde de deusLaranjaBananaCarimbo verde de deusLaranjaBananaCarimbo verde de deusLaranja";
@@ -34,7 +34,7 @@ pub mod processor {
             .build();
         let input = "Carimbo verde de deus";
 
-        let output = processor.process_all_with_debug(&identifier, input);
+        let output = processor.process_all_with_debug(&identifier, input).unwrap();
 
         let expected_output =
             "BananaCarimbo verde de deusLaranjaBananaCarimbo verde de deusLaranjaBananaCarimbo verde de deusLaranja";
@@ -82,7 +82,7 @@ pub mod processor {
         let input_string = "Banana";
         let expected_output = "Bznzn";
 
-        let output = processor.process_all(&identifier, input_string);
+        let output = processor.process_all(&identifier, input_string).unwrap();
 
         println!("{} => {} == {}", input_string, output, expected_output);
 

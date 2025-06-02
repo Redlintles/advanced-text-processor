@@ -33,7 +33,9 @@ pub mod benchmark {
 
             let string_to_process = "Banana Laranja cheia de canja";
 
-            let processed_string = processor.process_all_with_debug(&identifier, string_to_process);
+            let processed_string = processor
+                .process_all_with_debug(&identifier, string_to_process)
+                .unwrap();
 
             println!("{}", processed_string);
             let elapsed = start.elapsed().as_secs_f64();
@@ -76,7 +78,7 @@ pub mod benchmark {
 
             let string_to_process = "Banana Laranja cheia de canja";
 
-            let processed_string = processor.process_all(&identifier, string_to_process);
+            let processed_string = processor.process_all(&identifier, string_to_process).unwrap();
 
             println!("{}", processed_string);
 
