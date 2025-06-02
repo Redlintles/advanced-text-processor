@@ -3,7 +3,7 @@ use std::{ fs::OpenOptions, io::Write, path::Path };
 use crate::{
     text_parser::reader::read_from_file,
     token_data::TokenMethods,
-    utils::{ transforms::token_to_bytecode_token_convert, validations::check_file_path },
+    utils::{ transforms::token_to_bytecode_token, validations::check_file_path },
 };
 
 use super::{ reader::read_bytecode_from_file };
@@ -22,7 +22,7 @@ pub fn atp_text_to_bytecode_file(input_file: &Path, output_file: &Path) -> Resul
         .map_err(|x| x.to_string())?;
 
     for token in tokens.into_iter() {
-        let line = token_to_bytecode_token_convert(token)
+        let line = token_to_bytecode_token(&token)
             .expect("Invalid Path")
             .token_to_bytecode_instruction()
             .to_bytecode_line();
