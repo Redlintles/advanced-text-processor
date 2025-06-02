@@ -1,8 +1,9 @@
 use std::{ fs::OpenOptions, io::Write, path::Path };
 
-use crate::token_data::{ TokenMethods };
+use crate::{ token_data::TokenMethods, utils::validations::check_file_path };
 
 pub fn write_to_file(path: &Path, tokens: &Vec<Box<dyn TokenMethods>>) -> Result<(), String> {
+    check_file_path(path, Some("atp"));
     if path.extension().expect("Unable to get file extension") != "atp" {
         return Err(
             "An ATP Writing error ocurred: Only .atp files are allowed to be written".to_string()

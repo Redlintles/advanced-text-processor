@@ -1,15 +1,11 @@
 use std::{ fs::OpenOptions, io::{ BufRead, BufReader }, path::Path };
 
-use crate::token_data::{ TokenMethods };
+use crate::{ token_data::TokenMethods, utils::validations::check_file_path };
 
 use super::get_supported_tokens;
 
 pub fn read_from_file(path: &Path) -> Result<Vec<Box<dyn TokenMethods>>, String> {
-    if path.extension().expect("Unable to get file extension") != "atp" {
-        return Err(
-            "An ATP Reading error ocurred: Only .atp files are allowed to be read".to_string()
-        );
-    }
+    check_file_path(path, Some("atp"))?;
     let mut result: Vec<Box<dyn TokenMethods>> = Vec::new();
 
     let file = match OpenOptions::new().read(true).open(path) {
