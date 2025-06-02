@@ -1,4 +1,7 @@
-use crate::{ bytecode_parser::BytecodeTokenMethods, token_data::{ token_defs::*, TokenMethods } };
+use crate::{ token_data::{ token_defs::*, TokenMethods } };
+
+#[cfg(feature = "bytecode")]
+use crate::bytecode_parser::BytecodeTokenMethods;
 
 use std::collections::HashMap;
 
