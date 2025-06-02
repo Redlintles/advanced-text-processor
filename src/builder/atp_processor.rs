@@ -18,8 +18,8 @@ pub trait AtpProcessorMethods {
     fn write_to_file(&self, id: &str, path: &str) -> Result<(), String>;
     fn read_from_file(&mut self, path: &str) -> Result<String, String>;
     fn add_transform(&mut self, tokens: Vec<Box<dyn TokenMethods>>) -> String;
-    fn process_all(&self, id: &str, input: &str) -> String;
-    fn process_all_with_debug(&self, id: &str, input: &str) -> String;
+    fn process_all(&self, id: &str, input: &str) -> Result<String, String>;
+    fn process_all_with_debug(&self, id: &str, input: &str) -> Result<String, String>;
     fn process_single(&self, token: Box<dyn TokenMethods>, input: &str) -> String;
     fn process_single_with_debug(&self, token: Box<dyn TokenMethods>, input: &str) -> String;
 }
@@ -32,9 +32,12 @@ impl AtpProcessor {
 
 impl AtpProcessorMethods for AtpProcessor {
     fn write_to_file(&self, id: &str, path: &str) -> Result<(), String> {
-        let tokens = self.transforms
-            .get(id)
-            .expect("Token array not found, is id a valid transform identifier");
+        let tokens = match self.transforms.get(id) {
+            Some(x) => x,
+            None => {
+                return Err("Token array not found, is id a valid transform identifier".to_string());
+            }
+        };
 
         match write_to_file(Path::new(path), tokens) {
             Ok(_) => Ok(()),
@@ -55,28 +58,34 @@ impl AtpProcessorMethods for AtpProcessor {
         }
     }
 
-    fn process_all(&self, id: &str, input: &str) -> String {
+    fn process_all(&self, id: &str, input: &str) -> Result<String, String> {
         let mut result = String::from(input);
 
-        let tokens = self.transforms
-            .get(id)
-            .expect("Token array not found, is id a valid transform identifier");
+        let tokens = match self.transforms.get(id) {
+            Some(x) => x,
+            None => {
+                return Err("Token array not found, is id a valid transform identifier".to_string());
+            }
+        };
 
         for token in tokens.iter() {
             result = parse_token(token.as_ref(), result.as_str());
         }
 
-        result.to_string()
+        Ok(result.to_string())
     }
 
-    fn process_all_with_debug(&self, id: &str, input: &str) -> String {
+    fn process_all_with_debug(&self, id: &str, input: &str) -> Result<String, String> {
         let mut result = String::from(input);
 
         let dashes = 10;
 
-        let tokens = self.transforms
-            .get(id)
-            .expect("Token array not found, is id a valid transform identifier");
+        let tokens = match self.transforms.get(id) {
+            Some(x) => x,
+            None => {
+                return Err("Token array not found, is id a valid transform identifier".to_string());
+            }
+        };
 
         println!("PROCESSING STEP BY STEP:\n{}\n", "-".repeat(dashes));
 
@@ -98,7 +107,7 @@ impl AtpProcessorMethods for AtpProcessor {
             result = temp;
         }
 
-        result.to_string()
+        Ok(result.to_string())
     }
 
     fn add_transform(&mut self, tokens: Vec<Box<dyn TokenMethods>>) -> String {
