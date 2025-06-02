@@ -13,7 +13,7 @@ uuid = { version = "1.17.0", features = ["v4"] }
 [features]
 
 default = []
-bytecode = ["default"]
+bytecode = []
 debug = ["colored"]
 bytecode_debug = ["colored", "bytecode"]
-test_access = ["default", "bytecode"]
+test_access = ["default", "bytecode", "debug", "bytecode_debug"]
