@@ -26,7 +26,8 @@ pub mod benchmark {
             .trim_both()
             .trim_left()
             .trim_right()
-            .build();
+            .build()
+            .text_debug_processor();
 
         for _ in 0..runs {
             let start = Instant::now();
@@ -71,7 +72,8 @@ pub mod benchmark {
             .trim_both()
             .trim_left()
             .trim_right()
-            .build();
+            .build()
+            .text_processor();
 
         for _ in 0..runs {
             let start = Instant::now();

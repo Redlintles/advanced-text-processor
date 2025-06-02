@@ -3,6 +3,8 @@
 pub mod bytecode {
     use std::{ fs::File, io::Read, path::Path };
 
+    use atp_project::builder::atp_processor::AtpProcessorDebugMethods;
+
     #[test]
     fn test_write_bytecode_to_file() {
         use atp_project::bytecode_parser::{ writer::write_bytecode_to_file, BytecodeTokenMethods };
@@ -42,7 +44,7 @@ pub mod bytecode {
     #[test]
     fn test_read_bytecode_from_file() {
         use atp_project::{
-            builder::atp_processor::{ AtpProcessor, AtpProcessorMethods },
+            builder::atp_processor::{ AtpProcessor },
             bytecode_parser::reader::read_bytecode_from_file,
             token_data::TokenMethods,
         };
@@ -55,7 +57,7 @@ pub mod bytecode {
 
         let expected_output = "BananaCoxinhaLaranjaBananaCoxinhaLaranjaBananaCoxinhaLaranja";
 
-        let mut processor = AtpProcessor::new();
+        let mut processor: Box<dyn AtpProcessorDebugMethods> = Box::new(AtpProcessor::new());
 
         let tokens: Vec<Box<dyn TokenMethods>> = result
             .into_iter()

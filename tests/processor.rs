@@ -1,10 +1,13 @@
 #[cfg(test)]
 #[cfg(feature = "test_access")]
 pub mod processor {
-    use std::{ fs::File, io::Read };
+    use std::{ fs::File, io::Read, path::Path };
 
     use atp_project::{
-        builder::{ atp_builder::AtpBuilder, atp_processor::{ AtpProcessor, AtpProcessorMethods } },
+        builder::{
+            atp_builder::AtpBuilder,
+            atp_processor::{ AtpProcessor, AtpProcessorDebugMethods, AtpProcessorMethods },
+        },
         token_data::{ token_defs::{ atb::Atb, ate::Ate, raw::Raw, rpt::Rpt }, TokenMethods },
     };
     use uuid::Uuid;
@@ -15,7 +18,8 @@ pub mod processor {
             .add_to_beginning("Banana")
             .add_to_end("Laranja")
             .repeat(3 as usize)
-            .build();
+            .build()
+            .text_processor();
         let input = "Carimbo verde de deus";
 
         let output = processor.process_all(&identifier, input).unwrap();
@@ -31,7 +35,8 @@ pub mod processor {
             .add_to_beginning("Banana")
             .add_to_end("Laranja")
             .repeat(3 as usize)
-            .build();
+            .build()
+            .text_debug_processor();
         let input = "Carimbo verde de deus";
 
         let output = processor.process_all_with_debug(&identifier, input).unwrap();
@@ -59,7 +64,7 @@ pub mod processor {
     }
     #[test]
     fn test_process_single_with_debug() {
-        let processor = AtpProcessor::new();
+        let processor: Box<dyn AtpProcessorDebugMethods> = Box::new(AtpProcessor::new());
         let token: Box<dyn TokenMethods> = Box::new(
             Raw::params("a".to_string(), "b".to_string()).unwrap()
         );
@@ -77,7 +82,7 @@ pub mod processor {
     fn test_read_from_file() {
         let mut processor = AtpProcessor::new();
 
-        let identifier = processor.read_from_file("instructions.atp").unwrap();
+        let identifier = processor.read_from_text_file(Path::new("instructions.atp")).unwrap();
 
         let input_string = "Banana";
         let expected_output = "Bznzn";
@@ -99,9 +104,10 @@ pub mod processor {
             .add_to_beginning("Banana")
             .add_to_end("Laranja")
             .repeat(3 as usize)
-            .build();
+            .build()
+            .text_processor();
 
-        let _ = processor.write_to_file(&identifier, path.to_str().unwrap());
+        let _ = processor.write_to_text_file(&identifier, path);
 
         let mut opened_file = File::open(path).unwrap();
 
