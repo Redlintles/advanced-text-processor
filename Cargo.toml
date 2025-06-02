@@ -13,4 +13,5 @@ uuid = { version = "1.17.0", features = ["v4"] }
 [features]
 
 default = []
-bytecode = []
+bytecode = ["default"]
+test_access = ["default", "bytecode"]
