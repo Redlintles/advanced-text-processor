@@ -1,3 +1,9 @@
 {
-  "rust-analyzer.cargo.features": ["default", "bytecode", "test_access"]
+  "rust-analyzer.cargo.features": [
+    "default",
+    "bytecode",
+    "test_access",
+    "debug",
+    "bytecode_debug"
+  ]
 }
