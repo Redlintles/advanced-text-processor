@@ -1,12 +1,12 @@
 use std::{ fs::OpenOptions, io::Write, path::Path };
 
 use crate::{
-    token_data::TokenMethods,
     text_parser::reader::read_from_file,
-    utils::validations::check_file_path,
+    token_data::TokenMethods,
+    utils::{ transforms::token_to_bytecode_token_convert, validations::check_file_path },
 };
 
-use super::{ reader::read_bytecode_from_file, token_to_bytecode_token_convert };
+use super::{ reader::read_bytecode_from_file };
 
 pub fn atp_text_to_bytecode_file(input_file: &Path, output_file: &Path) -> Result<(), String> {
     check_file_path(input_file, Some("atp"))?;
