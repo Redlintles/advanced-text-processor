@@ -151,6 +151,7 @@ impl AtpProcessorDebugMethods for AtpProcessor {
 
         for (counter, token) in (0_i64..).zip(tokens.iter()) {
             let temp = parse_token(token.as_ref(), result.as_str());
+
             println!(
                 "Step: [{}] => [{}]\nInstruction: {}\nBefore: {}\nAfter: {}\n",
                 counter.to_string().blue(),
