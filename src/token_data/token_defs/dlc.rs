@@ -44,8 +44,8 @@ impl TokenMethods for Dlc {
         // "dlc;"
 
         if line[0] == "dlc" {
-            self.start_index = line[1].clone().parse().expect("Parse from string to usize failed");
-            self.end_index = line[2].clone().parse().expect("Parse from string to usize failed");
+            self.start_index = string_to_usize(&line[1])?;
+            self.end_index = string_to_usize(&line[2])?;
             return Ok(());
         }
         Err("Parsing Error".to_string())
