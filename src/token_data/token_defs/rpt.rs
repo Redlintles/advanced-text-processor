@@ -1,54 +1,51 @@
-use crate::data::TokenMethods;
+use crate::token_data::TokenMethods;
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
-// add to end
 #[derive(Clone, Default)]
-pub struct Ate {
-    pub text: String,
+pub struct Rpt {
+    pub times: usize,
 }
 
-impl Ate {
-    pub fn params(text: String) -> Self {
-        Ate {
-            text,
-        }
+impl Rpt {
+    pub fn params(times: usize) -> Self {
+        Rpt { times }
     }
 }
 
-impl TokenMethods for Ate {
+impl TokenMethods for Rpt {
     fn token_to_atp_line(&self) -> String {
-        format!("ate {};\n", self.text)
+        format!("rpt {};\n", self.times)
     }
 
     fn parse(&self, input: &str) -> String {
-        let mut s = String::from(input);
-        s.push_str(&self.text);
-        s
+        input.repeat(self.times)
     }
     fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
-        // "ate;"
-
-        if line[0] == "ate" {
-            self.text = line[1].clone();
+        if line[0] == "rpt" {
+            self.times = line[1].parse().expect("Parsing from string to usize failed");
             return Ok(());
         }
+
         Err("Parsing Error".to_string())
     }
 
     fn get_string_repr(&self) -> String {
-        "ate".to_string()
+        "rpt".to_string()
     }
 }
 #[cfg(feature = "bytecode")]
-impl BytecodeTokenMethods for Ate {
+impl BytecodeTokenMethods for Rpt {
     fn token_from_bytecode_instruction(
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Ate::default().get_opcode() {
-            if !instruction.operands[0].is_empty() {
-                self.text = instruction.operands[1].clone();
+        if instruction.op_code == Rpt::default().get_opcode() {
+            if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
+                self.times = instruction.operands[1]
+                    .clone()
+                    .parse()
+                    .expect("Parse error: Failed parsing string to usize");
                 return Ok(());
             }
 
@@ -60,11 +57,11 @@ impl BytecodeTokenMethods for Ate {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Ate::default().get_opcode(),
-            operands: [self.text.clone()].to_vec(),
+            op_code: Rpt::default().get_opcode(),
+            operands: [self.times.to_string()].to_vec(),
         }
     }
     fn get_opcode(&self) -> u8 {
-        0x02
+        0x0d
     }
 }

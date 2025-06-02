@@ -1,46 +1,46 @@
 use regex::Regex;
 
-use crate::data::TokenMethods;
+use crate::token_data::TokenMethods;
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
-// Replace first with
+// Replace all with
 #[derive(Clone)]
-pub struct Rfw {
+pub struct Raw {
     pub pattern: Regex,
     pub text_to_replace: String,
 }
 
-impl Rfw {
+impl Raw {
     pub fn params(pattern: String, text_to_replace: String) -> Self {
-        Rfw {
-            pattern: Regex::new(&pattern).expect("Failed creating regex"),
+        Raw {
             text_to_replace,
+            pattern: Regex::new(&pattern).expect("Failed creating regex"),
         }
     }
 }
 
-impl Default for Rfw {
+impl Default for Raw {
     fn default() -> Self {
-        Rfw {
+        Raw {
             pattern: Regex::new("").unwrap(),
             text_to_replace: "_".to_string(),
         }
     }
 }
 
-impl TokenMethods for Rfw {
+impl TokenMethods for Raw {
     fn token_to_atp_line(&self) -> String {
-        format!("rfw {} {};\n", self.pattern, self.text_to_replace)
+        format!("raw {} {};\n", self.pattern, self.text_to_replace)
     }
 
     fn parse(&self, input: &str) -> String {
-        self.pattern.replace(input, &self.text_to_replace).to_string()
+        self.pattern.replace_all(input, &self.text_to_replace).to_string()
     }
     fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
-        // "rfw;"
+        // "raw;"
 
-        if line[0] == "rfw" {
+        if line[0] == "raw" {
             self.pattern = Regex::new(&line[1]).expect("Failed Creating Regex");
             self.text_to_replace = line[2].clone();
             return Ok(());
@@ -49,16 +49,16 @@ impl TokenMethods for Rfw {
     }
 
     fn get_string_repr(&self) -> String {
-        "rfw".to_string()
+        "raw".to_string()
     }
 }
 #[cfg(feature = "bytecode")]
-impl BytecodeTokenMethods for Rfw {
+impl BytecodeTokenMethods for Raw {
     fn token_from_bytecode_instruction(
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Rfw::default().get_opcode() {
+        if instruction.op_code == Raw::default().get_opcode() {
             if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
                 self.pattern = Regex::new(&instruction.operands[0].clone()).expect(
                     "Parse error, Could not create regex"
@@ -75,11 +75,11 @@ impl BytecodeTokenMethods for Rfw {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Rfw::default().get_opcode(),
+            op_code: Raw::default().get_opcode(),
             operands: [self.pattern.to_string(), self.text_to_replace.to_string()].to_vec(),
         }
     }
     fn get_opcode(&self) -> u8 {
-        0x0c
+        0x0b
     }
 }

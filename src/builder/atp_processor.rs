@@ -4,7 +4,7 @@ use std::path::Path;
 use uuid::Uuid;
 use colored::*;
 
-use crate::data::{ TokenMethods };
+use crate::token_data::{ TokenMethods };
 
 use crate::text_parser::parser::parse_token;
 use crate::text_parser::reader::read_from_file;

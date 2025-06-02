@@ -1,36 +1,35 @@
-use crate::data::TokenMethods;
+use crate::token_data::TokenMethods;
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
-
-// add to beginning
+// add to end
 #[derive(Clone, Default)]
-pub struct Atb {
+pub struct Ate {
     pub text: String,
 }
 
-impl Atb {
+impl Ate {
     pub fn params(text: String) -> Self {
-        Atb {
+        Ate {
             text,
         }
     }
 }
 
-impl TokenMethods for Atb {
+impl TokenMethods for Ate {
     fn token_to_atp_line(&self) -> String {
-        format!("atb {};\n", self.text)
+        format!("ate {};\n", self.text)
     }
 
     fn parse(&self, input: &str) -> String {
-        let mut s = String::from(&self.text);
-        s.push_str(input);
+        let mut s = String::from(input);
+        s.push_str(&self.text);
         s
     }
     fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
-        // "atb;"
+        // "ate;"
 
-        if line[0] == "atb" {
+        if line[0] == "ate" {
             self.text = line[1].clone();
             return Ok(());
         }
@@ -38,17 +37,16 @@ impl TokenMethods for Atb {
     }
 
     fn get_string_repr(&self) -> String {
-        "atb".to_string()
+        "ate".to_string()
     }
 }
-
 #[cfg(feature = "bytecode")]
-impl BytecodeTokenMethods for Atb {
+impl BytecodeTokenMethods for Ate {
     fn token_from_bytecode_instruction(
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Atb::default().get_opcode() {
+        if instruction.op_code == Ate::default().get_opcode() {
             if !instruction.operands[0].is_empty() {
                 self.text = instruction.operands[1].clone();
                 return Ok(());
@@ -62,12 +60,11 @@ impl BytecodeTokenMethods for Atb {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Atb::default().get_opcode(),
+            op_code: Ate::default().get_opcode(),
             operands: [self.text.clone()].to_vec(),
         }
     }
-
     fn get_opcode(&self) -> u8 {
-        0x01
+        0x02
     }
 }

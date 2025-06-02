@@ -1,4 +1,4 @@
-use crate::data::TokenMethods;
+use crate::token_data::TokenMethods;
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };

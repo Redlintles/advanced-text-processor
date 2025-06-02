@@ -1,40 +1,46 @@
-use crate::data::TokenMethods;
+use crate::token_data::TokenMethods;
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 
-// Trim right side
+// Delete last
 #[derive(Clone, Copy, Default)]
-pub struct Trs {}
+pub struct Dll {}
 
-impl TokenMethods for Trs {
+impl TokenMethods for Dll {
     fn token_to_atp_line(&self) -> String {
-        "trs;\n".to_string()
+        "dll;\n".to_string()
     }
 
     fn parse(&self, input: &str) -> String {
-        String::from(input.trim_end())
+        let mut s = String::from(input);
+
+        if let Some((x, _)) = s.char_indices().next_back() {
+            s.drain(x..);
+        }
+
+        s
     }
     fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
-        // "trs;"
+        // "dll;"
 
-        if line[0] == "trs" {
+        if line[0] == "dll" {
             return Ok(());
         }
         Err("Parsing Error".to_string())
     }
 
     fn get_string_repr(&self) -> String {
-        "trs".to_string()
+        "dll".to_string()
     }
 }
 #[cfg(feature = "bytecode")]
-impl BytecodeTokenMethods for Trs {
+impl BytecodeTokenMethods for Dll {
     fn token_from_bytecode_instruction(
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Trs::default().get_opcode() {
+        if instruction.op_code == Dll::default().get_opcode() {
             return Ok(());
         }
 
@@ -43,11 +49,11 @@ impl BytecodeTokenMethods for Trs {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Trs::default().get_opcode(),
+            op_code: Dll::default().get_opcode(),
             operands: [].to_vec(),
         }
     }
     fn get_opcode(&self) -> u8 {
-        0x07
+        0x04
     }
 }

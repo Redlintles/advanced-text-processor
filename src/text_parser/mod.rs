@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::data::{ token_defs::*, TokenMethods };
+use crate::token_data::{ token_defs::*, TokenMethods };
 
 pub mod writer;
 pub mod reader;

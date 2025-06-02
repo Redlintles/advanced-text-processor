@@ -1,6 +1,6 @@
 use std::{ fs::OpenOptions, io::Write, path::Path };
 
-use crate::data::{ TokenMethods };
+use crate::token_data::{ TokenMethods };
 
 pub fn write_to_file(path: &Path, tokens: &Vec<Box<dyn TokenMethods>>) -> Result<(), String> {
     if path.extension().expect("Unable to get file extension") != "atp" {

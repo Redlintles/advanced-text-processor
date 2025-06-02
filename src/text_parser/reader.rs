@@ -1,6 +1,6 @@
 use std::{ fs::OpenOptions, io::{ BufRead, BufReader }, path::Path };
 
-use crate::data::{ TokenMethods };
+use crate::token_data::{ TokenMethods };
 
 use super::get_supported_tokens;
 

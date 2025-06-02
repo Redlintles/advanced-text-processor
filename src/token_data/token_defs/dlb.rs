@@ -1,24 +1,24 @@
-use crate::data::TokenMethods;
+use crate::token_data::TokenMethods;
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
-// Delete after
+// Delete before
 #[derive(Clone, Copy, Default)]
-pub struct Dla {
+pub struct Dlb {
     pub index: usize,
 }
 
-impl Dla {
+impl Dlb {
     pub fn params(index: usize) -> Self {
-        Dla {
+        Dlb {
             index,
         }
     }
 }
 
-impl TokenMethods for Dla {
+impl TokenMethods for Dlb {
     fn token_to_atp_line(&self) -> String {
-        format!("dla {};\n", self.index)
+        format!("dlb {};\n", self.index)
     }
 
     fn parse(&self, input: &str) -> String {
@@ -30,15 +30,15 @@ impl TokenMethods for Dla {
                 .nth(self.index)
                 .map(|(i, _)| i)
         {
-            s.drain(byte_index..);
+            s.drain(..=byte_index);
         }
 
         s
     }
     fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
-        // "dla;"
+        // "dlb;"
 
-        if line[0] == "dla" {
+        if line[0] == "dlb" {
             self.index = line[1].clone().parse().expect("Parse from string to usize failed");
             return Ok(());
         }
@@ -46,16 +46,16 @@ impl TokenMethods for Dla {
     }
 
     fn get_string_repr(&self) -> String {
-        "dla".to_string()
+        "dlb".to_string()
     }
 }
 #[cfg(feature = "bytecode")]
-impl BytecodeTokenMethods for Dla {
+impl BytecodeTokenMethods for Dlb {
     fn token_from_bytecode_instruction(
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Dla::default().get_opcode() {
+        if instruction.op_code == Dlb::default().get_opcode() {
             if !instruction.operands[0].is_empty() {
                 self.index = instruction.operands[0]
                     .clone()
@@ -72,12 +72,11 @@ impl BytecodeTokenMethods for Dla {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Dla::default().get_opcode(),
+            op_code: Dlb::default().get_opcode(),
             operands: [self.index.to_string()].to_vec(),
         }
     }
-
     fn get_opcode(&self) -> u8 {
-        0x09
+        0x0a
     }
 }

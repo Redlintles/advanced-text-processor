@@ -1,21 +1,21 @@
-use crate::data::TokenMethods;
+use crate::token_data::TokenMethods;
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
 #[derive(Clone, Default)]
-pub struct Rtl {
+pub struct Rtr {
     pub times: usize,
 }
 
-impl Rtl {
-    pub fn params(times: usize) -> Rtl {
-        Rtl {
+impl Rtr {
+    pub fn params(times: usize) -> Rtr {
+        Rtr {
             times,
         }
     }
 }
 
-impl TokenMethods for Rtl {
+impl TokenMethods for Rtr {
     fn parse(&self, input: &str) -> String {
         if input.is_empty() {
             return String::default();
@@ -25,34 +25,34 @@ impl TokenMethods for Rtl {
         let len = chars.len();
         let times = self.times % len;
 
-        chars[times..]
+        chars[len - times..]
             .iter()
-            .chain(&chars[..times])
+            .chain(&chars[..len - times])
             .collect()
     }
 
     fn token_to_atp_line(&self) -> String {
-        format!("rtl {};\n", self.times)
+        format!("rtr {};\n", self.times)
     }
+    fn get_string_repr(&self) -> String {
+        "rtr".to_string()
+    }
+
     fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
-        if line[0] == "rtl" {
+        if line[0] == "rtr" {
             self.times = line[1].parse().expect("Parsing from string to usize failed");
             return Ok(());
         }
         Err("Parsing Error".to_string())
     }
-
-    fn get_string_repr(&self) -> String {
-        "rtl".to_string()
-    }
 }
 #[cfg(feature = "bytecode")]
-impl BytecodeTokenMethods for Rtl {
+impl BytecodeTokenMethods for Rtr {
     fn token_from_bytecode_instruction(
         &mut self,
         instruction: BytecodeInstruction
     ) -> Result<(), String> {
-        if instruction.op_code == Rtl::default().get_opcode() {
+        if instruction.op_code == Rtr::default().get_opcode() {
             if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
                 self.times = instruction.operands[0]
                     .clone()
@@ -69,11 +69,11 @@ impl BytecodeTokenMethods for Rtl {
 
     fn token_to_bytecode_instruction(&self) -> BytecodeInstruction {
         BytecodeInstruction {
-            op_code: Rtl::default().get_opcode(),
+            op_code: Rtr::default().get_opcode(),
             operands: [self.times.to_string()].to_vec(),
         }
     }
     fn get_opcode(&self) -> u8 {
-        0x0e
+        0x0f
     }
 }
