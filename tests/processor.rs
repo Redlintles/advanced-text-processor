@@ -45,7 +45,9 @@ pub mod processor {
     #[test]
     fn test_process_single() {
         let processor = AtpProcessor::new();
-        let token: Box<dyn TokenMethods> = Box::new(Raw::params("a".to_string(), "b".to_string()));
+        let token: Box<dyn TokenMethods> = Box::new(
+            Raw::params("a".to_string(), "b".to_string()).unwrap()
+        );
 
         let input = "a".repeat(100);
 
@@ -58,7 +60,9 @@ pub mod processor {
     #[test]
     fn test_process_single_with_debug() {
         let processor = AtpProcessor::new();
-        let token: Box<dyn TokenMethods> = Box::new(Raw::params("a".to_string(), "b".to_string()));
+        let token: Box<dyn TokenMethods> = Box::new(
+            Raw::params("a".to_string(), "b".to_string()).unwrap()
+        );
 
         let input = "a".repeat(100);
 
