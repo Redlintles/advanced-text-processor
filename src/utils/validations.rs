@@ -5,7 +5,7 @@ pub fn check_file_path(path: &Path, ext: Option<&str>) -> Result<(), String> {
     let mut v1: String = match path.extension() {
         Some(x) => {
             if x == parsed_ext {
-                "";
+                "".to_string();
             }
             format!("Path does not match required extension {}", parsed_ext)
         }
@@ -15,7 +15,7 @@ pub fn check_file_path(path: &Path, ext: Option<&str>) -> Result<(), String> {
     let v2: String = match path.parent() {
         Some(x) => {
             if x.exists() && path.is_dir() {
-                "";
+                "".to_string();
             }
             "Parent should be an already existing directory".to_string()
         }
@@ -25,8 +25,8 @@ pub fn check_file_path(path: &Path, ext: Option<&str>) -> Result<(), String> {
     v1.push_str(&v2);
 
     if v1.is_empty() {
-        return Ok(());
+        Ok(())
     } else {
-        return Err(v1);
+        Err(v1)
     }
 }
