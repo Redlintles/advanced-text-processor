@@ -1,4 +1,4 @@
-use crate::{ token_data::{ TokenMethods }, utils::mapping::get_supported_bytecode_tokens };
+use crate::{ token_data::{ TokenMethods } };
 
 pub mod writer;
 pub mod reader;
