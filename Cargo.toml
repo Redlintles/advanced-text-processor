@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+tempfile = { version = "3.20.0", optional = true }
 colored = { version = "3.0.0", optional = true }
 regex = "1.11.1"
 shell-words = "1.1.0"
-tempfile = "3.20.0"
 uuid = { version = "1.17.0", features = ["v4"] }
 
 [features]
@@ -16,4 +16,4 @@ default = []
 bytecode = []
 debug = ["colored"]
 bytecode_debug = ["colored", "bytecode"]
-test_access = ["default", "bytecode", "debug", "bytecode_debug"]
+test_access = ["default", "bytecode", "debug", "bytecode_debug", "tempfile"]
