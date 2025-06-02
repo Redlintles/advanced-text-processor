@@ -1,8 +1,9 @@
 use std::{ fs::OpenOptions, io::{ BufRead, BufReader }, path::Path };
 
-use crate::{ token_data::TokenMethods, utils::validations::check_file_path };
-
-use super::get_supported_tokens;
+use crate::{
+    token_data::TokenMethods,
+    utils::{ mapping::get_supported_default_tokens, validations::check_file_path },
+};
 
 pub fn read_from_file(path: &Path) -> Result<Vec<Box<dyn TokenMethods>>, String> {
     check_file_path(path, Some("atp"))?;
@@ -34,7 +35,7 @@ pub fn read_from_file(path: &Path) -> Result<Vec<Box<dyn TokenMethods>>, String>
             }
         };
 
-        let supported_tokens = get_supported_tokens();
+        let supported_tokens = get_supported_default_tokens();
         let token_factory = match supported_tokens.get(&chunks[0]) {
             Some(x) => x,
             None => {
