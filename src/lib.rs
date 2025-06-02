@@ -1,6 +1,9 @@
 // Internal
 
+#[cfg(not(feature = "test_access"))]
 mod utils;
+#[cfg(feature = "test_access")]
+pub mod utils;
 
 #[cfg(not(feature = "test_access"))]
 mod token_data;
