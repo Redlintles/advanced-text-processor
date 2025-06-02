@@ -3,6 +3,7 @@ use crate::{ token_data::{ TokenMethods } };
 pub mod writer;
 pub mod reader;
 pub mod transformer;
+pub mod parser;
 
 pub struct BytecodeInstruction {
     pub op_code: u8,
