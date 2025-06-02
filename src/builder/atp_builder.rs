@@ -2,11 +2,50 @@ use crate::token_data::{ TokenMethods };
 
 use crate::token_data::token_defs::*;
 
-use super::atp_processor::{ AtpProcessor, AtpProcessorMethods };
+use super::atp_processor::{ AtpProcessorMethods, AtpProcessor };
+#[cfg(feature = "debug")]
+use super::atp_processor::AtpProcessorDebugMethods;
+#[cfg(feature = "bytecode")]
+use super::atp_processor::AtpProcessorBytecodeMethods;
+#[cfg(feature = "bytecode_debug")]
+use super::atp_processor::AtpProcessorBytecodeDebugMethods;
 #[derive(Default)]
 pub struct AtpBuilder {
     tokens: Vec<Box<dyn TokenMethods>>,
 }
+#[derive(Default)]
+pub struct AtpProcessorBuilder {
+    tokens: Vec<Box<dyn TokenMethods>>,
+}
+
+impl AtpProcessorBuilder {
+    pub fn text_processor(self) -> (Box<dyn AtpProcessorMethods>, String) {
+        let mut processor: Box<dyn AtpProcessorMethods> = Box::new(AtpProcessor::new());
+        let identifier = processor.add_transform(self.tokens);
+        (processor, identifier)
+    }
+    #[cfg(feature = "debug")]
+    pub fn text_debug_processor(self) -> (Box<dyn AtpProcessorDebugMethods>, String) {
+        let mut processor: Box<dyn AtpProcessorDebugMethods> = Box::new(AtpProcessor::new());
+        let identifier = processor.add_transform(self.tokens);
+        (processor, identifier)
+    }
+    #[cfg(feature = "bytecode")]
+    pub fn bytecode_processor(self) -> (Box<dyn AtpProcessorBytecodeMethods>, String) {
+        let mut processor: Box<dyn AtpProcessorBytecodeMethods> = Box::new(AtpProcessor::new());
+        let identifier = processor.add_transform(self.tokens);
+        (processor, identifier)
+    }
+    #[cfg(feature = "bytecode_debug")]
+    pub fn bytecode_debug_processor(self) -> (Box<dyn AtpProcessorBytecodeDebugMethods>, String) {
+        let mut processor: Box<dyn AtpProcessorBytecodeDebugMethods> = Box::new(
+            AtpProcessor::new()
+        );
+        let identifier = processor.add_transform(self.tokens);
+        (processor, identifier)
+    }
+}
+
 impl AtpBuilder {
     pub fn new() -> AtpBuilder {
         AtpBuilder {
@@ -14,12 +53,10 @@ impl AtpBuilder {
         }
     }
 
-    pub fn build(self) -> (AtpProcessor, String) {
-        let mut processor = AtpProcessor::new();
-
-        let identifier = processor.add_transform(self.tokens);
-
-        (processor, identifier)
+    pub fn build(self) -> AtpProcessorBuilder {
+        AtpProcessorBuilder {
+            tokens: self.tokens,
+        }
     }
 }
 
