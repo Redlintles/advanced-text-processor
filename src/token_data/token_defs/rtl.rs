@@ -1,4 +1,4 @@
-use crate::token_data::TokenMethods;
+use crate::{ token_data::TokenMethods, utils::transforms::string_to_usize };
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
@@ -36,7 +36,7 @@ impl TokenMethods for Rtl {
     }
     fn token_from_vec_params(&mut self, line: Vec<String>) -> Result<(), String> {
         if line[0] == "rtl" {
-            self.times = line[1].parse().expect("Parsing from string to usize failed");
+            self.times = string_to_usize(&line[1])?;
             return Ok(());
         }
         Err("Parsing Error".to_string())
@@ -54,10 +54,7 @@ impl BytecodeTokenMethods for Rtl {
     ) -> Result<(), String> {
         if instruction.op_code == Rtl::default().get_opcode() {
             if !(instruction.operands[0].is_empty() || instruction.operands[1].is_empty()) {
-                self.times = instruction.operands[0]
-                    .clone()
-                    .parse()
-                    .expect("Parse error: Failed parsing string to usize");
+                self.times = string_to_usize(&instruction.operands[1])?;
                 return Ok(());
             }
 

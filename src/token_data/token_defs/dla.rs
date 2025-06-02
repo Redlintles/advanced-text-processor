@@ -1,4 +1,4 @@
-use crate::token_data::TokenMethods;
+use crate::{ token_data::TokenMethods, utils::transforms::string_to_usize };
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
@@ -39,7 +39,7 @@ impl TokenMethods for Dla {
         // "dla;"
 
         if line[0] == "dla" {
-            self.index = line[1].clone().parse().expect("Parse from string to usize failed");
+            self.index = string_to_usize(&line[1])?;
             return Ok(());
         }
         Err("Parsing Error".to_string())
@@ -57,10 +57,7 @@ impl BytecodeTokenMethods for Dla {
     ) -> Result<(), String> {
         if instruction.op_code == Dla::default().get_opcode() {
             if !instruction.operands[0].is_empty() {
-                self.index = instruction.operands[0]
-                    .clone()
-                    .parse()
-                    .expect("Parse from string to usize failed");
+                self.index = string_to_usize(&instruction.operands[1])?;
                 return Ok(());
             }
 

@@ -1,4 +1,4 @@
-use crate::token_data::TokenMethods;
+use crate::{ token_data::TokenMethods, utils::transforms::string_to_usize };
 
 #[cfg(feature = "bytecode")]
 use crate::bytecode_parser::{ BytecodeInstruction, BytecodeTokenMethods };
@@ -63,14 +63,8 @@ impl BytecodeTokenMethods for Dlc {
     ) -> Result<(), String> {
         if instruction.op_code == Dlc::default().get_opcode() {
             if !instruction.operands[0].is_empty() {
-                self.start_index = instruction.operands[0]
-                    .clone()
-                    .parse()
-                    .expect("Parse from string to usize failed");
-                self.end_index = instruction.operands[1]
-                    .clone()
-                    .parse()
-                    .expect("Parse from string to usize failed");
+                self.start_index = string_to_usize(&instruction.operands[1])?;
+                self.end_index = string_to_usize(&instruction.operands[2])?;
                 return Ok(());
             }
 
