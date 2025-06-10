@@ -64,23 +64,17 @@ impl AtpProcessorMethods for AtpProcessor {
     fn write_to_text_file(&self, id: &str, path: &Path) -> Result<(), String> {
         let tokens = self.transforms.get(id).ok_or_else(token_array_not_found(id))?;
 
-        match write_to_file(Path::new(path), tokens) {
-            Ok(_) => Ok(()),
-            Err(x) => Err(x),
-        }
+        write_to_file(Path::new(path), tokens)
     }
 
     fn read_from_text_file(&mut self, path: &Path) -> Result<String, String> {
-        match read_from_file(Path::new(path)) {
-            Ok(tokens) => {
-                let identifier = Uuid::new_v4();
+        let tokens = read_from_file(Path::new(path))?;
 
-                self.transforms.insert(identifier.to_string(), tokens);
+        let identifier = Uuid::new_v4();
 
-                Ok(identifier.to_string())
-            }
-            Err(e) => Err(e),
-        }
+        self.transforms.insert(identifier.to_string(), tokens);
+
+        Ok(identifier.to_string())
     }
 
     fn process_all(&self, id: &str, input: &str) -> Result<String, String> {
