@@ -18,6 +18,7 @@ use crate::text_parser::parser::parse_token;
 use crate::text_parser::reader::read_from_file;
 use crate::text_parser::writer::write_to_file;
 
+use crate::utils::errors::token_array_not_found;
 #[cfg(feature = "bytecode")]
 use crate::utils::transforms::{ bytecode_token_vec_to_token_vec, token_vec_to_bytecode_token_vec };
 #[derive(Default)]
@@ -61,12 +62,7 @@ impl AtpProcessor {
 
 impl AtpProcessorMethods for AtpProcessor {
     fn write_to_text_file(&self, id: &str, path: &Path) -> Result<(), String> {
-        let tokens = match self.transforms.get(id) {
-            Some(x) => x,
-            None => {
-                return Err("Token array not found, is id a valid transform identifier".to_string());
-            }
-        };
+        let tokens = self.transforms.get(id).ok_or_else(token_array_not_found(id))?;
 
         match write_to_file(Path::new(path), tokens) {
             Ok(_) => Ok(()),
@@ -90,12 +86,7 @@ impl AtpProcessorMethods for AtpProcessor {
     fn process_all(&self, id: &str, input: &str) -> Result<String, String> {
         let mut result = String::from(input);
 
-        let tokens = match self.transforms.get(id) {
-            Some(x) => x,
-            None => {
-                return Err("Token array not found, is id a valid transform identifier".to_string());
-            }
-        };
+        let tokens = self.transforms.get(id).ok_or_else(token_array_not_found(id))?;
 
         for token in tokens.iter() {
             result = parse_token(token.as_ref(), result.as_str());
@@ -119,10 +110,9 @@ impl AtpProcessorMethods for AtpProcessor {
 #[cfg(feature = "bytecode")]
 impl AtpProcessorBytecodeMethods for AtpProcessor {
     fn write_to_bytecode_file(&self, id: &str, path: &Path) -> Result<(), String> {
-        match self.transforms.get(id) {
-            Some(tokens) => write_bytecode_to_file(path, token_vec_to_bytecode_token_vec(tokens)?),
-            None => Err("Transformation not found".to_string()),
-        }
+        let tokens = self.transforms.get(id).ok_or_else(token_array_not_found(id))?;
+
+        write_bytecode_to_file(path, token_vec_to_bytecode_token_vec(tokens)?)
     }
     fn read_from_bytecode_file(&mut self, path: &Path) -> Result<(), String> {
         let tokens = read_bytecode_from_file(path)?;
@@ -140,12 +130,7 @@ impl AtpProcessorDebugMethods for AtpProcessor {
 
         let dashes = 10;
 
-        let tokens = match self.transforms.get(id) {
-            Some(x) => x,
-            None => {
-                return Err("Token array not found, is id a valid transform identifier".to_string());
-            }
-        };
+        let tokens = self.transforms.get(id).ok_or_else(token_array_not_found(id))?;
 
         println!("PROCESSING STEP BY STEP:\n{}\n", "-".repeat(dashes));
 
@@ -192,12 +177,9 @@ impl AtpProcessorBytecodeDebugMethods for AtpProcessor {
 
         let dashes = 10;
 
-        let tokens = token_vec_to_bytecode_token_vec(match self.transforms.get(id) {
-            Some(x) => x,
-            None => {
-                return Err("Token array not found, is id a valid transform identifier".to_string());
-            }
-        })?;
+        let tokens = token_vec_to_bytecode_token_vec(
+            self.transforms.get(id).ok_or_else(token_array_not_found(id))?
+        )?;
 
         println!("PROCESSING STEP BY STEP:\n{}\n", "-".repeat(dashes));
 
