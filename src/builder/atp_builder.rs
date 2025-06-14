@@ -1,3 +1,4 @@
+use crate::token_data::token_defs::rcw::Rcw;
 use crate::token_data::{ TokenMethods };
 
 use crate::token_data::token_defs::*;
@@ -119,6 +120,24 @@ impl AtpBuilder {
                 Err(e) => panic!("{}", e),
             })
         );
+        self
+    }
+
+    pub fn replace_count_with(
+        mut self,
+        pattern: &str,
+        text_to_replace: &str,
+        count: usize
+    ) -> Self {
+        self.tokens.push(
+            Box::new(match
+                rcw::Rcw::params(pattern.to_string(), text_to_replace.to_string(), count)
+            {
+                Ok(x) => x,
+                Err(e) => panic!("{}", e),
+            })
+        );
+
         self
     }
     pub fn rotate_left(mut self, times: usize) -> Self {
