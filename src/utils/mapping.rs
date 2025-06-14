@@ -54,6 +54,7 @@ macro_rules! for_each_token_entry {
             "dla" => dla::Dla,
             "dlb" => dlb::Dlb,
             "rfw" => rfw::Rfw,
+            "rcw" => rcw::Rcw,
             "raw" => raw::Raw,
             "tbs" => tbs::Tbs,
             "tls" => tls::Tls,
@@ -83,6 +84,7 @@ macro_rules! for_each_bytecode_entry {
             0x0d => rpt::Rpt,
             0x0e => rtl::Rtl,
             0x0f => rtr::Rtr,
+            0x10 => rcw::Rcw,
         }
     };
 }
