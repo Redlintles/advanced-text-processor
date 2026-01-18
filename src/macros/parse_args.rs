@@ -48,4 +48,52 @@ macro_rules! parse_args {
         }
         }
     };
+    ($param:expr, String) => {
+        {
+        use crate::utils::params::AtpParamTypes;
+        use crate::utils::errors::{AtpError, AtpErrorCode};
+        match &$param {
+            AtpParamTypes::String(payload) => payload.clone(),
+            _ => {
+                return Err(AtpError::new(
+                    AtpErrorCode::InvalidParameters("Param must be of type Sring".into()),
+                    "",
+                    "",
+                ));
+            }
+        }
+        }
+    };
+    ($param:expr, Usize) => {
+        {
+        use crate::utils::params::AtpParamTypes;
+        use crate::utils::errors::{AtpError, AtpErrorCode};
+        match $param {
+            AtpParamTypes::Usize(payload) => payload.clone(),
+            _ => {
+                return Err(AtpError::new(
+                    AtpErrorCode::InvalidParameters("Param must be of type Usize".into()),
+                    "",
+                    "",
+                ));
+            }
+        }
+        }
+    };
+    ($param:expr, Token) => {
+        {
+        use crate::utils::params::AtpParamTypes;
+        use crate::utils::errors::{AtpError, AtpErrorCode};
+        match $param {
+            AtpParamTypes::Token(payload) => payload.clone(),
+            _ => {
+                return Err(AtpError::new(
+                    AtpErrorCode::InvalidParameters("Param must be of type Token".into()),
+                    "",
+                    "",
+                ));
+            }
+        }
+        }
+    };
 }
