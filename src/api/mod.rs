@@ -5,14 +5,8 @@ pub mod block_builder;
 
 use crate::api::block_builder::BlockBuilder;
 use crate::api::conditional_builder::ConditionalBuilderEach;
-use crate::globals::var::TokenWrapper;
-use crate::tokens::instructions::cblk::Cblk;
-use crate::tokens::instructions::ifdc;
-use crate::tokens::transforms::ate::Ate;
-use crate::tokens::transforms::tbs::Tbs;
-use crate::tokens::transforms::tls::Tls;
-use crate::tokens::transforms::trs::Trs;
-use crate::tokens::{ transforms::*, InstructionMethods };
+use crate::globals::var::{ TokenWrapper, ValType };
+use crate::tokens::{ transforms::*, instructions::*, InstructionMethods };
 use crate::utils::errors::{ AtpError };
 use crate::utils::params::AtpParamTypes;
 
@@ -39,7 +33,7 @@ pub trait AtpBuilderMethods: Sized {
     /// assert_eq!(processor.process_all(&id, input), Ok("banana".to_string()));
     /// ```
     fn trim_both_sides(&mut self) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(Tbs::default());
+        let tok: Box<dyn InstructionMethods> = Box::new(tbs::Tbs::default());
         self.push_token(tok)?;
         Ok(self)
     }
@@ -64,7 +58,7 @@ pub trait AtpBuilderMethods: Sized {
     /// assert_eq!(processor.process_all(&id, input), Ok("banana  ".to_string()));
     /// ```
     fn trim_left_side(&mut self) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(Tls::default());
+        let tok: Box<dyn InstructionMethods> = Box::new(tls::Tls::default());
         self.push_token(tok)?;
         Ok(self)
     }
@@ -88,7 +82,7 @@ pub trait AtpBuilderMethods: Sized {
     /// assert_eq!(processor.process_all(&id, input), Ok("  banana".to_string()));
     /// ```
     fn trim_right_side(&mut self) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(Trs::default());
+        let tok: Box<dyn InstructionMethods> = Box::new(trs::Trs::default());
         self.push_token(tok)?;
         Ok(self)
     }
@@ -110,8 +104,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("banana!".to_string()));
     /// ```
-    fn add_to_end(&mut self, text: &str) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(Ate::new(text));
+    fn add_to_end(&mut self, text: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(ate::Ate::default()), Some(vec![text.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -134,8 +128,8 @@ pub trait AtpBuilderMethods: Sized {
     /// assert_eq!(processor.process_all(&id, input), Ok("xbanana".to_string()));
     /// ```
 
-    fn add_to_beginning(&mut self, text: &str) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(atb::Atb::new(text));
+    fn add_to_beginning(&mut self, text: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(atb::Atb::default()), Some(vec![text.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -207,8 +201,8 @@ pub trait AtpBuilderMethods: Sized {
     /// assert_eq!(processor.process_all(&id, input), Ok("ban".to_string()));
     /// ```
 
-    fn delete_after(&mut self, index: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(dla::Dla::new(index));
+    fn delete_after(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(dla::Dla::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -232,8 +226,8 @@ pub trait AtpBuilderMethods: Sized {
     /// assert_eq!(processor.process_all(&id, input), Ok("ana".to_string()));
     /// ```
 
-    fn delete_before(&mut self, index: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(dlb::Dlb::new(index));
+    fn delete_before(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(dlb::Dlb::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -260,10 +254,13 @@ pub trait AtpBuilderMethods: Sized {
 
     fn delete_chunk(
         &mut self,
-        start_index: usize,
-        end_index: usize
+        start_index: impl Into<ValType>,
+        end_index: impl Into<ValType>
     ) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(dlc::Dlc::new(start_index, end_index)?);
+        let tok = TokenWrapper::new(
+            Box::new(dlc::Dlc::default()),
+            Some(vec![start_index.into(), end_index.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -295,16 +292,13 @@ pub trait AtpBuilderMethods: Sized {
 
     fn replace_all_with(
         &mut self,
-        pattern: &str,
-        text_to_replace: &str
+        pattern: impl Into<ValType>,
+        text_to_replace: impl Into<ValType>
     ) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(match
-            raw::Raw::new(pattern, text_to_replace)
-        {
-            Ok(x) => x,
-            Err(e) => panic!("{}", e),
-        });
-
+        let tok = TokenWrapper::new(
+            Box::new(raw::Raw::default()),
+            Some(vec![pattern.into(), text_to_replace.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -336,16 +330,13 @@ pub trait AtpBuilderMethods: Sized {
 
     fn replace_first_with(
         &mut self,
-        pattern: &str,
-        text_to_replace: &str
+        pattern: impl Into<ValType>,
+        text_to_replace: impl Into<ValType>
     ) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(match
-            rfw::Rfw::new(pattern, text_to_replace)
-        {
-            Ok(x) => x,
-            Err(e) => panic!("{}", e),
-        });
-
+        let tok = TokenWrapper::new(
+            Box::new(rfw::Rfw::default()),
+            Some(vec![pattern.into(), text_to_replace.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -376,16 +367,13 @@ pub trait AtpBuilderMethods: Sized {
 
     fn replace_last_with(
         &mut self,
-        pattern: &str,
-        text_to_replace: &str
+        pattern: impl Into<ValType>,
+        text_to_replace: impl Into<ValType>
     ) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(match
-            rlw::Rlw::new(pattern, text_to_replace)
-        {
-            Ok(x) => x,
-            Err(e) => panic!("{}", e),
-        });
-
+        let tok = TokenWrapper::new(
+            Box::new(rlw::Rlw::default()),
+            Some(vec![pattern.into(), text_to_replace.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -418,17 +406,14 @@ pub trait AtpBuilderMethods: Sized {
 
     fn replace_nth_with(
         &mut self,
-        pattern: &str,
-        text_to_replace: &str,
-        index: usize
+        pattern: impl Into<ValType>,
+        text_to_replace: impl Into<ValType>,
+        index: impl Into<ValType>
     ) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(match
-            rnw::Rnw::new(pattern, text_to_replace, index)
-        {
-            Ok(x) => x,
-            Err(e) => panic!("{}", e),
-        });
-
+        let tok = TokenWrapper::new(
+            Box::new(rnw::Rnw::default()),
+            Some(vec![pattern.into(), text_to_replace.into(), index.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -460,17 +445,14 @@ pub trait AtpBuilderMethods: Sized {
 
     fn replace_count_with(
         &mut self,
-        pattern: &str,
-        text_to_replace: &str,
-        count: usize
+        pattern: impl Into<ValType>,
+        text_to_replace: impl Into<ValType>,
+        count: impl Into<ValType>
     ) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(match
-            rcw::Rcw::new(pattern, text_to_replace, count)
-        {
-            Ok(x) => x,
-            Err(e) => panic!("{}", e),
-        });
-
+        let tok = TokenWrapper::new(
+            Box::new(rcw::Rcw::default()),
+            Some(vec![pattern.into(), text_to_replace.into(), count.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -499,8 +481,8 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn rotate_left(&mut self, times: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(rtl::Rtl::new(times));
+    fn rotate_left(&mut self, times: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(rtl::Rtl::default()), Some(vec![times.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -529,8 +511,8 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn rotate_right(&mut self, times: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(rtr::Rtr::new(times));
+    fn rotate_right(&mut self, times: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(rtr::Rtr::default()), Some(vec![times.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -558,8 +540,8 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn repeat(&mut self, times: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(rpt::Rpt::new(times));
+    fn repeat(&mut self, times: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(rpt::Rpt::default()), Some(vec![times.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -588,8 +570,15 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn select(&mut self, start_index: usize, end_index: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(slt::Slt::new(start_index, end_index)?);
+    fn select(
+        &mut self,
+        start_index: impl Into<ValType>,
+        end_index: impl Into<ValType>
+    ) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(
+            Box::new(slt::Slt::default()),
+            Some(vec![start_index.into(), end_index.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -678,8 +667,8 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_uppercase_single(&mut self, index: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(tucs::Tucs::new(index));
+    fn to_uppercase_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(tucs::Tucs::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -709,8 +698,8 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_lowercase_single(&mut self, index: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(tlcs::Tlcs::new(index));
+    fn to_lowercase_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(tlcs::Tlcs::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -746,11 +735,12 @@ pub trait AtpBuilderMethods: Sized {
 
     fn to_uppercase_chunk(
         &mut self,
-        start_index: usize,
-        end_index: usize
+        start_index: impl Into<ValType>,
+        end_index: impl Into<ValType>
     ) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(
-            tucc::Tucc::new(start_index, end_index)?
+        let tok = TokenWrapper::new(
+            Box::new(tucc::Tucc::default()),
+            Some(vec![start_index.into(), end_index.into()])
         );
         self.push_token(tok)?;
         Ok(self)
@@ -787,11 +777,12 @@ pub trait AtpBuilderMethods: Sized {
 
     fn to_lowercase_chunk(
         &mut self,
-        start_index: usize,
-        end_index: usize
+        start_index: impl Into<ValType>,
+        end_index: impl Into<ValType>
     ) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(
-            tlcc::Tlcc::new(start_index, end_index)?
+        let tok = TokenWrapper::new(
+            Box::new(tlcc::Tlcc::default()),
+            Some(vec![start_index.into(), end_index.into()])
         );
         self.push_token(tok)?;
         Ok(self)
@@ -885,12 +876,15 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn split_select(&mut self, pattern: &str, index: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(match sslt::Sslt::new(pattern, index) {
-            Ok(x) => x,
-            Err(e) => panic!("{}", e),
-        });
-
+    fn split_select(
+        &mut self,
+        pattern: impl Into<ValType>,
+        index: impl Into<ValType>
+    ) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(
+            Box::new(sslt::Sslt::default()),
+            Some(vec![pattern.into(), index.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -925,10 +919,13 @@ pub trait AtpBuilderMethods: Sized {
 
     fn capitalize_chunk(
         &mut self,
-        start_index: usize,
-        end_index: usize
+        start_index: impl Into<ValType>,
+        end_index: impl Into<ValType>
     ) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(ctc::Ctc::new(start_index, end_index)?);
+        let tok = TokenWrapper::new(
+            Box::new(ctc::Ctc::default()),
+            Some(vec![start_index.into(), end_index.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -962,10 +959,13 @@ pub trait AtpBuilderMethods: Sized {
     /// ```
     fn capitalize_range(
         &mut self,
-        start_index: usize,
-        end_index: usize
+        start_index: impl Into<ValType>,
+        end_index: impl Into<ValType>
     ) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(ctr::Ctr::new(start_index, end_index)?);
+        let tok = TokenWrapper::new(
+            Box::new(ctr::Ctr::default()),
+            Some(vec![start_index.into(), end_index.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -994,8 +994,8 @@ pub trait AtpBuilderMethods: Sized {
     ///     Ok("hello brave World".to_string())
     /// );
     /// ```
-    fn capitalize_single_word(&mut self, index: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(cts::Cts::new(index));
+    fn capitalize_single_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(cts::Cts::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -1245,8 +1245,15 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("ba laranjanana".to_string()));
     /// ```
-    fn insert(&mut self, index: usize, text_to_insert: &str) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(ins::Ins::new(index, text_to_insert));
+    fn insert(
+        &mut self,
+        index: impl Into<ValType>,
+        text_to_insert: impl Into<ValType>
+    ) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(
+            Box::new(ins::Ins::default()),
+            Some(vec![index.into(), text_to_insert.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -1270,8 +1277,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("BANANA laranja CHEIA DE CANJA".to_string()));
     /// ```
-    fn to_lowercase_word(&mut self, index: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(tlcw::Tlcw::new(index));
+    fn to_lowercase_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(tlcw::Tlcw::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -1294,8 +1301,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("banana LARANJA cheia de canja".to_string()));
     /// ```
-    fn to_uppercase_word(&mut self, index: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(tucw::Tucw::new(index));
+    fn to_uppercase_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(tucw::Tucw::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -1420,8 +1427,15 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("xbanana".to_string()));
     /// ```
-    fn pad_left(&mut self, text: &str, times: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(padl::Padl::new(text, times));
+    fn pad_left(
+        &mut self,
+        text: impl Into<ValType>,
+        times: impl Into<ValType>
+    ) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(
+            Box::new(padl::Padl::default()),
+            Some(vec![text.into(), times.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -1444,8 +1458,15 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("bananax".to_string()));
     /// ```
-    fn pad_right(&mut self, text: &str, times: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(padr::Padr::new(text, times));
+    fn pad_right(
+        &mut self,
+        text: impl Into<ValType>,
+        times: impl Into<ValType>
+    ) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(
+            Box::new(padr::Padr::default()),
+            Some(vec![text.into(), times.into()])
+        );
         self.push_token(tok)?;
         Ok(self)
     }
@@ -1487,8 +1508,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("banna".to_string()));
     /// ```
-    fn delete_single(&mut self, index: usize) -> Result<&mut Self, AtpError> {
-        let tok: Box<dyn InstructionMethods> = Box::new(dls::Dls::new(index));
+    fn delete_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+        let tok = TokenWrapper::new(Box::new(dls::Dls::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
@@ -1531,7 +1552,7 @@ pub trait AtpBlockMethods: AtpBuilderMethods {
     }
 
     fn call_block(&mut self, block_name: &'static str) -> Result<&mut Self, AtpError> {
-        let mut t: Box<dyn InstructionMethods> = Box::new(Cblk::default());
+        let mut t: Box<dyn InstructionMethods> = Box::new(cblk::Cblk::default());
 
         t.from_params(&vec![AtpParamTypes::String(block_name.to_string())])?;
 

@@ -1,7 +1,6 @@
 use crate::{
     api::{ AtpBlockMethods, AtpBuilderMethods, AtpConditionalMethods },
     globals::var::TokenWrapper,
-    tokens::InstructionMethods,
     utils::errors::AtpError,
 };
 
