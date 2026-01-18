@@ -12,6 +12,31 @@ pub enum ValType {
     Literal(AtpParamTypes),
     VarRef(String),
 }
+
+impl From<String> for ValType {
+    fn from(value: String) -> Self {
+        return Self::Literal(AtpParamTypes::String(value));
+    }
+}
+impl From<&str> for ValType {
+    fn from(value: &str) -> Self {
+        return Self::Literal(AtpParamTypes::String(value.to_string()));
+    }
+}
+impl From<usize> for ValType {
+    fn from(value: usize) -> Self {
+        return Self::Literal(AtpParamTypes::Usize(value));
+    }
+}
+
+impl From<ValType> for AtpParamTypes {
+    fn from(value: ValType) -> Self {
+        match value {
+            ValType::Literal(v) => v,
+            ValType::VarRef(name) => AtpParamTypes::VarRef(name),
+        }
+    }
+}
 #[derive(Clone)]
 pub struct TokenWrapper {
     params: Vec<ValType>,
