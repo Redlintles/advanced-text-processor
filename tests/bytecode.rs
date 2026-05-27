@@ -15,6 +15,7 @@ pub mod bytecode {
         use atp::context::execution_context::{ GlobalExecutionContext };
         use atp::tokens::InstructionMethods;
 
+        use atp::utils::params::AtpParamTypes;
         use tempfile::tempdir;
 
         /// Minimal dummy token for these tests.
@@ -22,6 +23,7 @@ pub mod bytecode {
         struct DummyToken {
             atp: String,
             bc: Vec<u8>,
+            params: Vec<AtpParamTypes>,
         }
 
         impl DummyToken {
@@ -29,11 +31,15 @@ pub mod bytecode {
                 Self {
                     atp: atp.into(),
                     bc: bc.to_vec(),
+                    params: vec![],
                 }
             }
         }
 
         impl atp::tokens::InstructionMethods for DummyToken {
+            fn get_params(&self) -> &Vec<AtpParamTypes> {
+                &self.params
+            }
             fn to_bytecode(&self) -> Vec<u8> {
                 self.bc.clone()
             }
@@ -96,7 +102,7 @@ pub mod bytecode {
                 Box::new(DummyToken::new("tok4", &[0xff, 0x00, 0x01]))
             ];
 
-            write_bytecode_to_file(&path, tokens).unwrap();
+            write_bytecode_to_file(&path, tokens.into()).unwrap();
 
             let bytes = fs::read(&path).unwrap();
             let (magic, protocol, count, rest) = parse_header(&bytes);

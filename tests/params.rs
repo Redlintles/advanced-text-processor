@@ -1,10 +1,9 @@
 #[cfg(feature = "test_access")]
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::globals::table::{ QuerySource, QueryTarget, SyntaxDef, TargetValue, TOKEN_TABLE };
-    use crate::globals::var::{ TokenWrapper, ValType };
-    use crate::utils::errors::AtpErrorCode;
+    use atp::globals::table::{ QuerySource, QueryTarget, SyntaxDef, TargetValue, TOKEN_TABLE };
+    use atp::globals::var::{ ValType };
+    use atp::utils::errors::AtpErrorCode;
 
     use std::sync::Arc;
 

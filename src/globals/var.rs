@@ -144,7 +144,6 @@ impl TokenWrapper {
     }
 
     pub fn to_bytecode_unresolved(&self) -> Result<Vec<u8>, AtpError> {
-        let result: Vec<u8> = Vec::new();
         let mut unresolved_params: Vec<AtpParamTypes> = Vec::new();
         for val in self.params.iter() {
             match val {
@@ -154,7 +153,7 @@ impl TokenWrapper {
             }
         }
 
-        let x = to_bytecode!(self.get_opcode(), []);
+        let result = to_bytecode!(self.get_opcode(), unresolved_params);
 
         Ok(result)
     }
@@ -173,7 +172,6 @@ pub fn get_effective_param_types(expected: &[SyntaxDef]) -> Vec<SyntaxToken> {
 }
 
 impl ValType {
-    #[allow(dead_code)]
     fn resolve_variables(
         t: &Box<dyn InstructionMethods>,
         values: &Vec<ValType>,
