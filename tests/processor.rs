@@ -5,7 +5,8 @@ pub mod processor {
 
     use atp::{
         api::{ AtpBuilderMethods, atp_processor::{ AtpProcessor, AtpProcessorMethods } },
-        tokens::{ InstructionMethods, transforms::{ atb::Atb, ate::Ate, raw::Raw, rpt::Rpt } },
+        globals::var::TokenWrapper,
+        tokens::{ transforms::{ atb::Atb, ate::Ate, rpt::Rpt } },
         utils::errors::AtpError,
     };
     use uuid::Uuid;
@@ -54,15 +55,7 @@ pub mod processor {
     #[test]
     fn test_process_single() -> Result<(), AtpError> {
         let mut processor = AtpProcessor::new();
-        let token: Box<dyn InstructionMethods> = Box::new(
-            Raw::params("a", "b").map_err(|e|
-                AtpError::new(
-                    atp::utils::errors::AtpErrorCode::TextParsingError("".into()),
-                    "",
-                    e.to_string()
-                )
-            )?
-        );
+        let token = TokenWrapper::new(Box::new(Atb::new("banana")), None);
 
         let input = "a".repeat(100);
 
@@ -77,15 +70,7 @@ pub mod processor {
     #[test]
     fn test_process_single_with_debug() -> Result<(), AtpError> {
         let mut processor: Box<dyn AtpProcessorMethods> = Box::new(AtpProcessor::new());
-        let token: Box<dyn InstructionMethods> = Box::new(
-            Raw::params("a", "b").map_err(|e|
-                AtpError::new(
-                    atp::utils::errors::AtpErrorCode::TextParsingError("".into()),
-                    "",
-                    e.to_string()
-                )
-            )?
-        );
+        let token = TokenWrapper::new(Box::new(Atb::new("banana")), None);
 
         let input = "a".repeat(100);
 
@@ -158,11 +143,20 @@ pub mod processor {
     #[test]
     fn test_add_transform() {
         use uuid::Variant;
-        let mut tokens: Vec<Box<dyn InstructionMethods>> = Vec::new();
-
-        tokens.push(Box::new(Atb::params("Banana")));
-        tokens.push(Box::new(Ate::params("Laranja")));
-        tokens.push(Box::new(Rpt::params(3)));
+        let tokens: Vec<TokenWrapper> = vec![
+            TokenWrapper {
+                params: vec![],
+                token: Box::new(Atb::new("Banana")),
+            },
+            TokenWrapper {
+                params: vec![],
+                token: Box::new(Ate::new("Pizza")),
+            },
+            TokenWrapper {
+                params: vec![],
+                token: Box::new(Rpt::new(5 as usize)),
+            }
+        ];
 
         let mut processor = AtpProcessor::new();
 

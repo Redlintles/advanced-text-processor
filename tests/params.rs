@@ -1,9 +1,11 @@
 #[cfg(feature = "test_access")]
 #[cfg(test)]
 mod tests {
+    use atp::context::execution_context::GlobalExecutionContext;
     use atp::globals::table::{ QuerySource, QueryTarget, SyntaxDef, TargetValue, TOKEN_TABLE };
     use atp::globals::var::{ ValType };
     use atp::utils::errors::AtpErrorCode;
+    use atp::utils::params::AtpParamTypes;
 
     use std::sync::Arc;
 
@@ -35,16 +37,16 @@ mod tests {
     }
 
     fn is_text_err(code: &AtpErrorCode) -> bool {
-        matches!(code, AtpErrorCode::TextParsingError(_))
+        return matches!(code, AtpErrorCode::TextParsingError(_));
     }
 
     fn is_bc_err(code: &AtpErrorCode) -> bool {
-        matches!(
+        return matches!(
             code,
             AtpErrorCode::BytecodeParsingError(_) |
                 AtpErrorCode::BytecodeParamParsingError(_) |
                 AtpErrorCode::BytecodeParamNotRecognized(_)
-        )
+        );
     }
 
     // -----------------------------
@@ -61,6 +63,10 @@ mod tests {
         out
     }
 
+    const PARAM_STRING: u32 = 0x01;
+    const PARAM_USIZE: u32 = 0x02;
+    const PARAM_TOKEN: u32 = 0x03;
+    const PARAM_VARREF: u32 = 0x04;
     fn bc_string(s: &str) -> Vec<u8> {
         bc_param(PARAM_STRING, s.as_bytes())
     }
