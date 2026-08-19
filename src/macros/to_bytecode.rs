@@ -22,7 +22,7 @@ macro_rules! to_bytecode {
         let mut ctx = GlobalExecutionContext::new();
 
         for p in &params_vec {
-            p.write_as_instruction_param(&mut body, &mut ctx);
+            p.write_as_instruction_param(&mut body, &mut ctx)?;
         }
 
         // Instruction Total Size = bytes do body (4 + 1 + params...)
@@ -61,7 +61,7 @@ macro_rules! to_bytecode {
         let mut ctx = GlobalExecutionContext::new();
 
         for p in params_slice {
-            p.write_as_instruction_param(&mut body, &mut ctx);
+            p.write_as_instruction_param(&mut body, &mut ctx)?;
         }
 
         // Instruction Total Size = bytes do body (4 + 1 + params...)
