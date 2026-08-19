@@ -35,7 +35,7 @@ pub trait InstructionMethods: InstructionMethodsClone + Send + Sync {
     fn get_params(&self) -> &Vec<AtpParamTypes>;
     /// BytecodeMethods
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Vec<u8>;
+    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError>;
 
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32;
