@@ -7,7 +7,7 @@ use crate::{
     tokens::{ InstructionMethods, transforms::dlf::Dlf },
     utils::{ errors::{ AtpError, AtpErrorCode }, params::AtpParamTypes },
 };
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum ValType {
     Literal(AtpParamTypes),
     VarRef(String),
@@ -37,9 +37,10 @@ impl From<ValType> for AtpParamTypes {
         }
     }
 }
+
 #[derive(Clone)]
 pub struct TokenWrapper {
-    params: Vec<ValType>,
+    pub params: Vec<ValType>,
     pub token: Box<dyn InstructionMethods>,
 }
 
@@ -140,7 +141,7 @@ impl TokenWrapper {
         let mut t = self.token.clone();
         t.from_params(&parsed_params)?;
 
-        Ok(t.to_bytecode())
+        Ok(t.to_bytecode()?)
     }
 
     pub fn to_bytecode_unresolved(&self) -> Result<Vec<u8>, AtpError> {
