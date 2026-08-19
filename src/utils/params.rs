@@ -14,6 +14,7 @@ use regex::Regex;
 use crate::context::execution_context::GlobalExecutionContext;
 
 use crate::{
+    context::execution_context::VarValues,
     globals::{
         table::{ QuerySource, QueryTarget, SyntaxDef, SyntaxToken, TOKEN_TABLE, TargetValue },
         var::{ TokenWrapper, ValType },
@@ -66,6 +67,28 @@ impl TryFrom<AtpParamTypes> for String {
             AtpParamTypes::Usize(v) => v.to_string(),
             AtpParamTypes::Token(v) => v.to_text_line_unresolved()?,
             AtpParamTypes::VarRef(v) => v,
+        })
+    }
+}
+
+impl TryFrom<AtpParamTypes> for VarValues {
+    type Error = AtpError;
+    fn try_from(value: AtpParamTypes) -> Result<Self, AtpError> {
+        Ok(match value {
+            AtpParamTypes::String(s) => VarValues::String(s),
+            AtpParamTypes::Usize(n) => VarValues::Usize(n),
+            AtpParamTypes::Token(t) => VarValues::Token(t),
+            AtpParamTypes::VarRef(_) => {
+                return Err(
+                    AtpError::new(
+                        AtpErrorCode::TryIntoFailError(
+                            "VarRef must be resolved through context before becoming a VarValues".into()
+                        ),
+                        "TryFrom<AtpParamTypes> for VarValues",
+                        ""
+                    )
+                );
+            }
         })
     }
 }
@@ -412,7 +435,7 @@ impl AtpParamTypes {
             matches!(expected[2].token, SyntaxToken::Token)
     }
 
-    fn effective_syntax_tokens(expected: &Arc<[SyntaxDef]>) -> Vec<SyntaxToken> {
+    pub fn effective_syntax_tokens(expected: &Arc<[SyntaxDef]>) -> Vec<SyntaxToken> {
         let mut out = Vec::with_capacity(expected.len());
         for ip in expected.iter() {
             if matches!(ip.token, SyntaxToken::Literal(_)) {
@@ -873,7 +896,7 @@ impl AtpParamTypes {
     ) -> Result<Vec<u8>, AtpError> {
         let mut buf = vec![0u8; len];
         reader
-            .read_exact(&mut buf)
+            .read_exact(&mut buf[..])
             .map_err(|e| {
                 AtpError::new(
                     AtpErrorCode::BytecodeParsingError("Failed reading bytecode".into()),
