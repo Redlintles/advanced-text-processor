@@ -3,10 +3,12 @@ use std::ops::Deref;
 use crate::{
     context::execution_context::{ GlobalContextMethods, GlobalExecutionContext, VarValues },
     globals::table::{ QuerySource, QueryTarget, SyntaxDef, SyntaxToken, TOKEN_TABLE, TargetValue },
-    to_bytecode,
     tokens::{ InstructionMethods, transforms::dlf::Dlf },
     utils::{ errors::{ AtpError, AtpErrorCode }, params::AtpParamTypes },
 };
+
+#[cfg(feature = "bytecode")]
+use crate::to_bytecode;
 #[derive(Clone, Debug)]
 pub enum ValType {
     Literal(AtpParamTypes),
@@ -132,7 +134,7 @@ impl TokenWrapper {
 
         Ok(t.to_atp_line().into())
     }
-
+    #[cfg(feature = "bytecode")]
     pub fn to_bytecode_resolved(
         &self,
         context: &mut GlobalExecutionContext
@@ -143,7 +145,7 @@ impl TokenWrapper {
 
         Ok(t.to_bytecode()?)
     }
-
+    #[cfg(feature = "bytecode")]
     pub fn to_bytecode_unresolved(&self) -> Result<Vec<u8>, AtpError> {
         let mut unresolved_params: Vec<AtpParamTypes> = Vec::new();
         for val in self.params.iter() {

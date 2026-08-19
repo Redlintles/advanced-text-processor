@@ -33,6 +33,7 @@ impl InstructionMethods for Blk {
     fn get_params(&self) -> &Vec<AtpParamTypes> {
         return &self.params;
     }
+    #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
         0x34
     }
@@ -65,7 +66,7 @@ impl InstructionMethods for Blk {
 
         Ok(())
     }
-
+    #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
         let result = to_bytecode!(self.get_opcode(), [
             AtpParamTypes::String(self.block_name.to_string()),

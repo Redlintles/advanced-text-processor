@@ -1,0 +1,318 @@
+   Compiling atp v0.1.0 (/home/jota/Documentos/atp_project)
+   Compiling atp v0.1.0 (/home/jota/Documentos/atp_project)
+error[E0407]: method `get_opcode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/blk/mod.rs:36:5
+   |
+36 | /     fn get_opcode(&self) -> u32 {
+37 | |         0x34
+38 | |error[E0407]: method `get_opcode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/blk/mod.rs:36:5
+   |
+36 | /     fn get_opcode(&self) -> u32 {
+37 | |         0x34
+38 | |     }
+   | |_____^ not a member of trait `InstructionMethods`
+
+     }
+   | |_____^ not a member of trait `InstructionMethods`
+
+error[E0407]: method `to_bytecode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/blk/mod.rs:69:5
+   |
+69 | /error[E0407]: method `to_bytecode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/blk/mod.rs:69:5
+   |
+69 | /     fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+70 | |         let result = to_bytecode!(self.get_opcode(), [
+71 |      fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+70 | |         let result = to_bytecode!(self.get_opcode(), [
+71 | |             AtpParamTypes::String(self.block_name.to_string()),
+72 | |             AtpParamTypes::Token(self.inner.clone()),
+...|             AtpParamTypes::String(self.block_name.to_string()),
+72 | |             AtpParamTypes::Token(self.inner.clone()),
+...  |
+75 | |         Ok(result)
+  |
+75 | |         Ok(result)
+76 | |     }
+   | |_____^ not a member of trait `InstructionMethods`76 | |     }
+   | |_____^ not a member of trait `InstructionMethods`
+
+
+
+error[E0407]: method `get_opcode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/cblk/mod.rs:30:5
+   |
+30 | /     fn get_opcode(&self) -> u32 {
+error[E0407]: method `get_opcode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/cblk/mod.rs:30:5
+   |
+30 | /     fn get_opcode(&self) -> u32 {
+31 | |         0x35
+32 | |     }
+   | |_____^31 | |         0x35
+32 | |     }
+   | |_____^ not a member of trait `InstructionMethods`
+
+ not a member of trait `InstructionMethods`
+
+error[E0407]: method `to_bytecode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/cblk/mod.rs:68:5
+   |
+68 | /     fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+69 | |         let result = to_bytecode!(self.get_opcode(), [
+70 |error[E0407]: method `to_bytecode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/cblk/mod.rs:68:5
+   |
+68 | /     fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+69 | |         let result = to_bytecode!(self.get_opcode(), [
+70 | |             AtpParamTypes::String(self.block_name.to_string()),
+71 | |         ]);
+72 | |
+73 | |         Ok(result)
+74 | |     }
+   | |_____^ |             AtpParamTypes::String(self.block_name.to_string()),
+71 | |         ]);
+72 | |
+73 | |         Ok(result)
+74 | |     }
+   | |_____^ not a member of trait `InstructionMethods`
+
+error[E0407]: method `get_opcode` is not a member of trait `InstructionMethods`
+   not a member of trait `InstructionMethods`
+
+error[E0407]: method `get_opcode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/val/mod.rs:41:5
+   |
+41 | /     fn get_opcode(&self) -> u32 {
+42--> src/tokens/instructions/val/mod.rs:41:5
+   |
+41 | /     fn get_opcode(&self) -> u32 {
+42 | |         0x36
+43 | |     }
+    | |         0x36
+43 | |     }
+   | |_____^ not a member of trait `InstructionMethods`
+
+| |_____^ not a member of trait `InstructionMethods`
+
+error[E0407]: method `to_bytecode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/val/mod.rs:82:5
+   |
+82 | /     fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+83 error[E0407]: method `to_bytecode` is not a member of trait `InstructionMethods`
+  --> src/tokens/instructions/val/mod.rs:82:5
+   |
+82 | /     fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+83 | |         let result = to_bytecode!(self.get_opcode(), [
+84 | |             AtpParamTypes::String(self.val_name.clone()),
+85 | |             self.val_value.clone(),
+86 | |         ]);
+87 || |         let result = to_bytecode!(self.get_opcode(), [
+84 | |             AtpParamTypes::String(self.val_name.clone()),
+85 | |             self.val_value.clone(),
+86 | |         ]);
+87 | |         Ok(result)
+88 | |     }
+   | |_____^ not a member of trait `InstructionMethods`
+
+ |         Ok(result)
+88 | |     }
+   | |_____^ not a member of trait `InstructionMethods`
+
+error[E0599]: no method named `to_bytecode` found for struct `Box<dyn InstructionMethods>` in the current scope
+   --> src/globals/var.rs:144:14
+    |
+144 |         Ok(t.to_bytecode()?)
+    error[E0599]: no method named `to_bytecode` found for struct `Box<dyn InstructionMethods>` in the current scope
+   --> src/globals/var.rs:144:14
+    |
+144 |         Ok(t.to_bytecode()?)
+    |              ^^^^^^^^^^^ method not found in `Box<dyn InstructionMethods>`
+
+|              ^^^^^^^^^^^ method not found in `Box<dyn InstructionMethods>`
+
+error[E0599]: no method named `get_opcode` found for reference `&TokenWrapper` in the current scope
+   --> src/globals/var.rs:157:40
+    |
+157 |         let result = to_bytecode!(self.get_opcode(), unresolved_params);
+    |                                        ^^^^^^^^^^ method not found in `&TokenWrapper`
+
+error[E0599]: no method named `get_opcode` found for reference `&TokenWrapper` in the current scope
+   --> src/globals/var.rs:157:40
+    |
+157 |         let result = to_bytecode!(self.get_opcode(), unresolved_params);
+    |                                        ^^^^^^^^^^ method not found in `&TokenWrapper`
+
+error[E0599]: no method named `write_as_instruction_param` found for reference `&AtpParamTypes` in the current scope
+   --> src/macros/to_bytecode.rs:64:15
+    |
+ 64 |             p.write_as_instruction_param(&mut body, &mut ctx)?;
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `&AtpParamTypes`
+    |
+   ::: src/globals/var.rs:157:22
+    |
+157 |         let result = to_bytecode!(self.get_opcode(), unresolved_params);
+    error[E0599]: no method named `write_as_instruction_param` found for reference `&AtpParamTypes` in the current scope
+   --> src/macros/to_bytecode.rs:64:15
+    |
+ 64 |             p.write_as_instruction_param(&mut body, &mut ctx)?;
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `&AtpParamTypes`
+    |
+   ::: src/globals/var.rs:157:22
+    |
+157 |         let result = to_bytecode!(self.get_opcode(), unresolved_params);
+    |                      -------------------------------------------------- in this macro invocation
+    |
+    = note: this error originates in the macro `to_bytecode` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+|                      -------------------------------------------------- in this macro invocation
+    |
+    = note: this error originates in the macro `to_bytecode` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0599]: no method named `get_opcode` found for reference `&Blk` in the current scope
+  --> src/tokens/instructions/blk/mod.rs:70:40
+   |
+70 |         let result = to_bytecode!(self.get_opcode(), [
+   |                                        ^^^^^^^^^^ method not found in `&Blk`
+
+error[E0599]: no method named `get_opcode` found for reference `&Blk` in the current scope
+  --> src/tokens/instructions/blk/mod.rs:70:40
+   |
+70 |         let result = to_bytecode!(self.get_opcode(), [
+   |                                        ^^^^^^^^^^ method not found in `&Blk`
+
+error[E0599]: no method named `write_as_instruction_param` found for reference `&AtpParamTypes` in the current scope
+  --> src/macros/to_bytecode.rs:25:15
+   |
+25 |               p.write_as_instruction_param(&mut body, &mut ctx)?;
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `&AtpParamTypes`
+   |
+  ::: src/tokens/instructions/blk/mod.rs:70:22
+   |
+70 |           let result = to_bytecode!(self.get_opcode(), [
+   error[E0599]: no method named `write_as_instruction_param` found for reference `&AtpParamTypes` in the current scope
+  --> src/macros/to_bytecode.rs:25:15
+   |
+25 |               p.write_as_instruction_param(&mut body, &mut ctx)?;
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `&AtpParamTypes`
+   |
+  ::: src/tokens/instructions/blk/mod.rs:70:22
+   |
+70 |           let result = to_bytecode!(self.get_opcode(), [
+   |  ______________________-
+71 | |             AtpParamTypes::String(self.block_name.to_string()),
+72 | |             AtpParamTypes::Token(self.inner.clone()),
+73 | |         ]);
+   | |__________- in this macro invocation
+   |
+   = note: this error originates in the macro `to_bytecode` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+|  ______________________-
+71 | |             AtpParamTypes::String(self.block_name.to_string()),
+72 | |             AtpParamTypes::Token(self.inner.clone()),
+73 | |         ]);
+   | |__________- in this macro invocation
+   |
+   = note: this error originates in the macro `to_bytecode` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0599]: no method named `get_opcode` found for reference `&Cblk` in the current scope
+  --> src/tokens/instructions/cblk/mod.rs:69:40
+   |
+69 |         let result = to_bytecode!(self.get_opcode(), [
+   |                                        ^^^^^^^^^^ method not found in `&Cblk`
+
+error[E0599]: no method named `get_opcode` found for reference `&Cblk` in the current scope
+  --> src/tokens/instructions/cblk/mod.rs:69:40
+   |
+69 |         let result = to_bytecode!(self.get_opcode(), [
+   |                                        ^^^^^^^^^^ method not found in `&Cblk`
+
+error[E0599]: no method named `write_as_instruction_param` found for reference `&AtpParamTypes` in the current scope
+  --> src/macros/to_bytecode.rs:25:15
+   |
+25 |               p.write_as_instruction_param(&mut body, &mut ctx)?;
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `&AtpParamTypes`
+   |
+  ::: src/tokens/instructions/cblk/mod.rs:69:22
+   |
+69 |error[E0599]: no method named `write_as_instruction_param` found for reference `&AtpParamTypes` in the current scope
+  --> src/macros/to_bytecode.rs:25:15
+   |
+25 |               p.write_as_instruction_param(&mut body, &mut ctx)?;
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `&AtpParamTypes`
+   |
+  ::: src/tokens/instructions/cblk/mod.rs:69:22
+   |
+69 |           let result = to_bytecode!(self.get_opcode(), [
+   |  ______________________-
+70 | |             AtpParamTypes::String(self.block_name.to_string()),
+71 | |         ]);
+   | |__________- in this macro invocation
+   |
+   = note: this error originates in the macro `to_bytecode` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+           let result = to_bytecode!(self.get_opcode(), [
+   |  ______________________-
+70 | |             AtpParamTypes::String(self.block_name.to_string()),
+71 | |         ]);
+   | |__________- in this macro invocation
+   |
+   = note: this error originates in the macro `to_bytecode` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0599]: no method named `get_opcode` found for reference `&Val` in the current scope
+  --> src/tokens/instructions/val/mod.rs:83:40
+   |
+83 |         let result = to_bytecode!(self.get_opcode(), [
+   |                                        ^^^^^^^^^^ method not found in `&Val`
+
+error[E0599]: no method named `get_opcode` found for reference `&Val` in the current scope
+  --> src/tokens/instructions/val/mod.rs:83:40
+   |
+83 |         let result = to_bytecode!(self.get_opcode(), [
+   |                                        ^^^^^^^^^^ method not found in `&Val`
+
+error[E0599]: no method named `write_as_instruction_param` found for reference `&AtpParamTypes` in the current scope
+  --> src/macros/to_bytecode.rs:25:15
+   |
+25 |               p.write_as_instruction_param(&mut body, &mut ctx)?;
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `&AtpParamTypes`
+   |
+  ::: src/tokens/instructions/val/mod.rs:83:22
+   |
+83 |error[E0599]: no method named `write_as_instruction_param` found for reference `&AtpParamTypes` in the current scope
+  --> src/macros/to_bytecode.rs:25:15
+   |
+25 |               p.write_as_instruction_param(&mut body, &mut ctx)?;
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^ method not found in `&AtpParamTypes`
+   |
+  ::: src/tokens/instructions/val/mod.rs:83:22
+   |
+83 |           let result = to_bytecode!(self.get_opcode(), [
+   |  ______________________-
+84 | |             AtpParamTypes::String(self.val_name.clone()),
+85 | |             self.val_value.clone(),
+86 | |         ]);
+   | |__________- in this macro invocation
+   |
+   = note: this error originates in the macro `to_bytecode` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+           let result = to_bytecode!(self.get_opcode(), [
+   |  ______________________-
+84 | |             AtpParamTypes::String(self.val_name.clone()),
+85 | |             self.val_value.clone(),
+86 | |         ]);
+   | |__________- in this macro invocation
+   |
+   = note: this error originates in the macro `to_bytecode` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+Some errors have detailed explanations: E0407, E0599.
+For more information about an error, try `rustc --explain E0407`.
+Some errors have detailed explanations: E0407, E0599.
+For more information about an error, try `rustc --explain E0407`.
+error: could not compile `atp` (lib) due to 15 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `atp` (lib) due to 15 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `atp` (lib test) due to 15 previous errors
+error: could not compile `atp` (lib test) due to 15 previous errors

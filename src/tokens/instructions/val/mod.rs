@@ -38,6 +38,7 @@ impl InstructionMethods for Val {
     fn get_params(&self) -> &Vec<AtpParamTypes> {
         return &self.params;
     }
+    #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
         0x36
     }
@@ -78,7 +79,7 @@ impl InstructionMethods for Val {
 
         Ok(())
     }
-
+    #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
         let result = to_bytecode!(self.get_opcode(), [
             AtpParamTypes::String(self.val_name.clone()),
