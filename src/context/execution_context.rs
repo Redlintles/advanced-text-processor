@@ -1,9 +1,5 @@
 use std::collections::HashMap;
-use crate::{
-    globals::var::{ TokenWrapper, ValType },
-    tokens::InstructionMethods,
-    utils::errors::{ AtpError, AtpErrorCode },
-};
+use crate::{ globals::var::{ TokenWrapper }, utils::errors::{ AtpError, AtpErrorCode } };
 #[derive(Clone)]
 pub enum VarValues {
     String(String),
@@ -24,6 +20,7 @@ pub struct VarEntry {
 }
 // This Object will be re-created every time the program starts.
 // Some tokens could access this object for additional data
+#[derive(Default)]
 pub struct GlobalExecutionContext {
     variables: HashMap<String, VarEntry>,
     blocks: HashMap<String, Vec<TokenWrapper>>,
