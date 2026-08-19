@@ -80,7 +80,7 @@ mod tests {
         #[test]
         fn to_bytecode_has_opcode_and_two_params() {
             let t = Tlcc::new(1, 4).unwrap();
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             assert!(bc.len() >= 13);
 

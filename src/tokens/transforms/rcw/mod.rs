@@ -117,13 +117,13 @@ impl InstructionMethods for Rcw {
         0x10
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Vec<u8> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
             AtpParamTypes::String(self.pattern.to_string()),
             AtpParamTypes::String(self.text_to_replace.clone()),
             AtpParamTypes::Usize(self.count),
         ]);
-        result
+        Ok(result)
     }
 }

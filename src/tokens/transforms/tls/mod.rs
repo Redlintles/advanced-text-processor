@@ -54,9 +54,9 @@ impl InstructionMethods for Tls {
         0x06
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Vec<u8> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), []);
-        result
+        Ok(result)
     }
 }

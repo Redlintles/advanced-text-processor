@@ -93,7 +93,7 @@ mod common {
         let mut ctx = GlobalExecutionContext::new();
 
         let original = Atb::new("hello");
-        let bytes = original.to_bytecode();
+        let bytes = original.to_bytecode().unwrap();
 
         // sanity: param_count deve ser 1
         assert_eq!(bytes[12], 1);

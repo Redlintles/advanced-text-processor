@@ -62,7 +62,7 @@ mod tests {
         #[test]
         fn to_bytecode_has_opcode_and_one_param() {
             let t = Tucs::new(5);
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             assert!(bc.len() >= 13);
 

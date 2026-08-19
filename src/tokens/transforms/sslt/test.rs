@@ -90,7 +90,7 @@ mod tests {
         #[test]
         fn to_bytecode_has_opcode_and_two_params() {
             let t = Sslt::new("_", 1).unwrap();
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             // Formato: [u64 total_size_be][u32 opcode_be][u8 param_count]...
             assert!(bc.len() >= 13);

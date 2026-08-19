@@ -100,7 +100,7 @@ mod tests {
         #[test]
         fn to_bytecode_has_expected_header_and_no_params() {
             let t = Jsnc::default();
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             // header mínimo: 8 (size) + 4 (opcode) + 1 (param count)
             assert!(bc.len() >= 13);

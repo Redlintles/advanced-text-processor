@@ -84,7 +84,7 @@ mod tests {
         #[test]
         fn to_bytecode_contains_opcode_and_zero_params() {
             let t = Tua::default();
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             assert!(!bc.is_empty());
             assert!(bc.len() >= 13);

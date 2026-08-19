@@ -93,7 +93,7 @@ mod tests {
         #[test]
         fn rmws_to_bytecode_non_empty_and_no_params() {
             let t = Rmws::default();
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             // header mínimo: 8 + 4 + 1 = 13 bytes
             assert!(bc.len() >= 13);

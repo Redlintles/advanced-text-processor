@@ -196,7 +196,7 @@ mod tests {
         #[test]
         fn to_bytecode_has_expected_header_and_three_params() {
             let t = Rnw::new("a+", "b", 2).unwrap();
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             assert!(bc.len() >= 13);
 

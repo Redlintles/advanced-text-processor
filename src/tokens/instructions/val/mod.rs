@@ -1,26 +1,31 @@
 use crate::{
-    context::execution_context::{ GlobalContextMethods, GlobalExecutionContext },
+    context::execution_context::{
+        GlobalContextMethods,
+        GlobalExecutionContext,
+        VarEntry,
+        VarValues,
+    },
     globals::var::TokenWrapper,
     parse_args,
     to_bytecode,
-    tokens::{ InstructionMethods },
-    utils::{ params::AtpParamTypes, validations::check_vec_len },
+    tokens::InstructionMethods,
+    utils::{ errors::AtpError, params::AtpParamTypes, validations::check_vec_len },
 };
 
 #[cfg(feature = "test_access")]
 pub mod test;
 #[derive(Clone)]
-pub struct Blk {
+pub struct Val {
     val_name: String,
     val_value: AtpParamTypes,
     params: Vec<AtpParamTypes>,
 }
 
-impl Default for Blk {
+impl Default for Val {
     fn default() -> Self {
-        Blk {
-            block_name: "x".to_string(),
-            inner: TokenWrapper::default(),
+        Val {
+            val_name: "x".to_string(),
+            val_value: AtpParamTypes::String("".to_string()),
             params: vec![
                 AtpParamTypes::String("x".to_string()),
                 AtpParamTypes::Token(TokenWrapper::default())
@@ -29,19 +34,19 @@ impl Default for Blk {
     }
 }
 
-impl InstructionMethods for Blk {
+impl InstructionMethods for Val {
     fn get_params(&self) -> &Vec<AtpParamTypes> {
         return &self.params;
     }
     fn get_opcode(&self) -> u32 {
-        0x34
+        0x35 // era 0x34, colidindo com o opcode do Blk — confirme no seu registro (globals/table.rs) que 0x35 está livre
     }
     fn get_string_repr(&self) -> &'static str {
-        "blk".into()
+        "val".into()
     }
 
     fn to_atp_line(&self) -> std::borrow::Cow<'static, str> {
-        format!("blk {} assoc {}", self.block_name, self.inner.to_atp_line()).into()
+        format!("val {} = {}", self.val_name, self.val_value.to_string()).into()
     }
 
     fn transform(
@@ -49,29 +54,36 @@ impl InstructionMethods for Blk {
         input: &str,
         context: &mut GlobalExecutionContext
     ) -> Result<String, crate::utils::errors::AtpError> {
-        context.add_to_block(&self.block_name, self.inner.clone())?;
-        return Ok(input.to_string());
+        let value = match &self.val_value {
+            AtpParamTypes::VarRef(name) => context.get_var(name)?.value.clone(),
+            other => VarValues::try_from(other.clone())?,
+        };
+
+        context.add_var(&self.val_name, VarEntry {
+            value,
+            mutable: false,
+        })?;
+
+        Ok(input.to_string())
     }
 
     fn from_params(
         &mut self,
         params: &Vec<crate::utils::params::AtpParamTypes>
     ) -> Result<(), crate::utils::errors::AtpError> {
-        check_vec_len(&params, 2, "block assoc", "param parsing error, invalid vec len")?;
+        check_vec_len(&params, 2, "val", "param parsing error, invalid vec len")?;
 
-        self.block_name = parse_args!(params, 0, String, "Block name should be of string type");
-
-        self.inner = parse_args!(params, 1, Token, "Block inner should be of token type");
+        self.val_name = parse_args!(params, 0, String, "Val name should be of string type");
+        self.val_value = params[1].clone();
 
         Ok(())
     }
 
-    fn to_bytecode(&self) -> Vec<u8> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
         let result = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.block_name.to_string()),
-            AtpParamTypes::Token(self.inner.clone()),
+            AtpParamTypes::String(self.val_name.clone()),
+            self.val_value.clone(),
         ]);
-
-        result
+        Ok(result)
     }
 }

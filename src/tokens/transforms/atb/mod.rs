@@ -77,11 +77,11 @@ impl InstructionMethods for Atb {
     }
 
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Vec<u8> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
             AtpParamTypes::String(self.text.clone()),
         ]);
-        result
+        Ok(result)
     }
 }

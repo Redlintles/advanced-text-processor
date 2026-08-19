@@ -2,8 +2,8 @@ use crate::{
     context::execution_context::{ GlobalContextMethods, GlobalExecutionContext },
     parse_args,
     to_bytecode,
-    tokens::{ InstructionMethods },
-    utils::{ params::AtpParamTypes, validations::check_vec_len },
+    tokens::InstructionMethods,
+    utils::{ errors::AtpError, params::AtpParamTypes, validations::check_vec_len },
 };
 
 #[cfg(feature = "test_access")]
@@ -65,11 +65,11 @@ impl InstructionMethods for Cblk {
         Ok(())
     }
 
-    fn to_bytecode(&self) -> Vec<u8> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
         let result = to_bytecode!(self.get_opcode(), [
             AtpParamTypes::String(self.block_name.to_string()),
         ]);
 
-        result
+        Ok(result)
     }
 }

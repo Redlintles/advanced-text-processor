@@ -132,7 +132,7 @@ mod tests {
         #[test]
         fn to_bytecode_contains_opcode_and_one_param() {
             let t = Rtr::new(3);
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             assert!(!bc.is_empty());
             assert!(bc.len() >= 13);

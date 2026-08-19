@@ -85,7 +85,7 @@ mod tests {
         #[test]
         fn to_bytecode_contains_opcode_and_zero_params() {
             let t = Splc::default();
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             // Formato esperado: [u64 total_size_be][u32 opcode_be][u8 param_count]...
             assert!(bc.len() >= 13);

@@ -124,12 +124,12 @@ impl InstructionMethods for Ctc {
         0x1b
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Vec<u8> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+        let result = to_bytecode!(self.get_opcode(), [
             AtpParamTypes::Usize(self.start_index),
             AtpParamTypes::Usize(self.end_index),
         ]);
-        result
+        Ok(result)
     }
 }

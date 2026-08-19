@@ -63,9 +63,9 @@ impl InstructionMethods for Jpsc {
         0x2e
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Vec<u8> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), []);
-        result
+        Ok(result)
     }
 }

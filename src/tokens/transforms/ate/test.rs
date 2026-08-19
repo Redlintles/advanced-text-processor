@@ -110,7 +110,7 @@ mod tests {
             // [total_size u64][opcode u32][param_count u8][param...]
             // param = [param_total_size u64][param_type u32][payload_size u32][payload...]
             let t = Ate::new(" bar");
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             // Header mínimo: 8 + 4 + 1 = 13 bytes
             assert!(bc.len() >= 13);

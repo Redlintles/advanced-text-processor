@@ -151,7 +151,7 @@ mod tests {
         #[test]
         fn to_bytecode_has_expected_header_and_two_params() {
             let t = Rfw::new("a+", "b").unwrap();
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             assert!(bc.len() >= 13);
 

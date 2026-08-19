@@ -137,7 +137,7 @@ mod tests {
         #[test]
         fn to_bytecode_has_expected_header_and_decodes_two_params() {
             let t = Ctc::new(2, 7).unwrap();
-            let bc = t.to_bytecode();
+            let bc = t.to_bytecode().unwrap();
 
             // header mínimo: 8 + 4 + 1 = 13
             assert!(bc.len() >= 13);
