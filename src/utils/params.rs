@@ -7,11 +7,9 @@
 
 use core::str;
 use std::{ array::TryFromSliceError, borrow::Cow, io::{ Cursor, Read }, sync::Arc };
+use crate::context::execution_context::GlobalExecutionContext;
 
 use regex::Regex;
-
-#[cfg(feature = "bytecode")]
-use crate::context::execution_context::GlobalExecutionContext;
 
 use crate::{
     context::execution_context::VarValues,
@@ -896,7 +894,7 @@ impl AtpParamTypes {
     ) -> Result<Vec<u8>, AtpError> {
         let mut buf = vec![0u8; len];
         reader
-            .read_exact(&mut buf[..])
+            .read_exact(&mut buf)
             .map_err(|e| {
                 AtpError::new(
                     AtpErrorCode::BytecodeParsingError("Failed reading bytecode".into()),
@@ -904,7 +902,7 @@ impl AtpParamTypes {
                     e.to_string()
                 )
             })?;
-        Ok(buf)
+        Ok(buf.to_vec())
     }
 
     fn read_u8(reader: &mut Cursor<&[u8]>, instruction: &'static str) -> Result<u8, AtpError> {
