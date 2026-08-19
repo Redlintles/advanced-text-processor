@@ -39,7 +39,7 @@ impl InstructionMethods for Val {
         return &self.params;
     }
     fn get_opcode(&self) -> u32 {
-        0x35 // era 0x34, colidindo com o opcode do Blk — confirme no seu registro (globals/table.rs) que 0x35 está livre
+        0x36
     }
     fn get_string_repr(&self) -> &'static str {
         "val".into()

@@ -433,5 +433,15 @@ define_token_table! {
             || TokenRef::Shared(Arc::new(blk::Blk::default())),
             [SyntaxDef::req(SyntaxToken::String)],
         ),
+        (
+            "val",
+            0x36,
+            || TokenRef::Shared(Arc::new(val::Val::default())),
+            [
+                SyntaxDef::req(SyntaxToken::String),
+                SyntaxDef::req(SyntaxToken::Literal("=")),
+                SyntaxDef::req(SyntaxToken::String),
+            ],
+        ),
     ];
 }
