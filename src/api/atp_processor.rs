@@ -1,9 +1,11 @@
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::path::Path;
 
 use uuid::Uuid;
 
 use colored::*;
+use rayon::prelude::*;
 
 use crate::api::atp_builder::AtpBuilder;
 #[cfg(feature = "bytecode")]
@@ -16,6 +18,7 @@ use crate::text::reader::read_from_file;
 use crate::text::writer::write_to_file;
 
 use crate::utils::errors::{ AtpError, AtpErrorCode, ErrorManager, token_array_not_found };
+use crate::utils::validations::check_file_path;
 
 /// ATP Processor
 ///
@@ -442,6 +445,10 @@ pub trait AtpProcessorMethods {
         token: TokenWrapper,
         input: &str
     ) -> Result<String, AtpError>;
+
+    fn run_transform(&self, id: &str, input: &str) -> Result<String, AtpError>;
+
+    fn process_batch(&self, tasks: Vec<(&Path, &str, &Path)>) -> Vec<Result<(), AtpError>>;
 }
 
 impl AtpProcessor {
@@ -485,6 +492,21 @@ impl AtpProcessor {
 }
 
 impl AtpProcessorMethods for AtpProcessor {
+    fn run_transform(&self, id: &str, input: &str) -> Result<String, AtpError> {
+        let mut result = String::from(input);
+
+        let tokens = self.transforms.get(id).ok_or_else(token_array_not_found(id))?;
+        let mut context = GlobalExecutionContext::new();
+
+        // ErrorManager local, descartável — não é o self.errors compartilhado
+        let mut local_errors = ErrorManager::default();
+
+        for token in tokens.iter() {
+            result = apply_transform(token, result.as_str(), &mut local_errors, &mut context)?;
+        }
+
+        Ok(result)
+    }
     fn write_to_text_file(&mut self, id: &str, path: &Path) -> Result<(), AtpError> {
         let tokens = match self.transforms.get(id).ok_or_else(token_array_not_found(id)) {
             Ok(x) => x,
@@ -514,23 +536,8 @@ impl AtpProcessorMethods for AtpProcessor {
     }
 
     fn process_all(&mut self, id: &str, input: &str) -> Result<String, AtpError> {
-        let mut result = String::from(input);
-
-        let tokens = self.transforms.get(id).ok_or_else(token_array_not_found(id));
-        let mut context = GlobalExecutionContext::new();
-
-        match tokens {
-            Ok(tks) => {
-                for token in tks.iter() {
-                    result = apply_transform(
-                        token,
-                        result.as_str(),
-                        &mut self.errors,
-                        &mut context
-                    )?;
-                }
-                Ok(result.to_string())
-            }
+        match self.run_transform(id, input) {
+            Ok(result) => Ok(result),
             Err(e) => {
                 self.errors.add_error(e.clone());
                 Err(e)
@@ -808,5 +815,41 @@ impl AtpProcessorMethods for AtpProcessor {
         );
 
         Ok(output)
+    }
+
+    fn process_batch(&self, tasks: Vec<(&Path, &str, &Path)>) -> Vec<Result<(), AtpError>> {
+        tasks
+            .into_par_iter()
+            .map(
+                |(origin, pipeline_id, target)| -> Result<(), AtpError> {
+                    check_file_path(origin, None)?;
+                    check_file_path(target, None)?; // ajustar depois pra check_target_path se necessário
+
+                    let input = std::fs
+                        ::read_to_string(origin)
+                        .map_err(|e| {
+                            AtpError::new(
+                                AtpErrorCode::ValidationError("Failed to read origin file".into()),
+                                Cow::Borrowed("process_batch"),
+                                format!("{:?} - {}", origin, e)
+                            )
+                        })?;
+
+                    let output = self.run_transform(pipeline_id, &input)?;
+
+                    std::fs
+                        ::write(target, output)
+                        .map_err(|e| {
+                            AtpError::new(
+                                AtpErrorCode::ValidationError("Failed to write target file".into()),
+                                Cow::Borrowed("process_batch"),
+                                format!("{:?} - {}", target, e)
+                            )
+                        })?;
+
+                    Ok(())
+                }
+            )
+            .collect()
     }
 }
