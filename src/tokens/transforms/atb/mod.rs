@@ -50,7 +50,11 @@ impl InstructionMethods for Atb {
         format!("atb {};\n", self.text).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         let mut s = String::from(&self.text);
         s.push_str(input);
         Ok(s)

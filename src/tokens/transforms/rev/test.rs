@@ -24,7 +24,7 @@ mod tests {
         let t = Rev::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foobar", &mut ctx).unwrap(), "raboof");
+        assert_eq!(t.transform("foobar", Some(&mut ctx)).unwrap(), "raboof");
     }
 
     #[test]
@@ -32,7 +32,7 @@ mod tests {
         let t = Rev::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx).unwrap(), "");
+        assert_eq!(t.transform("", Some(&mut ctx)).unwrap(), "");
     }
 
     #[test]
@@ -40,7 +40,7 @@ mod tests {
         let t = Rev::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("x", &mut ctx).unwrap(), "x");
+        assert_eq!(t.transform("x", Some(&mut ctx)).unwrap(), "x");
     }
 
     #[test]
@@ -49,7 +49,7 @@ mod tests {
         let t = Rev::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("áβç", &mut ctx).unwrap(), "çβá");
+        assert_eq!(t.transform("áβç", Some(&mut ctx)).unwrap(), "çβá");
     }
 
     #[test]

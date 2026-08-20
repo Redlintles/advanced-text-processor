@@ -78,7 +78,7 @@ impl InstructionMethods for Rnw {
         format!("rnw {} {} {};\n", self.pattern, self.text_to_replace, self.index).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         let mut count = 0;
 
         let mut idx = None;

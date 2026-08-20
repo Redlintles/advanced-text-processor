@@ -33,7 +33,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         let t = Ctc::new(1, 5).unwrap();
-        assert_eq!(t.transform("bananabananosa", &mut ctx), Ok("bAnanabananosa".to_string()));
+        assert_eq!(t.transform("bananabananosa", Some(&mut ctx)), Ok("bAnanabananosa".to_string()));
     }
 
     #[test]
@@ -48,7 +48,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         let t = Ctc::new(3, 10).unwrap();
-        assert_eq!(t.transform(input, &mut ctx), Ok("xx Foo Bar yy".to_string()));
+        assert_eq!(t.transform(input, Some(&mut ctx)), Ok("xx Foo Bar yy".to_string()));
     }
 
     #[test]
@@ -57,7 +57,7 @@ mod tests {
         let t = Ctc::new(0, 999).unwrap(); // end enorme, deve clamp
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, &mut ctx), Ok("Hello".to_string()));
+        assert_eq!(t.transform(input, Some(&mut ctx)), Ok("Hello".to_string()));
     }
 
     #[test]
@@ -69,7 +69,7 @@ mod tests {
         let t = Ctc::new(0, 3).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, &mut ctx), Ok("Ábc def".to_string()));
+        assert_eq!(t.transform(input, Some(&mut ctx)), Ok("Ábc def".to_string()));
     }
 
     #[test]
@@ -78,7 +78,7 @@ mod tests {
         let t = Ctc::new(5, 6).unwrap(); // params() só valida relação, não input
         let mut ctx = GlobalExecutionContext::new();
 
-        let got: Result<String, AtpError> = t.transform(input, &mut ctx);
+        let got: Result<String, AtpError> = t.transform(input, Some(&mut ctx));
         assert!(got.is_err());
     }
 

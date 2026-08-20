@@ -37,7 +37,7 @@ impl InstructionMethods for Rev {
         "rev;\n".into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(input.chars().rev().collect())
     }
     fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {

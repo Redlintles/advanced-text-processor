@@ -25,7 +25,7 @@ mod tests {
         let t = Cfw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo bar", &mut ctx), Ok("Foo bar".to_string()));
+        assert_eq!(t.transform("foo bar", Some(&mut ctx)), Ok("Foo bar".to_string()));
     }
 
     #[test]
@@ -33,7 +33,7 @@ mod tests {
         let t = Cfw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -41,7 +41,7 @@ mod tests {
         let t = Cfw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("hello", &mut ctx), Ok("Hello".to_string()));
+        assert_eq!(t.transform("hello", Some(&mut ctx)), Ok("Hello".to_string()));
     }
 
     // Se sua função capitalize() lida com espaços/pontuação de um jeito específico,
@@ -51,7 +51,7 @@ mod tests {
         let t = Cfw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo bar baz", &mut ctx), Ok("Foo bar baz".to_string()));
+        assert_eq!(t.transform("foo bar baz", Some(&mut ctx)), Ok("Foo bar baz".to_string()));
     }
 
     #[test]

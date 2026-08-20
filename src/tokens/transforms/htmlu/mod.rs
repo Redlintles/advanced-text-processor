@@ -43,7 +43,7 @@ impl InstructionMethods for Htmlu {
     fn to_atp_line(&self) -> Cow<'static, str> {
         "htmlu;\n".into()
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(decode_html_entities(input).to_string())
     }
 

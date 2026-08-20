@@ -45,7 +45,7 @@ impl InstructionMethods for Rpt {
         format!("rpt {};\n", self.times).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(input.repeat(self.times))
     }
 

@@ -44,7 +44,7 @@ impl InstructionMethods for Jsonu {
         "jsonu;\n".into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(
             serde_json
                 ::from_str::<String>(input)

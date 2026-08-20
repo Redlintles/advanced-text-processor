@@ -24,7 +24,7 @@ mod tests {
         let t = Tla::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("BANANA", &mut ctx).unwrap(), "banana");
+        assert_eq!(t.transform("BANANA", Some(&mut ctx)).unwrap(), "banana");
     }
 
     #[test]
@@ -32,7 +32,7 @@ mod tests {
         let t = Tla::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("BA-NA_NA 123!", &mut ctx).unwrap(), "ba-na_na 123!");
+        assert_eq!(t.transform("BA-NA_NA 123!", Some(&mut ctx)).unwrap(), "ba-na_na 123!");
     }
 
     #[test]
@@ -40,7 +40,7 @@ mod tests {
         let t = Tla::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx).unwrap(), "");
+        assert_eq!(t.transform("", Some(&mut ctx)).unwrap(), "");
     }
 
     #[test]
@@ -49,7 +49,7 @@ mod tests {
         let t = Tla::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ÁÉÍÓÚ Ç", &mut ctx).unwrap(), "áéíóú ç");
+        assert_eq!(t.transform("ÁÉÍÓÚ Ç", Some(&mut ctx)).unwrap(), "áéíóú ç");
     }
 
     #[test]

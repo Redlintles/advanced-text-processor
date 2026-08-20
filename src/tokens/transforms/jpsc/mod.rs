@@ -42,7 +42,7 @@ impl InstructionMethods for Jpsc {
         "jpsc;\n".into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         let v = input.split_whitespace().collect::<Vec<_>>();
 
         let processed = v

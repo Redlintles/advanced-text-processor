@@ -20,7 +20,7 @@ mod common {
     fn transform_prepends_text() {
         let mut ctx = GlobalExecutionContext::new();
         let t = Atb::new("foo");
-        assert_eq!(t.transform(" bar", &mut ctx).unwrap(), "foo bar");
+        assert_eq!(t.transform(" bar", Some(&mut ctx)).unwrap(), "foo bar");
     }
 
     #[test]
@@ -28,7 +28,7 @@ mod common {
         let mut ctx = GlobalExecutionContext::new();
 
         let t = Atb::new("foo");
-        assert_eq!(t.transform("", &mut ctx).unwrap(), "foo");
+        assert_eq!(t.transform("", Some(&mut ctx)).unwrap(), "foo");
     }
 
     #[test]
@@ -36,7 +36,7 @@ mod common {
         let mut ctx = GlobalExecutionContext::new();
 
         let t = Atb::new("");
-        assert_eq!(t.transform("bar", &mut ctx).unwrap(), "bar");
+        assert_eq!(t.transform("bar", Some(&mut ctx)).unwrap(), "bar");
     }
 
     #[test]
@@ -61,7 +61,7 @@ mod common {
         t.from_params(&params).unwrap();
         assert_eq!(t.text, "foo");
 
-        assert_eq!(t.transform(" bar", &mut ctx).unwrap(), "foo bar");
+        assert_eq!(t.transform(" bar", Some(&mut ctx)).unwrap(), "foo bar");
     }
 
     #[test]
@@ -114,7 +114,7 @@ mod common {
         rebuilt.from_params(&vec![parsed_param]).unwrap();
 
         assert_eq!(rebuilt.text, "hello");
-        assert_eq!(rebuilt.transform(" world", &mut ctx).unwrap(), "hello world");
+        assert_eq!(rebuilt.transform(" world", Some(&mut ctx)).unwrap(), "hello world");
     }
 }
 

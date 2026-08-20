@@ -26,7 +26,7 @@ mod tests {
         let expected_output = "{banana: '10'}".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("\"{banana: '10'}\"", &mut ctx), Ok(expected_output));
+        assert_eq!(t.transform("\"{banana: '10'}\"", Some(&mut ctx)), Ok(expected_output));
     }
 
     #[test]
@@ -38,7 +38,7 @@ mod tests {
         let expected = "a \"quote\" and a \\ slash\nline2\tend\r".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, &mut ctx), Ok(expected));
+        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
     }
 
     #[test]
@@ -46,7 +46,7 @@ mod tests {
         let t = Jsonu::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("\"\"", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("\"\"", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -57,7 +57,7 @@ mod tests {
         let expected = "maçã 🍎".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, &mut ctx), Ok(expected));
+        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
     }
 
     #[test]
@@ -68,7 +68,7 @@ mod tests {
         let input = "{banana: '10'}";
         let mut ctx = GlobalExecutionContext::new();
 
-        let got = t.transform(input, &mut ctx);
+        let got = t.transform(input, Some(&mut ctx));
 
         let expected = Err(
             AtpError::new(
@@ -110,8 +110,8 @@ mod tests {
         let original = "banana \"laranja\" \\ canja\n\tfim\rmaçã 🍎";
         let mut ctx = GlobalExecutionContext::new();
 
-        let encoded = enc.transform(original, &mut ctx).unwrap();
-        let decoded = dec.transform(&encoded, &mut ctx).unwrap();
+        let encoded = enc.transform(original, Some(&mut ctx)).unwrap();
+        let decoded = dec.transform(&encoded, Some(&mut ctx)).unwrap();
 
         assert_eq!(decoded, original.to_string());
     }

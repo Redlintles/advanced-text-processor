@@ -24,7 +24,7 @@ mod tests {
         let t = Tlcs::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("BANANA", &mut ctx), Ok("BaNANA".to_string()));
+        assert_eq!(t.transform("BANANA", Some(&mut ctx)), Ok("BaNANA".to_string()));
     }
 
     #[test]
@@ -33,7 +33,7 @@ mod tests {
         let t = Tlcs::new(3);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banÀna", &mut ctx), Ok("banàna".to_string()));
+        assert_eq!(t.transform("banÀna", Some(&mut ctx)), Ok("banàna".to_string()));
     }
 
     #[test]

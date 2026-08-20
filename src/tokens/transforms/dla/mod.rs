@@ -45,7 +45,7 @@ impl InstructionMethods for Dla {
         format!("dla {};\n", self.index).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         check_index_against_input(self.index, input)?;
 
         let mut s = String::from(input);

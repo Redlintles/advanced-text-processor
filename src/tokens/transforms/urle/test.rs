@@ -25,7 +25,10 @@ mod tests {
         let t = Urle::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana laranja", &mut ctx), Ok("banana%20laranja".to_string()));
+        assert_eq!(
+            t.transform("banana laranja", Some(&mut ctx)),
+            Ok("banana%20laranja".to_string())
+        );
     }
 
     #[test]
@@ -37,7 +40,7 @@ mod tests {
         let expected = "a%3Fb%3Dc%26d%2Fe%3Af".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, &mut ctx), Ok(expected));
+        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
     }
 
     #[test]
@@ -50,7 +53,7 @@ mod tests {
         let expected = "a%2Bb%20c".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, &mut ctx), Ok(expected));
+        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
     }
 
     #[test]
@@ -58,7 +61,7 @@ mod tests {
         let t = Urle::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -70,7 +73,7 @@ mod tests {
         let expected = "ma%C3%A7%C3%A3%20%F0%9F%8D%8E".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, &mut ctx), Ok(expected));
+        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
     }
 
     #[test]

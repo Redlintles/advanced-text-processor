@@ -25,7 +25,7 @@ mod tests {
         let t = Padl::new("xy", 3);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx), Ok("banana".to_string())); // len 6 >= 3
+        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("banana".to_string())); // len 6 >= 3
     }
 
     #[test]
@@ -35,7 +35,7 @@ mod tests {
         let t = Padl::new("xy", 7);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx), Ok("xbanana".to_string()));
+        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("xbanana".to_string()));
     }
 
     #[test]
@@ -45,7 +45,7 @@ mod tests {
         let t = Padl::new("xy", 10);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx), Ok("xyxybanana".to_string()));
+        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("xyxybanana".to_string()));
     }
 
     #[test]

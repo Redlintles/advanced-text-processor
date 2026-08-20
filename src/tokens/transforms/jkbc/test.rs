@@ -26,7 +26,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja cheia de canja", &mut ctx),
+            t.transform("banana laranja cheia de canja", Some(&mut ctx)),
             Ok("banana-laranja-cheia-de-canja".to_string())
         );
     }
@@ -36,7 +36,7 @@ mod tests {
         let t = Jkbc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("BaNaNa", &mut ctx), Ok("banana".to_string()));
+        assert_eq!(t.transform("BaNaNa", Some(&mut ctx)), Ok("banana".to_string()));
     }
 
     #[test]
@@ -45,7 +45,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("  Banana   LARANJA \n Cheia\tDe   Canja  ", &mut ctx),
+            t.transform("  Banana   LARANJA \n Cheia\tDe   Canja  ", Some(&mut ctx)),
             Ok("banana-laranja-cheia-de-canja".to_string())
         );
     }
@@ -55,7 +55,7 @@ mod tests {
         let t = Jkbc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -64,7 +64,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         // unicode + lowercasing (Rust faz lowercase unicode-aware)
-        assert_eq!(t.transform("MAÇÃ COM CANELA", &mut ctx), Ok("maçã-com-canela".to_string()));
+        assert_eq!(t.transform("MAÇÃ COM CANELA", Some(&mut ctx)), Ok("maçã-com-canela".to_string()));
     }
 
     #[test]

@@ -54,7 +54,7 @@ impl InstructionMethods for Tlcc {
     fn to_atp_line(&self) -> Cow<'static, str> {
         format!("tlcc {} {};\n", self.start_index, self.end_index).into()
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         check_chunk_bound_indexes(self.start_index, self.end_index, Some(input))?;
 
         let total_chars = input.chars().count();

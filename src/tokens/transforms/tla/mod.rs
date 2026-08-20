@@ -40,7 +40,7 @@ impl InstructionMethods for Tla {
     fn to_atp_line(&self) -> Cow<'static, str> {
         "tla;\n".into()
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(input.to_lowercase())
     }
     fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {

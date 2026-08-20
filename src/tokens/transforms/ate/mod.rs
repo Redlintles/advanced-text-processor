@@ -46,7 +46,7 @@ impl InstructionMethods for Ate {
         format!("ate {};\n", self.text).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         let mut s = String::from(input);
         s.push_str(&self.text);
         Ok(s)

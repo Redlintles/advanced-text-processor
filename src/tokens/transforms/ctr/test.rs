@@ -32,7 +32,7 @@ mod tests {
         let t = Ctr::new(1, 5).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo bar mar", &mut ctx), Ok("foo Bar Mar".to_string()));
+        assert_eq!(t.transform("foo bar mar", Some(&mut ctx)), Ok("foo Bar Mar".to_string()));
     }
 
     #[test]
@@ -42,7 +42,7 @@ mod tests {
         let t = Ctr::new(1, 2).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aa bb cc dd", &mut ctx), Ok("aa Bb Cc dd".to_string()));
+        assert_eq!(t.transform("aa bb cc dd", Some(&mut ctx)), Ok("aa Bb Cc dd".to_string()));
     }
 
     #[test]
@@ -52,7 +52,7 @@ mod tests {
         let t = Ctr::new(1, 999).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo bar baz", &mut ctx), Ok("foo Bar Baz".to_string()));
+        assert_eq!(t.transform("foo bar baz", Some(&mut ctx)), Ok("foo Bar Baz".to_string()));
     }
 
     #[test]
@@ -60,7 +60,7 @@ mod tests {
         let t = Ctr::new(0, 1).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -68,7 +68,7 @@ mod tests {
         let t = Ctr::new(5, 6).unwrap(); // relação ok, mas input tem poucas palavras
         let mut ctx = GlobalExecutionContext::new();
 
-        let got: Result<String, AtpError> = t.transform("one two", &mut ctx);
+        let got: Result<String, AtpError> = t.transform("one two", Some(&mut ctx));
         assert!(got.is_err());
     }
 

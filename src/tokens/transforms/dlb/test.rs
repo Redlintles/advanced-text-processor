@@ -33,7 +33,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja vermelha azul", &mut ctx),
+            t.transform("banana laranja vermelha azul", Some(&mut ctx)),
             Ok("ana laranja vermelha azul".to_string())
         );
     }
@@ -44,7 +44,7 @@ mod tests {
         let t = Dlb::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("abcdef", &mut ctx), Ok("abcdef".to_string()));
+        assert_eq!(t.transform("abcdef", Some(&mut ctx)), Ok("abcdef".to_string()));
     }
 
     #[test]
@@ -54,7 +54,7 @@ mod tests {
         let t = Dlb::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ábcdef", &mut ctx), Ok("bcdef".to_string()));
+        assert_eq!(t.transform("ábcdef", Some(&mut ctx)), Ok("bcdef".to_string()));
     }
 
     #[test]
@@ -63,7 +63,7 @@ mod tests {
         let t = Dlb::new(999);
         let mut ctx = GlobalExecutionContext::new();
 
-        let got = t.transform("abc", &mut ctx);
+        let got = t.transform("abc", Some(&mut ctx));
         assert!(got.is_err());
     }
 

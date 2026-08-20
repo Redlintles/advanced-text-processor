@@ -25,7 +25,7 @@ mod tests {
         let t = Dlf::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx), Ok("anana".to_string()));
+        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("anana".to_string()));
     }
 
     #[test]
@@ -33,7 +33,7 @@ mod tests {
         let t = Dlf::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -41,7 +41,7 @@ mod tests {
         let t = Dlf::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("a", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -49,7 +49,7 @@ mod tests {
         let t = Dlf::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ábc", &mut ctx), Ok("bc".to_string()));
+        assert_eq!(t.transform("ábc", Some(&mut ctx)), Ok("bc".to_string()));
     }
 
     #[test]
@@ -57,7 +57,7 @@ mod tests {
         let t = Dlf::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("💥boom", &mut ctx), Ok("boom".to_string()));
+        assert_eq!(t.transform("💥boom", Some(&mut ctx)), Ok("boom".to_string()));
     }
 
     #[test]

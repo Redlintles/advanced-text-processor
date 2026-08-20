@@ -49,7 +49,7 @@ impl InstructionMethods for Cts {
     fn get_string_repr(&self) -> &'static str {
         "cts"
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         check_index_against_input(self.index, input)?;
         let v = input.split_whitespace().collect::<Vec<_>>();
 

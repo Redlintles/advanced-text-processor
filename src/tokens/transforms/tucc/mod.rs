@@ -53,7 +53,7 @@ impl InstructionMethods for Tucc {
     fn to_atp_line(&self) -> Cow<'static, str> {
         format!("tucc {} {};\n", self.start_index, self.end_index).into()
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         check_chunk_bound_indexes(self.start_index, self.end_index, Some(input))?;
 
         // Since the user will probably not know the length of the string in the middle of the processing

@@ -50,7 +50,7 @@ impl InstructionMethods for Dlc {
         format!("dlc {} {};\n", self.start_index, self.end_index).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         let len = input.chars().count();
 
         // opcional: se string vazia, deletar "tudo" vira vazio

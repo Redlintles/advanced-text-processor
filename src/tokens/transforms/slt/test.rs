@@ -25,7 +25,7 @@ mod tests {
         let t = Slt::new(1, 3).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx).unwrap(), "ana");
+        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "ana");
     }
 
     #[test]
@@ -35,7 +35,7 @@ mod tests {
         let t = Slt::new(1, 4).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banàna", &mut ctx).unwrap(), "anàn");
+        assert_eq!(t.transform("banàna", Some(&mut ctx)).unwrap(), "anàn");
     }
 
     #[test]
@@ -43,7 +43,7 @@ mod tests {
         let t = Slt::new(1, 9999).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx).unwrap(), "anana");
+        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "anana");
     }
 
     #[test]
@@ -52,7 +52,7 @@ mod tests {
         let t = Slt::new(5, 1).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert!(matches!(t.transform("banana", &mut ctx), Err(_)));
+        assert!(matches!(t.transform("banana", Some(&mut ctx)), Err(_)));
     }
 
     #[test]

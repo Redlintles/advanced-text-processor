@@ -32,7 +32,10 @@ mod tests {
         let t = Dla::new(3);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana laranja vermelha azul", &mut ctx), Ok("bana".to_string()));
+        assert_eq!(
+            t.transform("banana laranja vermelha azul", Some(&mut ctx)),
+            Ok("bana".to_string())
+        );
     }
 
     #[test]
@@ -40,7 +43,7 @@ mod tests {
         let t = Dla::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("abcdef", &mut ctx), Ok("a".to_string()));
+        assert_eq!(t.transform("abcdef", Some(&mut ctx)), Ok("a".to_string()));
     }
 
     #[test]
@@ -50,7 +53,7 @@ mod tests {
         let t = Dla::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ábcdef", &mut ctx), Ok("áb".to_string()));
+        assert_eq!(t.transform("ábcdef", Some(&mut ctx)), Ok("áb".to_string()));
     }
 
     #[test]
@@ -59,7 +62,7 @@ mod tests {
         let t = Dla::new(999);
         let mut ctx = GlobalExecutionContext::new();
 
-        let got = t.transform("abc", &mut ctx);
+        let got = t.transform("abc", Some(&mut ctx));
         assert!(got.is_err());
     }
 
@@ -71,7 +74,7 @@ mod tests {
         let t = Dla::new(2); // último char
         let mut ctx = GlobalExecutionContext::new();
 
-        let got = t.transform(input, &mut ctx);
+        let got = t.transform(input, Some(&mut ctx));
 
         let expected = Err(
             AtpError::new(

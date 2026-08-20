@@ -43,7 +43,7 @@ mod tests {
         let t = Rnw::new("a", "b", 2).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", &mut ctx), Ok("aabaa".to_string()));
+        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("aabaa".to_string()));
     }
 
     #[test]
@@ -51,7 +51,7 @@ mod tests {
         let t = Rnw::new("a", "b", 0).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", &mut ctx), Ok("baaaa".to_string()));
+        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("baaaa".to_string()));
     }
 
     #[test]
@@ -59,7 +59,7 @@ mod tests {
         let t = Rnw::new("a", "b", 999).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", &mut ctx), Ok("aaaaa".to_string()));
+        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("aaaaa".to_string()));
     }
 
     #[test]
@@ -67,7 +67,7 @@ mod tests {
         let t = Rnw::new("z", "b", 0).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", &mut ctx), Ok("aaaaa".to_string()));
+        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("aaaaa".to_string()));
     }
 
     #[test]
@@ -77,7 +77,7 @@ mod tests {
         let t = Rnw::new("aa", "X", 1).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaaa", &mut ctx), Ok("aaXaa".to_string()));
+        assert_eq!(t.transform("aaaaaa", Some(&mut ctx)), Ok("aaXaa".to_string()));
     }
 
     #[test]
@@ -86,7 +86,7 @@ mod tests {
         let t = Rnw::new("ã", "A", 1).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("maçã maçã", &mut ctx), Ok("maçã maçA".to_string()));
+        assert_eq!(t.transform("maçã maçã", Some(&mut ctx)), Ok("maçã maçA".to_string()));
     }
 
     #[test]
@@ -100,7 +100,7 @@ mod tests {
         let t = Rnw::new("", "X", 0).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        let out = t.transform("ab", &mut ctx).unwrap();
+        let out = t.transform("ab", Some(&mut ctx)).unwrap();
         assert!(out.starts_with('X'));
     }
 

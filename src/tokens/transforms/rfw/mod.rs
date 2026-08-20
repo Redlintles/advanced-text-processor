@@ -69,7 +69,7 @@ impl InstructionMethods for Rfw {
         format!("rfw {} {};\n", self.pattern, self.text_to_replace).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(self.pattern.replace(input, &self.text_to_replace).to_string())
     }
 

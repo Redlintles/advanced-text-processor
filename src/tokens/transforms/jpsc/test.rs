@@ -26,7 +26,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja cheia de canja", &mut ctx),
+            t.transform("banana laranja cheia de canja", Some(&mut ctx)),
             Ok("BananaLaranjaCheiaDeCanja".to_string())
         );
     }
@@ -36,7 +36,7 @@ mod tests {
         let t = Jpsc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx), Ok("Banana".to_string()));
+        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("Banana".to_string()));
     }
 
     #[test]
@@ -46,7 +46,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("  banana   laranja \n cheia\tde   canja  ", &mut ctx),
+            t.transform("  banana   laranja \n cheia\tde   canja  ", Some(&mut ctx)),
             Ok("BananaLaranjaCheiaDeCanja".to_string())
         );
     }
@@ -56,7 +56,7 @@ mod tests {
         let t = Jpsc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -65,7 +65,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         // depende do capitalize() do seu projeto; esperado típico:
-        assert_eq!(t.transform("maçã com canela", &mut ctx), Ok("MaçãComCanela".to_string()));
+        assert_eq!(t.transform("maçã com canela", Some(&mut ctx)), Ok("MaçãComCanela".to_string()));
     }
 
     #[test]

@@ -24,7 +24,7 @@ mod tests {
         let t = Trs::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("   banana   ", &mut ctx).unwrap(), "   banana");
+        assert_eq!(t.transform("   banana   ", Some(&mut ctx)).unwrap(), "   banana");
     }
 
     #[test]
@@ -32,7 +32,7 @@ mod tests {
         let t = Trs::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("   banana", &mut ctx).unwrap(), "   banana");
+        assert_eq!(t.transform("   banana", Some(&mut ctx)).unwrap(), "   banana");
     }
 
     #[test]
@@ -40,7 +40,7 @@ mod tests {
         let t = Trs::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx).unwrap(), "banana");
+        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "banana");
     }
 
     #[test]
@@ -48,7 +48,7 @@ mod tests {
         let t = Trs::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("      ", &mut ctx).unwrap(), "");
+        assert_eq!(t.transform("      ", Some(&mut ctx)).unwrap(), "");
     }
 
     #[test]
@@ -56,7 +56,7 @@ mod tests {
         let t = Trs::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana \t\n\r", &mut ctx).unwrap(), "banana");
+        assert_eq!(t.transform("banana \t\n\r", Some(&mut ctx)).unwrap(), "banana");
     }
 
     #[test]
@@ -64,7 +64,7 @@ mod tests {
         let t = Trs::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx).unwrap(), "");
+        assert_eq!(t.transform("", Some(&mut ctx)).unwrap(), "");
     }
 
     #[test]

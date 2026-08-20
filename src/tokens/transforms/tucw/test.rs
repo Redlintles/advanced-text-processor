@@ -25,7 +25,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja cheia de canja", &mut ctx),
+            t.transform("banana laranja cheia de canja", Some(&mut ctx)),
             Ok("banana LARANJA cheia de canja".to_string())
         );
     }

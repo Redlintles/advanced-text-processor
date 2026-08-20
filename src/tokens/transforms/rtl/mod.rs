@@ -40,7 +40,7 @@ impl InstructionMethods for Rtl {
     fn get_params(&self) -> &Vec<AtpParamTypes> {
         &self.params
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         if input.is_empty() {
             return Err(
                 AtpError::new(

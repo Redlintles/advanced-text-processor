@@ -26,7 +26,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("<div>banana</div>", &mut ctx),
+            t.transform("<div>banana</div>", Some(&mut ctx)),
             Ok("&lt;div&gt;banana&lt;&#x2F;div&gt;".to_string())
         );
     }
@@ -37,7 +37,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform(r#"<a href="x&y">"#, &mut ctx),
+            t.transform(r#"<a href="x&y">"#, Some(&mut ctx)),
             Ok("&lt;a href=&quot;x&amp;y&quot;&gt;".to_string())
         );
     }
@@ -47,7 +47,7 @@ mod tests {
         let t = Htmle::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx), Ok("banana".to_string()));
+        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("banana".to_string()));
     }
 
     #[test]
@@ -55,7 +55,7 @@ mod tests {
         let t = Htmle::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("maçã & pão", &mut ctx), Ok("maçã &amp; pão".to_string()));
+        assert_eq!(t.transform("maçã & pão", Some(&mut ctx)), Ok("maçã &amp; pão".to_string()));
     }
 
     #[test]

@@ -24,7 +24,7 @@ mod tests {
         let t = Splc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx).unwrap(), "b a n a n a");
+        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "b a n a n a");
     }
 
     #[test]
@@ -32,7 +32,7 @@ mod tests {
         let t = Splc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a b", &mut ctx).unwrap(), "a   b");
+        assert_eq!(t.transform("a b", Some(&mut ctx)).unwrap(), "a   b");
         // explicação: chars = ['a',' ','b'] => "a" + " " + " " + " " + "b" => "a␠␠␠b"
     }
 
@@ -41,7 +41,7 @@ mod tests {
         let t = Splc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("áβ🍌", &mut ctx).unwrap(), "á β 🍌");
+        assert_eq!(t.transform("áβ🍌", Some(&mut ctx)).unwrap(), "á β 🍌");
     }
 
     #[test]
@@ -49,7 +49,7 @@ mod tests {
         let t = Splc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx).unwrap(), "");
+        assert_eq!(t.transform("", Some(&mut ctx)).unwrap(), "");
     }
 
     #[test]

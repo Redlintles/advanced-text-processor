@@ -23,7 +23,7 @@ mod tests {
         let t = Rpt::new(3);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx).unwrap(), "bananabananabanana");
+        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "bananabananabanana");
     }
 
     #[test]
@@ -31,7 +31,7 @@ mod tests {
         let t = Rpt::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx).unwrap(), "");
+        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "");
     }
 
     #[test]
@@ -39,7 +39,7 @@ mod tests {
         let t = Rpt::new(5);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx).unwrap(), "");
+        assert_eq!(t.transform("", Some(&mut ctx)).unwrap(), "");
     }
 
     #[test]

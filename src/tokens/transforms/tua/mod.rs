@@ -27,7 +27,7 @@ impl InstructionMethods for Tua {
     fn to_atp_line(&self) -> Cow<'static, str> {
         "tua;\n".into()
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(input.to_uppercase())
     }
     #[cfg(feature = "bytecode")]

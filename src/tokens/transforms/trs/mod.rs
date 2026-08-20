@@ -38,7 +38,7 @@ impl InstructionMethods for Trs {
         "trs;\n".into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(String::from(input.trim_end()))
     }
 

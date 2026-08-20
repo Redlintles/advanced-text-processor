@@ -38,7 +38,7 @@ mod tests {
         let t = Rlw::new("a", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", &mut ctx), Ok("aaaab".to_string()));
+        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("aaaab".to_string()));
     }
 
     #[test]
@@ -46,7 +46,7 @@ mod tests {
         let t = Rlw::new("z", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", &mut ctx), Ok("aaaaa".to_string()));
+        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("aaaaa".to_string()));
     }
 
     #[test]
@@ -55,7 +55,7 @@ mod tests {
         let t = Rlw::new("a+", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", &mut ctx), Ok("b".to_string()));
+        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("b".to_string()));
     }
 
     #[test]
@@ -63,7 +63,7 @@ mod tests {
         let t = Rlw::new(r"\d+", "X").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a1 b22 c333", &mut ctx), Ok("a1 b22 cX".to_string()));
+        assert_eq!(t.transform("a1 b22 c333", Some(&mut ctx)), Ok("a1 b22 cX".to_string()));
     }
 
     #[test]
@@ -72,7 +72,7 @@ mod tests {
         let t = Rlw::new("ã", "A").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("maçã maçã", &mut ctx), Ok("maçã maçA".to_string()));
+        assert_eq!(t.transform("maçã maçã", Some(&mut ctx)), Ok("maçã maçA".to_string()));
     }
 
     // ============================

@@ -48,7 +48,7 @@ impl InstructionMethods for Jkbc {
         "jkbc;\n".into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(input.split_whitespace().collect::<Vec<_>>().join("-").to_lowercase())
     }
 

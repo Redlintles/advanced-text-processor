@@ -51,7 +51,7 @@ impl InstructionMethods for Tlcw {
     fn transform(
         &self,
         input: &str,
-        _: &mut GlobalExecutionContext
+        _: Option<&mut GlobalExecutionContext>
     ) -> Result<String, crate::utils::errors::AtpError> {
         check_index_against_words(self.index, input)?;
         Ok(

@@ -50,7 +50,7 @@ impl InstructionMethods for Ins {
         format!("ins {} {};\n", self.index, self.text_to_insert).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         if self.index > input.chars().count() {
             return Err(
                 AtpError::new(

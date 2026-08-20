@@ -45,7 +45,7 @@ impl InstructionMethods for Dlb {
         format!("dlb {};\n", self.index).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         let mut s = String::from(input);
 
         check_index_against_input(self.index, input)?;

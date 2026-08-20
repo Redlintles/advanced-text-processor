@@ -24,7 +24,7 @@ mod tests {
         let t = Rtl::new(3);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx).unwrap(), "anaban");
+        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "anaban");
     }
 
     #[test]
@@ -32,7 +32,7 @@ mod tests {
         let t = Rtl::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx).unwrap(), "banana");
+        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "banana");
     }
 
     #[test]
@@ -40,7 +40,7 @@ mod tests {
         let t = Rtl::new(6); // len("banana") == 6
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx).unwrap(), "banana");
+        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "banana");
     }
 
     #[test]
@@ -48,7 +48,7 @@ mod tests {
         let t = Rtl::new(7); // 7 % 6 = 1
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx).unwrap(), "ananab");
+        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "ananab");
     }
 
     #[test]
@@ -56,7 +56,7 @@ mod tests {
         let t = Rtl::new(999);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("x", &mut ctx).unwrap(), "x");
+        assert_eq!(t.transform("x", Some(&mut ctx)).unwrap(), "x");
     }
 
     #[test]
@@ -65,7 +65,7 @@ mod tests {
         let t = Rtl::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("áβç", &mut ctx).unwrap(), "βçá");
+        assert_eq!(t.transform("áβç", Some(&mut ctx)).unwrap(), "βçá");
     }
 
     #[test]
@@ -73,7 +73,7 @@ mod tests {
         let t = Rtl::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        let got = t.transform("", &mut ctx);
+        let got = t.transform("", Some(&mut ctx));
 
         let expected = Err(
             AtpError::new(

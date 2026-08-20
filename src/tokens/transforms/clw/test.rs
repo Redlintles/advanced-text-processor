@@ -25,7 +25,7 @@ mod tests {
         let t = Clw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo bar", &mut ctx), Ok("foo Bar".to_string()));
+        assert_eq!(t.transform("foo bar", Some(&mut ctx)), Ok("foo Bar".to_string()));
     }
 
     #[test]
@@ -33,7 +33,7 @@ mod tests {
         let t = Clw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -41,7 +41,7 @@ mod tests {
         let t = Clw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("hello", &mut ctx), Ok("Hello".to_string()));
+        assert_eq!(t.transform("hello", Some(&mut ctx)), Ok("Hello".to_string()));
     }
 
     #[test]
@@ -49,7 +49,7 @@ mod tests {
         let t = Clw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo bar baz", &mut ctx), Ok("foo bar Baz".to_string()));
+        assert_eq!(t.transform("foo bar baz", Some(&mut ctx)), Ok("foo bar Baz".to_string()));
     }
 
     #[test]
@@ -60,7 +60,7 @@ mod tests {
         let t = Clw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo ", &mut ctx), Ok("foo ".to_string()));
+        assert_eq!(t.transform("foo ", Some(&mut ctx)), Ok("foo ".to_string()));
     }
 
     #[test]

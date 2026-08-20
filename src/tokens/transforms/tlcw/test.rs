@@ -26,7 +26,7 @@ mod tests {
         let expected = "BANANA laranja CHEIA DE CANJA".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, &mut ctx), Ok(expected));
+        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
     }
 
     #[test]
@@ -34,7 +34,7 @@ mod tests {
         let t = Tlcw::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("BANANA LARANJA", &mut ctx), Ok("banana LARANJA".to_string()));
+        assert_eq!(t.transform("BANANA LARANJA", Some(&mut ctx)), Ok("banana LARANJA".to_string()));
     }
 
     #[test]

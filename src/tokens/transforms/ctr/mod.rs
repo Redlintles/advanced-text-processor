@@ -57,7 +57,7 @@ impl InstructionMethods for Ctr {
     fn get_string_repr(&self) -> &'static str {
         "ctr"
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         if input.trim().is_empty() {
             return Ok("".to_string());
         }

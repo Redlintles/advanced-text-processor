@@ -44,7 +44,7 @@ impl InstructionMethods for Htmle {
     fn to_atp_line(&self) -> Cow<'static, str> {
         "htmle;\n".into()
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(encode_safe(input).to_string())
     }
     fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {

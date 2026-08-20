@@ -26,7 +26,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("&lt;div&gt;banana&lt;/div&gt;", &mut ctx),
+            t.transform("&lt;div&gt;banana&lt;/div&gt;", Some(&mut ctx)),
             Ok("<div>banana</div>".to_string())
         );
     }
@@ -37,7 +37,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("&lt;a href=&quot;x&amp;y&quot;&gt;", &mut ctx),
+            t.transform("&lt;a href=&quot;x&amp;y&quot;&gt;", Some(&mut ctx)),
             Ok(r#"<a href="x&y">"#.to_string())
         );
     }
@@ -47,7 +47,7 @@ mod tests {
         let t = Htmlu::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx), Ok("banana".to_string()));
+        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("banana".to_string()));
     }
 
     #[test]
@@ -55,7 +55,7 @@ mod tests {
         let t = Htmlu::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("maçã &amp; pão", &mut ctx), Ok("maçã & pão".to_string()));
+        assert_eq!(t.transform("maçã &amp; pão", Some(&mut ctx)), Ok("maçã & pão".to_string()));
     }
 
     #[test]
@@ -64,7 +64,7 @@ mod tests {
         let t = Htmlu::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a&lt;b&amp;c&gt;d", &mut ctx), Ok("a<b&c>d".to_string()));
+        assert_eq!(t.transform("a&lt;b&amp;c&gt;d", Some(&mut ctx)), Ok("a<b&c>d".to_string()));
     }
 
     #[test]

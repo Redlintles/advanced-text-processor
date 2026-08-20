@@ -31,7 +31,7 @@ mod tests {
         let t = Cts::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo bar", &mut ctx), Ok("foo Bar".to_string()));
+        assert_eq!(t.transform("foo bar", Some(&mut ctx)), Ok("foo Bar".to_string()));
     }
 
     #[test]
@@ -39,7 +39,7 @@ mod tests {
         let t = Cts::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo bar", &mut ctx), Ok("Foo bar".to_string()));
+        assert_eq!(t.transform("foo bar", Some(&mut ctx)), Ok("Foo bar".to_string()));
     }
 
     #[test]
@@ -47,7 +47,7 @@ mod tests {
         let t = Cts::new(2);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a b c", &mut ctx), Ok("a b C".to_string()));
+        assert_eq!(t.transform("a b c", Some(&mut ctx)), Ok("a b C".to_string()));
     }
 
     #[test]
@@ -56,7 +56,7 @@ mod tests {
         let t = Cts::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo   bar", &mut ctx), Ok("foo Bar".to_string()));
+        assert_eq!(t.transform("foo   bar", Some(&mut ctx)), Ok("foo Bar".to_string()));
     }
 
     #[test]
@@ -64,7 +64,7 @@ mod tests {
         let t = Cts::new(7);
         let mut ctx = GlobalExecutionContext::new();
 
-        let got = t.transform("one two", &mut ctx);
+        let got = t.transform("one two", Some(&mut ctx));
         assert!(got.is_err());
     }
 

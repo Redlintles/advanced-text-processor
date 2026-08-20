@@ -26,7 +26,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja cheia de canja", &mut ctx),
+            t.transform("banana laranja cheia de canja", Some(&mut ctx)),
             Ok("banana_laranja_cheia_de_canja".to_string())
         );
     }
@@ -36,7 +36,7 @@ mod tests {
         let t = Jsnc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("Banana", &mut ctx), Ok("banana".to_string()));
+        assert_eq!(t.transform("Banana", Some(&mut ctx)), Ok("banana".to_string()));
     }
 
     #[test]
@@ -45,7 +45,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("  banana   laranja \n cheia\tde   canja  ", &mut ctx),
+            t.transform("  banana   laranja \n cheia\tde   canja  ", Some(&mut ctx)),
             Ok("banana_laranja_cheia_de_canja".to_string())
         );
     }
@@ -55,7 +55,7 @@ mod tests {
         let t = Jsnc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -63,7 +63,7 @@ mod tests {
         let t = Jsnc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("Maçã Com Canela", &mut ctx), Ok("maçã_com_canela".to_string()));
+        assert_eq!(t.transform("Maçã Com Canela", Some(&mut ctx)), Ok("maçã_com_canela".to_string()));
     }
 
     #[test]

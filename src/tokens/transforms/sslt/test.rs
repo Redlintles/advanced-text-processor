@@ -25,7 +25,7 @@ mod tests {
         let t = Sslt::new("_", 1).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foobar_foo_bar_bar_foo_barfoo", &mut ctx), Ok("foo".to_string()));
+        assert_eq!(t.transform("foobar_foo_bar_bar_foo_barfoo", Some(&mut ctx)), Ok("foo".to_string()));
     }
 
     #[test]
@@ -34,7 +34,7 @@ mod tests {
         let t = Sslt::new("_", 1).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a__b", &mut ctx), Ok("".to_string()));
+        assert_eq!(t.transform("a__b", Some(&mut ctx)), Ok("".to_string()));
     }
 
     #[test]
@@ -42,7 +42,7 @@ mod tests {
         let t = Sslt::new("_", 99).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        let got = t.transform("a_b", &mut ctx);
+        let got = t.transform("a_b", Some(&mut ctx));
 
         let expected = Err(
             AtpError::new(

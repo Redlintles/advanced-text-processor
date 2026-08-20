@@ -26,7 +26,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja cheia de canja", &mut ctx).unwrap(),
+            t.transform("banana laranja cheia de canja", Some(&mut ctx)).unwrap(),
             "bananalaranjacheiadecanja"
         );
     }
@@ -36,7 +36,7 @@ mod tests {
         let t = Rmws::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("  a\tb\nc\r\nd  ", &mut ctx).unwrap(), "abcd");
+        assert_eq!(t.transform("  a\tb\nc\r\nd  ", Some(&mut ctx)).unwrap(), "abcd");
     }
 
     #[test]
@@ -44,7 +44,7 @@ mod tests {
         let t = Rmws::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx).unwrap(), "");
+        assert_eq!(t.transform("", Some(&mut ctx)).unwrap(), "");
     }
 
     #[test]
@@ -52,7 +52,7 @@ mod tests {
         let t = Rmws::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(" \t\n\r  ", &mut ctx).unwrap(), "");
+        assert_eq!(t.transform(" \t\n\r  ", Some(&mut ctx)).unwrap(), "");
     }
 
     #[test]
@@ -64,7 +64,7 @@ mod tests {
         let input = format!("a\u{2003}b\u{2003}c");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(&input, &mut ctx).unwrap(), "abc");
+        assert_eq!(t.transform(&input, Some(&mut ctx)).unwrap(), "abc");
     }
 
     #[test]

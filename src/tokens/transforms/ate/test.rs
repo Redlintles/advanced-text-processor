@@ -31,7 +31,7 @@ mod tests {
         let t = Ate::new(" bar");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo", &mut ctx), Ok("foo bar".to_string()));
+        assert_eq!(t.transform("foo", Some(&mut ctx)), Ok("foo bar".to_string()));
     }
 
     #[test]
@@ -39,7 +39,7 @@ mod tests {
         let t = Ate::new("");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo", &mut ctx), Ok("foo".to_string()));
+        assert_eq!(t.transform("foo", Some(&mut ctx)), Ok("foo".to_string()));
     }
 
     #[test]
@@ -47,7 +47,7 @@ mod tests {
         let t = Ate::new("bar");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", &mut ctx), Ok("bar".to_string()));
+        assert_eq!(t.transform("", Some(&mut ctx)), Ok("bar".to_string()));
     }
 
     #[test]

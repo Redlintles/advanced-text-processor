@@ -38,7 +38,7 @@ mod tests {
         let t = Rfw::new("a", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", &mut ctx), Ok("baaaa".to_string()));
+        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("baaaa".to_string()));
     }
 
     #[test]
@@ -47,7 +47,7 @@ mod tests {
         let t = Rfw::new("a+", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", &mut ctx), Ok("b".to_string()));
+        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("b".to_string()));
     }
 
     #[test]
@@ -55,7 +55,7 @@ mod tests {
         let t = Rfw::new("z", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", &mut ctx), Ok("aaaaa".to_string()));
+        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("aaaaa".to_string()));
     }
 
     #[test]
@@ -63,7 +63,7 @@ mod tests {
         let t = Rfw::new(r"\d+", "X").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a1 b22 c333", &mut ctx), Ok("aX b22 c333".to_string()));
+        assert_eq!(t.transform("a1 b22 c333", Some(&mut ctx)), Ok("aX b22 c333".to_string()));
     }
     // ============================
     // Bytecode-only tests

@@ -38,7 +38,7 @@ impl InstructionMethods for Dll {
         "dll;\n".into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         let mut s = String::from(input);
 
         if let Some((x, _)) = s.char_indices().next_back() {

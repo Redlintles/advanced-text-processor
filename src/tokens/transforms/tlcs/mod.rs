@@ -49,7 +49,7 @@ impl InstructionMethods for Tlcs {
     fn to_atp_line(&self) -> Cow<'static, str> {
         format!("tlcs {};\n", self.index).into()
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         check_index_against_input(self.index, input)?;
 
         let result: String = input

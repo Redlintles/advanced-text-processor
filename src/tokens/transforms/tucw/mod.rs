@@ -46,7 +46,7 @@ impl InstructionMethods for Tucw {
         format!("tucw {};\n", self.index).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         check_index_against_words(self.index, input)?;
         Ok(
             input

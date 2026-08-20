@@ -37,7 +37,7 @@ impl InstructionMethods for Clw {
     fn get_string_repr(&self) -> &'static str {
         "clw"
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         let mut v: Vec<String> = input
             .split(' ')
             .rev()

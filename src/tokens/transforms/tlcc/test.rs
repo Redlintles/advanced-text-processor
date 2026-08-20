@@ -25,7 +25,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         // BANANA => BananA (1..4 inclusive)
-        assert_eq!(t.transform("BANANA", &mut ctx), Ok("BananA".to_string()));
+        assert_eq!(t.transform("BANANA", Some(&mut ctx)), Ok("BananA".to_string()));
     }
 
     #[test]
@@ -35,7 +35,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         // indexes: 0 Á, 1 B, 2 Ç, 3 D, 4 Ê
-        assert_eq!(t.transform("ÁBÇDÊ", &mut ctx), Ok("ÁbçdÊ".to_string()));
+        assert_eq!(t.transform("ÁBÇDÊ", Some(&mut ctx)), Ok("ÁbçdÊ".to_string()));
     }
 
     #[test]

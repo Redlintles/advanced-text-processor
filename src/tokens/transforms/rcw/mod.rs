@@ -76,7 +76,7 @@ impl InstructionMethods for Rcw {
         format!("rcw {} {} {};\n", self.pattern, self.text_to_replace, self.count).into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         if self.count == 0 {
             return Ok(input.to_string());
         }

@@ -60,7 +60,7 @@ impl InstructionMethods for Sslt {
     fn get_string_repr(&self) -> &'static str {
         "sslt"
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         let item = self.pattern
             .split(input)
             .nth(self.index)

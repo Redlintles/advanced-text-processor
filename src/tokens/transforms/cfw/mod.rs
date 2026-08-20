@@ -34,7 +34,7 @@ impl InstructionMethods for Cfw {
     fn get_string_repr(&self) -> &'static str {
         "cfw"
     }
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         Ok(capitalize(input))
     }
 

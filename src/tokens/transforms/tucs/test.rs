@@ -24,7 +24,7 @@ mod tests {
         let t = Tucs::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", &mut ctx), Ok("bAnana".to_string()));
+        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("bAnana".to_string()));
     }
 
     #[test]

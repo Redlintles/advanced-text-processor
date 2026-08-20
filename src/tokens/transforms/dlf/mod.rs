@@ -37,7 +37,7 @@ impl InstructionMethods for Dlf {
         "dlf;\n".into()
     }
 
-    fn transform(&self, input: &str, _: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
         // Se a string é vazia, não há o que deletar.
         if input.is_empty() {
             return Ok(String::new());
