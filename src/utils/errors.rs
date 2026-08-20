@@ -37,7 +37,8 @@ impl Display for AtpError {
             self.instruction.as_ref().cyan(),
             input_label,
             self.input.as_ref().dimmed()
-        )
+        );
+        Ok(())
     }
 }
 
@@ -156,6 +157,7 @@ pub enum AtpErrorCode {
     ZeroDivisionError(Cow<'static, str>),
     TryIntoFailError(Cow<'static, str>),
     IncompatibleTypeError(Cow<'static, str>),
+    RequiredContextError(Cow<'static, str>),
 }
 
 impl Display for AtpErrorCode {
@@ -169,7 +171,8 @@ impl Display for AtpErrorCode {
         let code_val = self.get_error_code().to_string().color(severity).bold();
         let msg_val = self.message().as_ref().color(severity);
 
-        write!(f, "{} {}\n{} {}", code_label, code_val, msg_label, msg_val)
+        write!(f, "{} {}\n{} {}", code_label, code_val, msg_label, msg_val);
+        Ok(())
     }
 }
 
@@ -199,6 +202,7 @@ impl AtpErrorCode {
             Self::ZeroDivisionError(_) => 21u16,
             Self::TryIntoFailError(_) => 22u16,
             Self::IncompatibleTypeError(_) => 23u16,
+            Self::RequiredContextError(_) => 24u16,
         }
     }
 
@@ -232,7 +236,8 @@ impl AtpErrorCode {
             | Self::NonMutableVariableError(x)
             | Self::TryIntoFailError(x)
             | Self::IncompatibleTypeError(x)
-            | Self::BytecodeParamNotRecognized(x) => x,
+            | Self::BytecodeParamNotRecognized(x)
+            | Self::RequiredContextError(x) => x,
         }
     }
 
@@ -260,6 +265,7 @@ impl AtpErrorCode {
             | Self::VariableNotFound(_)
             | Self::NonMutableVariableError(_)
             | Self::BytecodeNotFound(_)
+            | Self::RequiredContextError(_)
             | Self::BytecodeParamNotRecognized(_) => Color::Yellow,
 
             // Index-ish
