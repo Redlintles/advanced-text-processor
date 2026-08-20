@@ -51,8 +51,8 @@ use crate::utils::validations::check_file_path;
 /// ## 1) Build a pipeline through the processor, then run it
 ///
 /// ```rust
-/// use atp::builder::atp_processor::{AtpProcessor, AtpProcessorMethods};
-/// use atp::builder::AtpBuilderMethods;
+/// use atp::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
+/// use atp::api::AtpBuilderMethods;
 ///
 /// let mut processor = AtpProcessor::new();
 ///
@@ -71,8 +71,8 @@ use crate::utils::validations::check_file_path;
 /// ## 2) Step-by-step debug execution (SBS)
 ///
 /// ```rust
-/// use atp::builder::atp_processor::{AtpProcessor, AtpProcessorMethods};
-/// use atp::builder::AtpBuilderMethods;
+/// use atp::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
+/// use atp::api::AtpBuilderMethods;
 ///
 /// let mut processor = AtpProcessor::new();
 ///
@@ -93,7 +93,7 @@ use crate::utils::validations::check_file_path;
 /// ## 3) Quick single-token execution (no pipeline registration)
 ///
 /// ```rust
-/// use atp::builder::atp_processor::{AtpProcessor, AtpProcessorMethods};
+/// use atp::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
 /// use atp::tokens::transforms::tbs;
 ///
 /// let mut processor = AtpProcessor::new();
@@ -109,7 +109,7 @@ use crate::utils::validations::check_file_path;
 /// This mirrors the exact usage pattern shown in your suite:
 ///
 /// ```rust
-/// use atp::builder::{
+/// use atp::api::{
 ///     AtpBuilderMethods,
 ///     atp_processor::{ AtpProcessor, AtpProcessorMethods },
 /// };
@@ -471,8 +471,8 @@ impl AtpProcessor {
     /// # Example
     ///
     /// ```rust
-    /// use atp::builder::atp_processor::{AtpProcessor, AtpProcessorMethods};
-    /// use atp::builder::AtpBuilderMethods;
+    /// use atp::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
+    /// use atp::api::AtpBuilderMethods;
     ///
     /// let mut processor = AtpProcessor::new();
     ///

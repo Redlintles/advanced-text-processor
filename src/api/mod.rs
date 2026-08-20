@@ -24,8 +24,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().trim_both_sides().build();
     /// let input = "   banana   ";
@@ -49,8 +49,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().trim_left_side().build();
     /// let input = "   banana  ";
@@ -73,8 +73,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().trim_right_side().build();
     /// let input = "  banana   ";
@@ -96,8 +96,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().add_to_end("!").build();
     /// let input = "banana";
@@ -119,8 +119,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().add_to_beginning("x").build();
     /// let input = "banana";
@@ -143,8 +143,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().delete_first().build();
     /// let input = "banana";
@@ -167,8 +167,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().delete_last().build();
     /// let input = "banana";
@@ -192,8 +192,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().delete_after(2).build();
     /// let input = "banana";
@@ -217,8 +217,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().delete_before(3).build();
     /// let input = "banana";
@@ -243,8 +243,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().delete_chunk(1, 3).build();
     /// let input = "banana";
@@ -276,8 +276,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().replace_all_with("a", "x").build();
@@ -314,8 +314,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().replace_first_with("a", "x").build();
@@ -351,8 +351,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().replace_last_with("a", "x").build();
@@ -390,8 +390,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().replace_nth_with("a", "x", 1).build();
@@ -429,8 +429,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().replace_count_with("a", "x", 2).build();
@@ -468,8 +468,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().rotate_left(2).build();
     ///
@@ -498,8 +498,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().rotate_right(1).build();
     ///
@@ -527,8 +527,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().repeat(3).build();
     ///
@@ -556,8 +556,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().select(1, 3).unwrap().build();
@@ -594,8 +594,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().to_uppercase_all().build();
     ///
@@ -623,8 +623,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new().to_lowercase_all().build();
     ///
@@ -653,8 +653,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().to_uppercase_single(1).build();
@@ -684,8 +684,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().to_lowercase_single(0).build();
@@ -716,8 +716,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let builder = AtpBuilder::new()
     ///     .to_uppercase_chunk(1, 3)
@@ -758,8 +758,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let builder = AtpBuilder::new()
     ///     .to_lowercase_chunk(2, 4)
@@ -800,8 +800,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().capitalize_first_word().build();
@@ -830,8 +830,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().capitalize_last_word().build();
@@ -862,8 +862,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) =
     ///     AtpBuilder::new().split_select("-", 1).build();
@@ -900,8 +900,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let builder = AtpBuilder::new()
     ///     .capitalize_chunk(1, 3)
@@ -942,8 +942,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let builder = AtpBuilder::new()
     ///     .capitalize_range(1, 4)
@@ -981,8 +981,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new()
     ///     .capitalize_single_word(2)
@@ -1010,8 +1010,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new()
     ///     .to_url_encoded()
@@ -1040,8 +1040,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new()
     ///     .to_url_decoded()
@@ -1068,8 +1068,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new()
     ///     .to_reverse()
@@ -1095,8 +1095,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new()
     ///     .split_characters()
@@ -1126,8 +1126,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new()
     ///     .to_html_escaped()
@@ -1156,8 +1156,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::AtpBuilder;
-    /// use atp::builder::atp_processor::AtpProcessorMethods;
+    /// use atp::api::atp_builder::AtpBuilder;
+    /// use atp::api::atp_processor::AtpProcessorMethods;
     ///
     /// let (mut processor, id) = AtpBuilder::new()
     ///     .to_html_unescaped()
@@ -1186,8 +1186,8 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().to_json_escaped().build();
     /// let input = "{banana: '10'}";
@@ -1211,8 +1211,8 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().to_json_unescaped().build();
     /// let input = "\"{banana: '10'}\"";
@@ -1237,8 +1237,8 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().insert(1, " laranja").build();
     /// let input = "banana";
@@ -1269,8 +1269,8 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().to_lowercase_word(1).build();
     /// let input = "BANANA LARANJA CHEIA DE CANJA";
@@ -1293,8 +1293,8 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().to_uppercase_word(1).build();
     /// let input = "banana laranja cheia de canja";
@@ -1319,8 +1319,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().join_to_kebab_case().build();
     /// let input = "banana laranja cheia de canja";
@@ -1345,8 +1345,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().join_to_snake_case().build();
     /// let input = "banana laranja cheia de canja";
@@ -1370,8 +1370,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().join_to_camel_case().build();
     /// let input = "banana laranja cheia de canja";
@@ -1395,8 +1395,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().join_to_pascal_case().build();
     /// let input = "banana laranja cheia de canja";
@@ -1418,8 +1418,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().pad_left("x", 7).build();
     /// let input = "banana";
@@ -1449,8 +1449,8 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().pad_right("x", 7).build();
     /// let input = "banana";
@@ -1477,8 +1477,8 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().remove_whitespace().build();
     /// let input = "banana laranja cheia de canja";
@@ -1500,8 +1500,8 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::builder::atp_builder::{AtpBuilder};
-    /// use atp::builder::atp_processor::{AtpProcessorMethods};
+    /// use atp::api::atp_builder::{AtpBuilder};
+    /// use atp::api::atp_processor::{AtpProcessorMethods};
     ///
     /// let (mut processor, id) = AtpBuilder::new().delete_single(3).build();
     /// let input = "banana";
