@@ -22,7 +22,7 @@ pub trait InstructionMethods: InstructionMethodsClone + Send + Sync {
     fn transform(
         &self,
         input: &str,
-        context: &mut GlobalExecutionContext
+        context: Option<&mut GlobalExecutionContext>
     ) -> Result<String, AtpError>;
 
     /// get_string_repr
