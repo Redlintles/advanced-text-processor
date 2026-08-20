@@ -98,7 +98,7 @@ impl TokenWrapper {
         let mut t = self.token.clone();
         t.from_params(&parsed_params)?;
 
-        let result = t.transform(input, context)?;
+        let result = t.transform(input, Some(context))?;
 
         Ok(result)
     }

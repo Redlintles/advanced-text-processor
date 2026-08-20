@@ -52,7 +52,7 @@ pub mod bytecode {
             fn transform(
                 &self,
                 _input: &str,
-                _context: &mut GlobalExecutionContext
+                _context: Option<&mut GlobalExecutionContext>
             ) -> Result<String, atp::utils::errors::AtpError> {
                 Ok(_input.to_string())
             }
