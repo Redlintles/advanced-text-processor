@@ -22,10 +22,10 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
         let token = Ifdc::new("xy", TokenWrapper::default());
 
-        let a = token.transform("abcxydef", &mut ctx);
+        let a = token.transform("abcxydef", Some(&mut ctx));
         assert!(a.is_ok(), "contains -> inner executed (at least does not fail)");
 
-        let b = token.transform("banana", &mut ctx).unwrap();
+        let b = token.transform("banana", Some(&mut ctx)).unwrap();
         assert_eq!(b, "banana".to_string(), "does nothing when not contains");
     }
 

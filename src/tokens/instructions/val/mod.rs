@@ -9,7 +9,11 @@ use crate::{
     parse_args,
     to_bytecode,
     tokens::InstructionMethods,
-    utils::{ errors::AtpError, params::AtpParamTypes, validations::check_vec_len },
+    utils::{
+        errors::{ AtpError, AtpErrorCode::RequiredContextError },
+        params::AtpParamTypes,
+        validations::check_vec_len,
+    },
 };
 
 #[cfg(feature = "test_access")]
@@ -53,8 +57,15 @@ impl InstructionMethods for Val {
     fn transform(
         &self,
         input: &str,
-        context: &mut GlobalExecutionContext
+        context: Option<&mut GlobalExecutionContext>
     ) -> Result<String, crate::utils::errors::AtpError> {
+        let context = context.ok_or_else(||
+            AtpError::new(
+                RequiredContextError("Context required for proper working!".into()),
+                std::borrow::Cow::Borrowed("val"),
+                std::borrow::Cow::Borrowed("")
+            )
+        )?;
         let value = match &self.val_value {
             AtpParamTypes::VarRef(name) => context.get_var(name)?.value.clone(),
             other => VarValues::try_from(other.clone())?,

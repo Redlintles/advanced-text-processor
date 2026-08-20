@@ -60,9 +60,13 @@ impl InstructionMethods for Ifdc {
         "ifdc"
     }
 
-    fn transform(&self, input: &str, c: &mut GlobalExecutionContext) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        context: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         if input.contains(&self.text) {
-            return Ok(self.inner.transform(input, &mut *c)?);
+            return Ok(self.inner.transform(input, context)?);
         }
 
         Ok(input.to_string())

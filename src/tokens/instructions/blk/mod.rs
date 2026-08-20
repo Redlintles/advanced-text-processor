@@ -4,7 +4,11 @@ use crate::{
     parse_args,
     to_bytecode,
     tokens::InstructionMethods,
-    utils::{ errors::AtpError, params::AtpParamTypes, validations::check_vec_len },
+    utils::{
+        errors::{ AtpError, AtpErrorCode::RequiredContextError },
+        params::AtpParamTypes,
+        validations::check_vec_len,
+    },
 };
 
 #[cfg(feature = "test_access")]
@@ -48,8 +52,15 @@ impl InstructionMethods for Blk {
     fn transform(
         &self,
         input: &str,
-        context: &mut GlobalExecutionContext
+        context: Option<&mut GlobalExecutionContext>
     ) -> Result<String, crate::utils::errors::AtpError> {
+        let context = context.ok_or_else(||
+            AtpError::new(
+                RequiredContextError("Context required for proper working!".into()),
+                std::borrow::Cow::Borrowed("val"),
+                std::borrow::Cow::Borrowed("")
+            )
+        )?;
         context.add_to_block(&self.block_name, self.inner.clone())?;
         return Ok(input.to_string());
     }
