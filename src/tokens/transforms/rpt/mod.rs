@@ -22,7 +22,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Rpt::new(3);
 ///
-/// assert_eq!(token.transform("banana"),Ok("bananabananabanana".to_string()));
+/// assert_eq!(token.transform("banana", None), Ok("bananabananabanana".to_string()));
 ///
 /// ```
 #[derive(Clone, Default)]

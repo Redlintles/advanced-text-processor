@@ -24,7 +24,7 @@ use crate::utils::errors::{ AtpError, AtpErrorCode };
 ///
 /// let token = Sslt::new("_", 1).unwrap();
 ///
-/// assert_eq!(token.transform("foobar_foo_bar_bar_foo_barfoo"), Ok("foo".to_string()));
+/// assert_eq!(token.transform("foobar_foo_bar_bar_foo_barfoo", None), Ok("foo".to_string()));
 ///
 /// ```
 #[derive(Clone)]

@@ -22,7 +22,7 @@ use crate::{
 ///
 /// let token = Tlcw::new(1);
 ///
-/// assert_eq!(token.transform("BANANA LARANJA CHEIA DE CANJA"), Ok("BANANA laranja CHEIA DE CANJA".to_string()));
+/// assert_eq!(token.transform("BANANA LARANJA CHEIA DE CANJA", None), Ok("BANANA laranja CHEIA DE CANJA".to_string()));
 ///
 /// ```
 #[derive(Clone, Default)]

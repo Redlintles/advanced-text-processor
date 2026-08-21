@@ -23,7 +23,7 @@ use crate::utils::params::AtpParamTypes;
 /// use atp::tokens::{InstructionMethods, transforms::clw::Clw};
 ///
 /// let token = Clw::default();
-/// assert_eq!(token.transform("foo bar"), Ok("foo Bar".to_string()));
+/// assert_eq!(token.transform("foo bar", None), Ok("foo Bar".to_string()));
 /// ```
 #[derive(Clone, Default)]
 pub struct Clw {

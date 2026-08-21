@@ -21,7 +21,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Tucc::new(1,4).unwrap();
 ///
-/// assert_eq!(token.transform("banana"), Ok("bANANa".to_string()));
+/// assert_eq!(token.transform("banana", None), Ok("bANANa".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

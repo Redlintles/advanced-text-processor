@@ -22,7 +22,7 @@ use crate::{ tokens::InstructionMethods };
 ///
 /// let token = Dlb::new(3);
 ///
-/// assert_eq!(token.transform("banana laranja vermelha azul"), Ok("ana laranja vermelha azul".to_string()))
+/// assert_eq!(token.transform("banana laranja vermelha azul", None), Ok("ana laranja vermelha azul".to_string()))
 ///
 /// ```
 #[derive(Clone, Default)]

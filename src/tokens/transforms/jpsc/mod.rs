@@ -22,7 +22,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Jpsc::default();
 ///
-/// assert_eq!(token.transform("banana laranja cheia de canja"), Ok("BananaLaranjaCheiaDeCanja".to_string()));
+/// assert_eq!(token.transform("banana laranja cheia de canja", None), Ok("BananaLaranjaCheiaDeCanja".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

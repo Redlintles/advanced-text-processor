@@ -22,7 +22,7 @@ use crate::utils::errors::{ AtpError };
 ///
 /// let token = Slt::new(1,9999).unwrap();
 ///
-/// assert_eq!(token.transform("banàna"), Ok("anàn".to_string()));
+/// assert_eq!(token.transform("banàna", None), Ok("anàna".to_string()));
 ///
 ///
 /// ```
@@ -51,7 +51,11 @@ impl InstructionMethods for Slt {
     fn get_string_repr(&self) -> &'static str {
         "slt"
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         let len = input.chars().count();
         let mut end = self.end_index;
 

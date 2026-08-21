@@ -21,7 +21,7 @@ use crate::utils::errors::{ AtpError, AtpErrorCode };
 ///
 /// let token = Rtl::new(3);
 ///
-/// assert_eq!(token.transform("banana"),Ok("anaban".to_string()));
+/// assert_eq!(token.transform("banana", None), Ok("anaban".to_string()));
 ///
 /// ```
 #[derive(Clone, Default)]

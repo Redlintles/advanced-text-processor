@@ -22,7 +22,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Tlcs::new(1);
 ///
-/// assert_eq!(token.transform("BANANA"), Ok("BaNANA".to_string()));
+/// assert_eq!(token.transform("BANANA", None), Ok("BaNANA".to_string()));
 ///
 /// ```
 

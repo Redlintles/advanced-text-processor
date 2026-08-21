@@ -23,12 +23,19 @@ use crate::utils::params::AtpParamTypes;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, instructions::ifdc::Ifdc};
+/// use atp::tokens::{InstructionMethods, instructions::ifdc::Ifdc, transforms::atb::Atb};
+/// use atp::globals::var::{TokenWrapper, ValType};
+/// use atp::utils::params::AtpParamTypes;
 ///
-/// let token = Ifdc::new("xy", "atb laranja;");
-///
-/// assert_eq!(token.transform("larryxy"), Ok("laranjalarryxy".to_string())); // Adds laranja to the beginning
-/// assert_eq!(token.transform("banana"), Ok("banana".to_string())); // Does nothing
+/// let token = Ifdc::new(
+///     "xy",
+///     TokenWrapper::new(
+///         Box::new(Atb::new("laranja")),
+///         None
+///     )
+/// );
+/// assert_eq!(token.transform("larryxy", None), Ok("laranjalarryxy".to_string())); // Adds laranja to the beginning
+/// assert_eq!(token.transform("banana", None), Ok("banana".to_string())); // Does nothing
 ///
 /// ```
 #[derive(Clone, Default)]
@@ -42,7 +49,10 @@ impl Ifdc {
     pub fn new(text: &str, inner: TokenWrapper) -> Self {
         Ifdc {
             text: text.to_string(),
-            params: vec![text.to_string().into(), inner.clone().into()],
+            params: vec![
+                AtpParamTypes::String(text.to_string()),
+                AtpParamTypes::Token(inner.clone())
+            ],
             inner,
         }
     }

@@ -29,7 +29,7 @@ use crate::utils::{ params::AtpParamTypes };
 /// use atp::tokens::{InstructionMethods, transforms::ctc::Ctc};
 ///
 /// let token = Ctc::new(1, 5).unwrap();
-/// assert_eq!(token.transform("bananabananosa"), Ok("bAnanabananosa".to_string()));
+/// assert_eq!(token.transform("bananabananosa", None), Ok("bAnanabananosa".to_string()));
 /// ```
 #[derive(Clone, Default)]
 pub struct Ctc {

@@ -22,7 +22,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Dll::default();
 ///
-/// assert_eq!(token.transform("banana"), Ok("banan".to_string()));
+/// assert_eq!(token.transform("banana", None), Ok("banan".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

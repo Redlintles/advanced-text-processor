@@ -28,7 +28,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Jsnc::default();
 ///
-/// assert_eq!(token.transform("banana laranja cheia de canja"), Ok("banana_laranja_cheia_de_canja".to_string()));
+/// assert_eq!(token.transform("banana laranja cheia de canja", None), Ok("banana_laranja_cheia_de_canja".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

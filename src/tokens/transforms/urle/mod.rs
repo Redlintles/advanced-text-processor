@@ -22,7 +22,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Urle::default();
 ///
-/// assert_eq!(token.transform("banana laranja"), Ok("banana%20laranja".to_string()));
+/// assert_eq!(token.transform("banana laranja", None), Ok("banana%20laranja".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

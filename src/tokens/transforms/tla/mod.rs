@@ -21,7 +21,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Tla::default();
 ///
-/// assert_eq!(token.transform("BANANA"), Ok("banana".to_string()));
+/// assert_eq!(token.transform("BANANA", None), Ok("banana".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

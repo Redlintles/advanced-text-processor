@@ -25,7 +25,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Htmlu::default();
 ///
-/// assert_eq!(token.transform("&lt;div&gt;banana&lt;/div&gt;"), Ok("<div>banana</div>".to_string()));
+/// assert_eq!(token.transform("&lt;div&gt;banana&lt;/div&gt;", None), Ok("<div>banana</div>".to_string()));
 /// ```
 #[derive(Clone, Default)]
 pub struct Htmlu {

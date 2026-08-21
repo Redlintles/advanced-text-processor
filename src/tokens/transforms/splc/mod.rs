@@ -21,7 +21,7 @@ use crate::utils::validations::check_vec_len;
 ///
 /// let token = Splc::default();
 ///
-/// assert_eq!(token.transform("banana"), Ok("b a n a n a".to_string()));
+/// assert_eq!(token.transform("banana", None), Ok("b a n a n a".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

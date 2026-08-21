@@ -27,7 +27,7 @@ use crate::utils::params::AtpParamTypes;
 /// ```rust
 /// use atp::tokens::{InstructionMethods, transforms::cts::Cts};
 /// let token = Cts::new(1);
-/// assert_eq!(token.transform("foo bar"), Ok("foo Bar".to_string()));
+/// assert_eq!(token.transform("foo bar", None), Ok("foo Bar".to_string()));
 /// ```
 
 #[derive(Clone, Default)]

@@ -21,7 +21,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Urld::default();
 ///
-/// assert_eq!(token.transform("banana%20laranja"), Ok("banana laranja".to_string()));
+/// assert_eq!(token.transform("banana%20laranja", None), Ok("banana laranja".to_string()));
 /// ```
 ///
 

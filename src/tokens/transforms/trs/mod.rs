@@ -22,7 +22,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Trs::default();
 ///
-/// assert_eq!(token.transform("   banana   "), Ok("   banana".to_string()));
+/// assert_eq!(token.transform("   banana   ", None), Ok("   banana".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

@@ -28,7 +28,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Padl::new("xy", 7);
 ///
-/// assert_eq!(token.transform("banana"), Ok("xbanana".to_string()));
+/// assert_eq!(token.transform("banana", None), Ok("xbanana".to_string()));
 /// ```
 #[derive(Clone, Default)]
 pub struct Padl {

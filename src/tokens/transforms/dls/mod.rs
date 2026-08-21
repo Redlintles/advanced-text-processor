@@ -24,7 +24,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Dls::new(3);
 ///
-/// assert_eq!(token.transform("banana"), Ok("banna".to_string()));
+/// assert_eq!(token.transform("banana", None), Ok("banna".to_string()));
 /// ```
 #[derive(Clone, Default)]
 pub struct Dls {

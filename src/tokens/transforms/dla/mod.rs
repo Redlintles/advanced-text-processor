@@ -22,7 +22,7 @@ use crate::utils::errors::{ AtpError, AtpErrorCode };
 ///
 /// let token = Dla::new(3);
 ///
-/// assert_eq!(token.transform("banana laranja vermelha azul"), Ok("bana".to_string()))
+/// assert_eq!(token.transform("banana laranja vermelha azul", None), Ok("bana".to_string()))
 ///
 /// ```
 #[derive(Clone, Default)]

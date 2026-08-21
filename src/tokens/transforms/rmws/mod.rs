@@ -22,7 +22,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Rmws::default();
 ///
-/// assert_eq!(token.transform("banana laranja cheia de canja"), Ok("bananalaranjacheiadecanja".to_string()));
+/// assert_eq!(token.transform("banana laranja cheia de canja", None), Ok("bananalaranjacheiadecanja".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

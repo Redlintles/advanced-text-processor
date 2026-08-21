@@ -19,7 +19,7 @@ use crate::{ tokens::InstructionMethods, utils::errors::{ AtpError } };
 /// use atp::tokens::{InstructionMethods, transforms::rev::Rev};
 ///
 /// let token = Rev::default();
-/// assert_eq!(token.transform("foobar"), Ok("raboof".to_string()));
+/// assert_eq!(token.transform("foobar", None), Ok("raboof".to_string()));
 /// ``````
 #[derive(Clone, Default)]
 pub struct Rev {

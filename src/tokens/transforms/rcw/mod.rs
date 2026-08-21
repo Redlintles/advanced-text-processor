@@ -30,7 +30,7 @@ use crate::{ tokens::InstructionMethods };
 ///
 /// let token = Rcw::new(&"a", "b", 3).unwrap();
 ///
-/// assert_eq!(token.transform("aaaaa"), Ok("bbbaa".to_string()));
+/// assert_eq!(token.transform("aaaaa", None), Ok("bbbaa".to_string()));
 /// ```
 ///
 #[derive(Clone, Debug)]

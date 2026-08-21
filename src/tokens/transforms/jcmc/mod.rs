@@ -22,7 +22,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Jcmc::default();
 ///
-/// assert_eq!(token.transform("banana laranja cheia de canja"), Ok("bananaLaranjaCheiaDeCanja".to_string()));
+/// assert_eq!(token.transform("banana laranja cheia de canja", None), Ok("bananaLaranjaCheiaDeCanja".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

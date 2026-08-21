@@ -29,7 +29,7 @@ use crate::{
 /// ```rust
 /// use atp::tokens::{InstructionMethods,transforms::ctr::Ctr};
 /// let token = Ctr::new(1,5).unwrap();
-/// assert_eq!(token.transform("foo bar mar"), Ok("foo Bar Mar".to_string()));
+/// assert_eq!(token.transform("foo bar mar", None), Ok("foo Bar Mar".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]

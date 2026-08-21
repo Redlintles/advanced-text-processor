@@ -25,7 +25,7 @@ use crate::utils::params::AtpParamTypes;
 /// use atp::tokens::{InstructionMethods, transforms::atb::Atb};
 ///
 /// let token = Atb::new("foo");
-/// assert_eq!(token.transform(" bar"), Ok("foo bar".to_string()));
+/// assert_eq!(token.transform(" bar", None), Ok("foo bar".to_string()));
 /// ```
 #[derive(Clone, Default)]
 pub struct Atb {

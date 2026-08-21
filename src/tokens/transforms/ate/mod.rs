@@ -20,7 +20,7 @@ use crate::utils::params::AtpParamTypes;
 /// use atp::tokens::{InstructionMethods, transforms::ate::Ate};
 ///
 /// let token = Ate::new(" bar");
-/// assert_eq!(token.transform("foo"), Ok("foo bar".to_string()));
+/// assert_eq!(token.transform("foo", None), Ok("foo bar".to_string()));
 /// ```
 
 #[derive(Clone, Default)]

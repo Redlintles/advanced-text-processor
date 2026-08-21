@@ -25,7 +25,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Padr::new("xy", 7);
 ///
-/// assert_eq!(token.transform("banana"), Ok("bananax".to_string()));
+/// assert_eq!(token.transform("banana", None), Ok("bananax".to_string()));
 /// ```
 #[derive(Clone, Default)]
 pub struct Padr {

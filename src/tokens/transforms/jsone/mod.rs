@@ -24,7 +24,7 @@ use crate::utils::validations::check_vec_len;
 /// let token = Jsone::default();
 /// let expected_output = "\"{banana: '10'}\"".to_string();
 ///
-/// assert_eq!(token.transform("{banana: '10'}"), Ok(expected_output));
+/// assert_eq!(token.transform("{banana: '10'}", None), Ok(expected_output));
 /// ```
 
 #[derive(Clone, Default)]
@@ -43,7 +43,11 @@ impl InstructionMethods for Jsone {
         "jsone;\n".into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         Ok(
             serde_json
                 ::to_string(input)

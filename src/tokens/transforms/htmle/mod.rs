@@ -25,7 +25,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Htmle::default();
 ///
-/// assert_eq!(token.transform("<div>banana</div>"), Ok("&lt;div&gt;banana&lt;&#x2F;div&gt;".to_string()));
+/// assert_eq!(token.transform("<div>banana</div>", None), Ok("&lt;div&gt;banana&lt;&#x2F;div&gt;".to_string()));
 /// ```
 
 #[derive(Clone, Default)]

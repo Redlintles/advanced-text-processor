@@ -32,7 +32,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Rnw::new(&"a", "b", 2).unwrap();
 ///
-/// assert_eq!(token.transform("aaaaa"), Ok("aabaa".to_string()));
+/// assert_eq!(token.transform("aaaaa", None), Ok("aabaa".to_string()));
 /// ```
 ///
 #[derive(Clone, Debug)]

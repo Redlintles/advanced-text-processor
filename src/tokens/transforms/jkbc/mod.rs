@@ -28,7 +28,7 @@ use crate::utils::params::AtpParamTypes;
 ///
 /// let token = Jkbc::default();
 ///
-/// assert_eq!(token.transform("banana laranja cheia de canja"), Ok("banana-laranja-cheia-de-canja".to_string()));
+/// assert_eq!(token.transform("banana laranja cheia de canja", None), Ok("banana-laranja-cheia-de-canja".to_string()));
 /// ```
 ///
 #[derive(Clone, Default)]
