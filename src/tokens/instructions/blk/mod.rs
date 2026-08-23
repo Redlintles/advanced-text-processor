@@ -75,6 +75,15 @@ impl InstructionMethods for Blk {
 
         self.inner = parse_args!(params, 1, Token, "Block inner should be of token type");
 
+        self.params = vec![
+            AtpParamTypes::String(
+                parse_args!(params, 0, String, "Block name should be of string type")
+            ),
+            AtpParamTypes::Token(
+                parse_args!(params, 1, Token, "Block inner should be of token type")
+            )
+        ];
+
         Ok(())
     }
     #[cfg(feature = "bytecode")]

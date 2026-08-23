@@ -1,0 +1,126 @@
+warning: function `dummy_context` is never used
+  --> src/utils/params.rs:97:4
+   |
+97 | fn dummy_context() -> GlobalExecutionContext {
+   |warning: function `dummy_context` is never used
+  --> src/utils/params.rs:97:4
+   |
+97 | fn dummy_context() -> GlobalExecutionContext {
+   |    ^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused `Result` that must be used
+  --> src/utils/errors.rs:31:9
+   |
+31 | /         write!(
+32 | |             f,
+33 | |             "{}\n{}\n{} {}\n{} {}",
+34 | |             title,
+...  |
+39 | |             self.input.as_ref().dimmed()
+40 | |         );
+   | |_________^
+   |
+       ^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused `Result` that must be used
+  --> src/utils/errors.rs:31:9
+   |
+31 | /         write!(
+32 | |             f,
+33 | |             "{}\n{}\n{} {}\n{} {}",
+34 | |             title,
+...  |
+39 | |             self.input.as_ref().dimmed()
+40 | |         );
+   | |_________^
+   |
+   = note: this `Result` may be an `Err` variant, which should be handled
+   = note: `#[warn(unused_must_use)]` (part of `#[warn(unused)]`) on by default
+help: use `let _ = ...` to ignore the resulting value
+   |
+31 |         = note: this `Result` may be an `Err` variant, which should be handled
+   = note: `#[warn(unused_must_use)]` (part of `#[warn(unused)]`) on by default
+help: use `let _ = ...` to ignore the resulting value
+   |
+31 |         let _ = write!(
+   |         +++++++
+
+let _ = write!(
+   |         +++++++
+
+warning: unused `Result` that must be used
+   --> src/utils/errors.rs:174:9
+    |
+174 |         write!(f, "{} {}\n{} {}", code_label, code_val, msg_label, msg_val);
+    |         warning: unused `Result` that must be used
+   --> src/utils/errors.rs:174:9
+    |
+174 |         write!(f, "{} {}\n{} {}", code_label, code_val, msg_label, msg_val);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: this `Result` may be an `Err` variant, which should be handled
+help: use `let _ = ...` to ignore the resulting value
+    |
+174 |         let _ = ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: this `Result` may be an `Err` variant, which should be handled
+help: use `let _ = ...` to ignore the resulting value
+    |
+174 |         let _ = write!(f, "{} {}\n{} {}", code_label, code_val, msg_label, msg_val);
+    |         +++++++
+
+write!(f, "{} {}\n{} {}", code_label, code_val, msg_label, msg_val);
+    |         +++++++
+
+warning: `atp` (lib) generated 3 warnings
+warning: `atp` (lib) generated 3 warnings
+warning: `atp` (lib test) generated 3 warnings (3 duplicates)
+warning: `atp` (lib test) generated 3 warnings (3 duplicates)
+warning: constant `PARAM_VARREF` is never used
+  --> tests/params.rs:69:11
+   |
+69 |     const PARAM_VARREF: u32 = 0x04;
+   |           ^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `bc_varref` is never usedwarning: constant `PARAM_VARREF` is never used
+  --> tests/params.rs:69:11
+   |
+69 |     const PARAM_VARREF: u32 = 0x04;
+   |           ^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `bc_varref` is never used
+  --> tests/params.rs:80:8
+   |
+80 |     fn bc_varref(name: &str) -> Vec<u8> {
+   |        ^^^^^^^^^
+
+
+  --> tests/params.rs:80:8
+   |
+80 |     fn bc_varref(name: &str) -> Vec<u8> {
+   |        ^^^^^^^^^
+
+warning: `atp` (test "params") generated 2 warnings
+warning: `atp` (test "params") generated 2 warnings
+    Finished `release` profile [optimized] target(s) in 0.04s
+    Finished `release` profile [optimized] target(s) in 0.04s
+     Running unittests src/lib.rs (target/release/deps/atp-a7c0bbded28ee2b9)
+     Running unittests src/lib.rs (target/release/deps/atp-a7c0bbded28ee2b9)
+     Running unittests src/main.rs (target/release/deps/atp-687d42afba421505)
+     Running unittests src/main.rs (target/release/deps/atp-687d42afba421505)
+     Running unittests src/bin/atp-game.rs (target/release/deps/atp_game-163281060c42ec8b)
+     Running unittests src/bin/atp-game.rs (target/release/deps/atp_game-163281060c42ec8b)
+     Running unittests src/bin/atp-shell.rs (target/release/deps/atp_shell-2d39525233cebf65)
+     Running unittests src/bin/atp-shell.rs (target/release/deps/atp_shell-2d39525233cebf65)
+     Running tests/benchmark.rs (target/release/deps/benchmark-2e5662494a9613bb)
+     Running tests/benchmark.rs (target/release/deps/benchmark-2e5662494a9613bb)
+error: test failed, to rerun pass `--test benchmark`
+error: test failed, to rerun pass `--test benchmark`

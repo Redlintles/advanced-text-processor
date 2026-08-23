@@ -99,7 +99,7 @@ impl InstructionMethods for Ifdc {
 
         self.params = vec![
             AtpParamTypes::String(parse_args!(params, 0, String, "")),
-            AtpParamTypes::Usize(parse_args!(params, 1, Token, ""))
+            AtpParamTypes::Token(parse_args!(params, 1, Token, ""))
         ];
 
         Ok(())
