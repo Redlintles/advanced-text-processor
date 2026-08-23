@@ -48,7 +48,7 @@ impl InstructionMethods for Cblk {
         input: &str,
         context: Option<&mut GlobalExecutionContext>
     ) -> Result<String, crate::utils::errors::AtpError> {
-        let context = context.ok_or_else(||
+        let mut context = context.ok_or_else(||
             AtpError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("val"),
@@ -59,7 +59,7 @@ impl InstructionMethods for Cblk {
         let tokens = context.take_block(&self.block_name)?;
 
         for token in tokens.iter() {
-            result = token.transform(&result, Some(&mut *context))?;
+            result = token.apply_token(&result, &mut context)?;
         }
 
         context.put_block(&self.block_name, tokens);
