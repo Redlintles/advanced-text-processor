@@ -97,6 +97,11 @@ impl InstructionMethods for Ifdc {
 
         self.inner = parse_args!(params, 1, Token, "");
 
+        self.params = vec![
+            AtpParamTypes::String(parse_args!(params, 0, String, "")),
+            AtpParamTypes::Usize(parse_args!(params, 1, Token, ""))
+        ];
+
         Ok(())
     }
     #[cfg(feature = "bytecode")]
