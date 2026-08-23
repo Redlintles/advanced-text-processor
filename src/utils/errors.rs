@@ -396,7 +396,8 @@ mod tests {
         assert_eq!(ValidationError(Cow::Borrowed("x")).get_error_code(), 20);
         assert_eq!(ZeroDivisionError(Cow::Borrowed("x")).get_error_code(), 21);
         assert_eq!(TryIntoFailError(Cow::Borrowed("x")).get_error_code(), 22);
-        assert_eq!(TryIntoFailError(Cow::Borrowed("x")).get_error_code(), 23);
+        assert_eq!(IncompatibleTypeError(Cow::Borrowed("x")).get_error_code(), 23);
+        assert_eq!(RequiredContextError(Cow::Borrowed("x")).get_error_code(), 24);
     }
 
     #[test]
