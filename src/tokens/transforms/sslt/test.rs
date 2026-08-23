@@ -25,7 +25,10 @@ mod tests {
         let t = Sslt::new("_", 1).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foobar_foo_bar_bar_foo_barfoo", Some(&mut ctx)), Ok("foo".to_string()));
+        assert_eq!(
+            t.transform("foobar_foo_bar_bar_foo_barfoo", Some(&mut ctx)),
+            Ok("foo".to_string())
+        );
     }
 
     #[test]
@@ -57,7 +60,7 @@ mod tests {
     #[test]
     fn from_params_accepts_two_params() {
         let mut t = Sslt::default();
-        let params = vec![AtpParamTypes::Usize(1), AtpParamTypes::String("_".to_string())];
+        let params = vec![AtpParamTypes::String("_".to_string()), AtpParamTypes::Usize(1)];
 
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.index, 1);

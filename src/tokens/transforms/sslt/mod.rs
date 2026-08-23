@@ -37,7 +37,7 @@ pub struct Sslt {
 impl Sslt {
     pub fn new(pattern: &str, index: usize) -> Result<Self, AtpError> {
         let pattern = Regex::new(&pattern).map_err(|e| {
-            AtpError::new(AtpErrorCode::BytecodeParsingError(e.to_string().into()), "", "")
+            AtpError::new(AtpErrorCode::TextParsingError(e.to_string().into()), "", "")
         })?;
         Ok(Sslt { index, params: vec![pattern.to_string().into(), index.into()], pattern })
     }
@@ -60,7 +60,11 @@ impl InstructionMethods for Sslt {
     fn get_string_repr(&self) -> &'static str {
         "sslt"
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         let item = self.pattern
             .split(input)
             .nth(self.index)
@@ -85,9 +89,8 @@ impl InstructionMethods for Sslt {
 
         check_vec_len(&params, 2, "sslt", "")?;
 
-        self.index = parse_args!(params, 0, Usize, "Index should be of type Usize");
-
-        let pattern_payload = parse_args!(params, 1, String, "Pattern should be of string type");
+        let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
+        self.index = parse_args!(params, 1, Usize, "Index should be of type Usize");
 
         self.pattern = Regex::new(&pattern_payload.clone()).map_err(|_| {
             AtpError::new(
@@ -107,8 +110,8 @@ impl InstructionMethods for Sslt {
     fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::Usize(self.index),
             AtpParamTypes::String(self.pattern.to_string()),
+            AtpParamTypes::Usize(self.index),
         ]);
         Ok(result)
     }
