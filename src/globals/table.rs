@@ -386,6 +386,7 @@ define_token_table! {
             [SyntaxDef::req(SyntaxToken::Usize)],
         ),
         ("jkbc", 0x2b, || TokenRef::Shared(Arc::new(jkbc::Jkbc::default())), []),
+        ("jsnc", 0x2c, || TokenRef::Shared(Arc::new(jsnc::Jsnc::default())), []),
         ("jcmc", 0x2d, || TokenRef::Shared(Arc::new(jcmc::Jcmc::default())), []),
         ("jpsc", 0x2e, || TokenRef::Shared(Arc::new(jpsc::Jpsc::default())), []),
         (
@@ -430,7 +431,7 @@ define_token_table! {
         (
             "cblk",
             0x35,
-            || TokenRef::Shared(Arc::new(blk::Blk::default())),
+            || TokenRef::Shared(Arc::new(cblk::Cblk::default())),
             [SyntaxDef::req(SyntaxToken::String)],
         ),
         (
