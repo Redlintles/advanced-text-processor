@@ -49,10 +49,9 @@ mod tests {
     #[test]
     fn transform_rejects_invalid_bounds() {
         // start > end deve falhar (quem define isso é seu check_chunk_bound_indexes)
-        let t = Slt::new(5, 1).unwrap();
-        let mut ctx = GlobalExecutionContext::new();
+        let t = Slt::new(5, 1);
 
-        assert!(matches!(t.transform("banana", Some(&mut ctx)), Err(_)));
+        assert!(matches!(t, Err(_)));
     }
 
     #[test]
