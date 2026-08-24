@@ -97,22 +97,10 @@ pub mod bytecode {
             touch(&path);
 
             let tokens: Vec<TokenWrapper> = vec![
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[0xaa, 0xbb])),
-                },
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[0xaa])),
-                },
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[0xbb])),
-                },
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[])),
-                }
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa, 0xbb])), None),
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa])), None),
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xbb])), None),
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[])), None)
             ];
 
             write_bytecode_to_file(&path, tokens.into()).unwrap();
@@ -165,22 +153,10 @@ pub mod bytecode {
             touch(&path);
 
             let tokens: Vec<TokenWrapper> = vec![
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[0xaa, 0xbb])),
-                },
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[0xaa])),
-                },
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[0xbb])),
-                },
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[])),
-                }
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa, 0xbb])), None),
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa])), None),
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xbb])), None),
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[])), None)
             ];
 
             let err = write_bytecode_to_file(&path, tokens).unwrap_err();
@@ -202,22 +178,10 @@ pub mod bytecode {
             fs::create_dir_all(&path_is_dir).unwrap();
 
             let tokens: Vec<TokenWrapper> = vec![
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[0xaa, 0xbb])),
-                },
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[0xaa])),
-                },
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[0xbb])),
-                },
-                TokenWrapper {
-                    params: vec![],
-                    token: Box::new(DummyToken::new("tok1", &[])),
-                }
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa, 0xbb])), None),
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa])), None),
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xbb])), None),
+                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[])), None)
             ];
 
             let err = write_bytecode_to_file(&path_is_dir, tokens).unwrap_err();
@@ -240,18 +204,9 @@ pub mod bytecode {
         let path = file.path();
 
         let tokens: Vec<TokenWrapper> = vec![
-            TokenWrapper {
-                params: vec![],
-                token: Box::new(Atb::new("Banana")),
-            },
-            TokenWrapper {
-                params: vec![],
-                token: Box::new(Ate::new("Pizza")),
-            },
-            TokenWrapper {
-                params: vec![],
-                token: Box::new(Rpt::new(5 as usize)),
-            }
+            TokenWrapper::new(Box::new(Atb::new("Banana")), None),
+            TokenWrapper::new(Box::new(Ate::new("Pizza")), None),
+            TokenWrapper::new(Box::new(Rpt::new(5 as usize)), None)
         ];
 
         let mut header: Vec<u8> = Vec::new();
@@ -300,18 +255,9 @@ pub mod bytecode {
 
         // 1) cria tokens em memória (exemplo)
         let tokens: Vec<TokenWrapper> = vec![
-            TokenWrapper {
-                params: vec![],
-                token: Box::new(Atb::new("Banana")),
-            },
-            TokenWrapper {
-                params: vec![],
-                token: Box::new(Ate::new("Pizza")),
-            },
-            TokenWrapper {
-                params: vec![],
-                token: Box::new(Rpt::new(5 as usize)),
-            }
+            TokenWrapper::new(Box::new(Atb::new("Banana")), None),
+            TokenWrapper::new(Box::new(Ate::new("Pizza")), None),
+            TokenWrapper::new(Box::new(Rpt::new(5 as usize)), None)
         ];
 
         let tmp = Builder::new().prefix("banana_").suffix(".atpbc").tempfile().unwrap();

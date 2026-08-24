@@ -144,18 +144,9 @@ pub mod processor {
     fn test_add_transform() {
         use uuid::Variant;
         let tokens: Vec<TokenWrapper> = vec![
-            TokenWrapper {
-                params: vec![],
-                token: Box::new(Atb::new("Banana")),
-            },
-            TokenWrapper {
-                params: vec![],
-                token: Box::new(Ate::new("Pizza")),
-            },
-            TokenWrapper {
-                params: vec![],
-                token: Box::new(Rpt::new(5 as usize)),
-            }
+            TokenWrapper::new(Box::new(Atb::new("Banana")), None),
+            TokenWrapper::new(Box::new(Ate::new("Pizza")), None),
+            TokenWrapper::new(Box::new(Rpt::new(5 as usize)), None)
         ];
 
         let mut processor = AtpProcessor::new();
