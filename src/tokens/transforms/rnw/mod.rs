@@ -78,7 +78,11 @@ impl InstructionMethods for Rnw {
         format!("rnw {} {} {};\n", self.pattern, self.text_to_replace, self.index).into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         let mut count = 0;
 
         let mut idx = None;
@@ -127,6 +131,11 @@ impl InstructionMethods for Rnw {
 
         self.index = parse_args!(params, 2, Usize, "Index should be of type Usize");
 
+        self.params = vec![
+            self.pattern.to_string().into(),
+            self.text_to_replace.to_string().into(),
+            self.index.into()
+        ];
         return Ok(());
     }
     #[cfg(feature = "bytecode")]

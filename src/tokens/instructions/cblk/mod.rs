@@ -73,7 +73,7 @@ impl InstructionMethods for Cblk {
         check_vec_len(&params, 1, "call block", "param parsing error, invalid vec len")?;
 
         self.block_name = parse_args!(params, 0, String, "Block name should be of string type");
-
+        self.params = vec![self.block_name.to_string().into()];
         Ok(())
     }
     #[cfg(feature = "bytecode")]

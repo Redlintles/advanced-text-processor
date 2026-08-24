@@ -46,7 +46,11 @@ impl InstructionMethods for Ate {
         format!("ate {};\n", self.text).into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         let mut s = String::from(input);
         s.push_str(&self.text);
         Ok(s)
@@ -62,6 +66,8 @@ impl InstructionMethods for Ate {
         check_vec_len(&params, 1, "ate", params.join(""))?;
 
         self.text = parse_args!(params, 0, String, "Text should be of string type");
+
+        self.params = vec![self.text.to_string().into()];
 
         Ok(())
     }

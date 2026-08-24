@@ -54,7 +54,11 @@ impl InstructionMethods for Tlcc {
     fn to_atp_line(&self) -> Cow<'static, str> {
         format!("tlcc {} {};\n", self.start_index, self.end_index).into()
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         check_chunk_bound_indexes(self.start_index, self.end_index, Some(input))?;
 
         let total_chars = input.chars().count();
@@ -84,6 +88,7 @@ impl InstructionMethods for Tlcc {
 
         self.start_index = parse_args!(params, 0, Usize, "Index should be of usize type");
         self.end_index = parse_args!(params, 1, Usize, "Index should be of usize type");
+        self.params = vec![self.start_index.into(), self.end_index.into()];
 
         return Ok(());
     }

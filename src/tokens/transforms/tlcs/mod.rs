@@ -49,7 +49,11 @@ impl InstructionMethods for Tlcs {
     fn to_atp_line(&self) -> Cow<'static, str> {
         format!("tlcs {};\n", self.index).into()
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         check_index_against_input(self.index, input)?;
 
         let result: String = input
@@ -69,6 +73,8 @@ impl InstructionMethods for Tlcs {
         check_vec_len(&params, 1, "tlcs", "")?;
 
         self.index = parse_args!(params, 0, Usize, "Index should be of usize type");
+        self.params = vec![self.index.into()];
+
         Ok(())
     }
     #[cfg(feature = "bytecode")]

@@ -54,7 +54,11 @@ impl InstructionMethods for Padr {
     fn to_atp_line(&self) -> Cow<'static, str> {
         format!("padr {} {};\n", self.text, self.max_len).into()
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         let character_count = input.chars().count();
 
         if character_count >= self.max_len {
@@ -72,6 +76,7 @@ impl InstructionMethods for Padr {
 
         self.text = parse_args!(params, 0, String, "Text_to_insert should be of String type");
         self.max_len = parse_args!(params, 1, Usize, "Index should be of usize type");
+        self.params = vec![self.text.to_string().into(), self.max_len.into()];
 
         return Ok(());
     }

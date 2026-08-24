@@ -88,6 +88,8 @@ impl InstructionMethods for Val {
         self.val_name = parse_args!(params, 0, String, "Val name should be of string type");
         self.val_value = params[1].clone();
 
+        self.params = vec![self.val_name.to_string().into(), self.val_value.clone()];
+
         Ok(())
     }
     #[cfg(feature = "bytecode")]

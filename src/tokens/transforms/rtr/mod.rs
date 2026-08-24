@@ -40,7 +40,11 @@ impl InstructionMethods for Rtr {
     fn get_params(&self) -> &Vec<AtpParamTypes> {
         &self.params
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         if input.is_empty() {
             return Err(
                 AtpError::new(
@@ -76,6 +80,7 @@ impl InstructionMethods for Rtr {
         check_vec_len(&params, 1, "rtr", "")?;
 
         self.times = parse_args!(params, 0, Usize, "Index should be of usize type");
+        self.params = vec![self.times.into()];
 
         Ok(())
     }

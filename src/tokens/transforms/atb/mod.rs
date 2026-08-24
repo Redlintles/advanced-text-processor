@@ -72,6 +72,8 @@ impl InstructionMethods for Atb {
 
         self.text = parse_args!(params, 0, String, "Text should be of string type");
 
+        self.params = vec![self.text.to_string().into()];
+
         Ok(())
     }
 

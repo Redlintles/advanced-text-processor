@@ -90,7 +90,6 @@ impl InstructionMethods for Sslt {
         check_vec_len(&params, 2, "sslt", "")?;
 
         let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
-        self.index = parse_args!(params, 1, Usize, "Index should be of type Usize");
 
         self.pattern = Regex::new(&pattern_payload.clone()).map_err(|_| {
             AtpError::new(
@@ -99,6 +98,10 @@ impl InstructionMethods for Sslt {
                 pattern_payload.clone()
             )
         })?;
+
+        self.index = parse_args!(params, 1, Usize, "Index should be of type Usize");
+
+        self.params = vec![self.pattern.to_string().into(), self.index.into()];
 
         return Ok(());
     }

@@ -69,7 +69,11 @@ impl InstructionMethods for Rlw {
         format!("rlw {} {};\n", self.pattern, self.text_to_replace).into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         let caps: Vec<_> = self.pattern.find_iter(input).collect();
 
         if let Some(m) = caps.last() {
@@ -110,6 +114,11 @@ impl InstructionMethods for Rlw {
             String,
             "Text_to_replace should be of type String"
         );
+
+        self.params = vec![
+            self.pattern.to_string().into(),
+            self.text_to_replace.to_string().into()
+        ];
 
         return Ok(());
     }

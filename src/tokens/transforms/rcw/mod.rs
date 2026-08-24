@@ -76,7 +76,11 @@ impl InstructionMethods for Rcw {
         format!("rcw {} {} {};\n", self.pattern, self.text_to_replace, self.count).into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         if self.count == 0 {
             return Ok(input.to_string());
         }
@@ -109,7 +113,11 @@ impl InstructionMethods for Rcw {
         );
 
         self.count = parse_args!(params, 2, Usize, "Index should be of type Usize");
-
+        self.params = vec![
+            self.pattern.to_string().into(),
+            self.text_to_replace.to_string().into(),
+            self.count.into()
+        ];
         return Ok(());
     }
     #[cfg(feature = "bytecode")]

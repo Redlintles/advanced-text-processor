@@ -69,7 +69,11 @@ impl InstructionMethods for Raw {
         format!("raw {} {};\n", self.pattern, self.text_to_replace).into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         Ok(self.pattern.replace_all(input, &self.text_to_replace).to_string())
     }
 
@@ -97,6 +101,11 @@ impl InstructionMethods for Raw {
             String,
             "Text_to_replace should be of type String"
         );
+
+        self.params = vec![
+            self.pattern.to_string().into(),
+            self.text_to_replace.to_string().into()
+        ];
 
         return Ok(());
     }

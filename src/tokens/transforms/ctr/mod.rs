@@ -57,7 +57,11 @@ impl InstructionMethods for Ctr {
     fn get_string_repr(&self) -> &'static str {
         "ctr"
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         if input.trim().is_empty() {
             return Ok("".to_string());
         }
@@ -94,6 +98,7 @@ impl InstructionMethods for Ctr {
 
         self.start_index = parse_args!(params, 0, Usize, "Index should be of usize type");
         self.end_index = parse_args!(params, 1, Usize, "Index should be of usize type");
+        self.params = vec![self.start_index.into(), self.end_index.into()];
 
         return Ok(());
     }

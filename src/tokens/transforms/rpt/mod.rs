@@ -45,7 +45,11 @@ impl InstructionMethods for Rpt {
         format!("rpt {};\n", self.times).into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         Ok(input.repeat(self.times))
     }
 
@@ -58,6 +62,7 @@ impl InstructionMethods for Rpt {
         check_vec_len(&params, 1, "rpt", "")?;
 
         self.times = parse_args!(params, 0, Usize, "Index should be of usize type");
+        self.params = vec![self.times.into()];
 
         Ok(())
     }

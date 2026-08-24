@@ -50,7 +50,11 @@ impl InstructionMethods for Ins {
         format!("ins {} {};\n", self.index, self.text_to_insert).into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, AtpError> {
         if self.index > input.chars().count() {
             return Err(
                 AtpError::new(
@@ -90,6 +94,8 @@ impl InstructionMethods for Ins {
             String,
             "Text_to_insert should be of String type"
         );
+
+        self.params = vec![self.index.into(), self.text_to_insert.to_string().into()];
 
         return Ok(());
     }
