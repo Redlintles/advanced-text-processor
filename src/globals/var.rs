@@ -61,7 +61,13 @@ impl Deref for TokenWrapper {
 
 impl From<Box<dyn InstructionMethods>> for TokenWrapper {
     fn from(value: Box<dyn InstructionMethods>) -> Self {
-        TokenWrapper::new(value, None)
+        let token_params = value
+            .get_params()
+            .clone()
+            .into_iter()
+            .map(|i| ValType::Literal(i))
+            .collect::<Vec<ValType>>();
+        TokenWrapper { params: token_params, token: value }
     }
 }
 
