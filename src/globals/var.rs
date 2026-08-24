@@ -42,7 +42,7 @@ impl From<ValType> for AtpParamTypes {
 
 #[derive(Clone)]
 pub struct TokenWrapper {
-    pub params: Vec<ValType>,
+    params: Vec<ValType>,
     pub token: Box<dyn InstructionMethods>,
 }
 
@@ -78,6 +78,9 @@ impl From<TokenWrapper> for Box<dyn InstructionMethods> {
 }
 
 impl TokenWrapper {
+    pub fn get_params(&self) -> &Vec<ValType> {
+        &self.params
+    }
     pub fn get_default_token(&self) -> Box<dyn InstructionMethods> {
         self.token.clone()
     }
