@@ -3,75 +3,19 @@
 pub mod bytecode {
     use std::{ fs::File, io::Read };
 
-    use atp::{ globals::var::TokenWrapper };
+    use atp::globals::var::TokenWrapper;
 
     #[cfg(test)]
     mod write_bytecode_to_file_tests {
-        use std::borrow::Cow;
         use std::fs;
         use std::path::PathBuf;
 
         use atp::bytecode::writer::write_bytecode_to_file;
-        use atp::context::execution_context::{ GlobalExecutionContext };
         use atp::globals::var::TokenWrapper;
-
-        use atp::utils::errors::AtpError;
+        use atp::tokens::InstructionMethods;
+        use atp::tokens::transforms::{ atb::Atb, ate::Ate, ctc::Ctc, dlf::Dlf, rpt::Rpt };
         use atp::utils::params::AtpParamTypes;
         use tempfile::tempdir;
-
-        /// Minimal dummy token for these tests.
-        #[derive(Clone)]
-        struct DummyToken {
-            atp: String,
-            bc: Vec<u8>,
-            params: Vec<AtpParamTypes>,
-        }
-
-        impl DummyToken {
-            fn new(atp: &str, bc: &[u8]) -> Self {
-                Self {
-                    atp: atp.into(),
-                    bc: bc.to_vec(),
-                    params: vec![],
-                }
-            }
-        }
-
-        impl atp::tokens::InstructionMethods for DummyToken {
-            fn get_params(&self) -> &Vec<AtpParamTypes> {
-                &self.params
-            }
-            fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
-                Ok(self.bc.clone())
-            }
-
-            fn to_atp_line(&self) -> Cow<'static, str> {
-                self.atp.clone().into()
-            }
-
-            fn transform(
-                &self,
-                _input: &str,
-                _context: Option<&mut GlobalExecutionContext>
-            ) -> Result<String, atp::utils::errors::AtpError> {
-                Ok(_input.to_string())
-            }
-
-            fn get_string_repr(&self) -> &'static str {
-                "rep"
-            }
-
-            fn from_params(
-                &mut self,
-                _instruction: &Vec<atp::utils::params::AtpParamTypes>
-            ) -> Result<(), atp::utils::errors::AtpError> {
-                Ok(())
-            }
-
-            fn get_opcode(&self) -> u32 {
-                0xff
-            }
-        }
 
         fn parse_header(bytes: &[u8]) -> (Vec<u8>, u64, u32, &[u8]) {
             assert!(bytes.len() >= 20);
@@ -84,8 +28,37 @@ pub mod bytecode {
 
         /// Helper: create an empty file first so `canonicalize()` doesn't fail in `check_file_path`.
         fn touch(path: &PathBuf) {
-            // create(true) + truncate(true) ensures it exists and is empty
             fs::OpenOptions::new().create(true).truncate(true).write(true).open(path).unwrap();
+        }
+
+        /// Um exemplar de cada "forma" de instrução: 1 String, 1 Usize, 2 Usize e zero params.
+        fn sample_tokens() -> Vec<TokenWrapper> {
+            let mut ctc = Ctc::default();
+            ctc.from_params(&vec![AtpParamTypes::Usize(0), AtpParamTypes::Usize(3)]).unwrap();
+
+            return vec![
+                TokenWrapper::new(Box::new(Atb::new("Banana")), None), // String
+                TokenWrapper::new(Box::new(Ate::new("Pizza")), None), // String
+                TokenWrapper::new(Box::new(Rpt::new(5_usize)), None), // Usize
+                TokenWrapper::new(Box::new(Dlf::default()), None), // zero params
+                TokenWrapper::new(Box::new(ctc), None) // 2x Usize
+            ];
+        }
+
+        /// Mesma lista de tokens, mas como instâncias soltas — usadas só pra
+        /// calcular o bytecode esperado via to_bytecode() de cada uma,
+        /// sem depender de literais de bytes escritos à mão.
+        fn sample_instructions() -> Vec<Box<dyn InstructionMethods>> {
+            let mut ctc = Ctc::default();
+            ctc.from_params(&vec![AtpParamTypes::Usize(0), AtpParamTypes::Usize(3)]).unwrap();
+
+            return vec![
+                Box::new(Atb::new("Banana")),
+                Box::new(Ate::new("Pizza")),
+                Box::new(Rpt::new(5_usize)),
+                Box::new(Dlf::default()),
+                Box::new(ctc)
+            ];
         }
 
         #[test]
@@ -93,17 +66,11 @@ pub mod bytecode {
             let dir = tempdir().unwrap();
             let path: PathBuf = dir.path().join("out.atpbc");
 
-            // IMPORTANT: your check_file_path canonicalizes, so the file must exist already
             touch(&path);
 
-            let tokens: Vec<TokenWrapper> = vec![
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa, 0xbb])), None),
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa])), None),
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xbb])), None),
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[])), None)
-            ];
+            let tokens = sample_tokens();
 
-            write_bytecode_to_file(&path, tokens.into()).unwrap();
+            write_bytecode_to_file(&path, tokens).unwrap();
 
             let bytes = fs::read(&path).unwrap();
             let (magic, protocol, count, rest) = parse_header(&bytes);
@@ -111,17 +78,13 @@ pub mod bytecode {
             let expected_magic = vec![38, 235, 245, 8, 244, 137, 1, 179];
             assert_eq!(magic, expected_magic);
             assert_eq!(protocol, 1);
-            assert_eq!(count, 4);
+            assert_eq!(count, 5);
 
-            let expected_payload: Vec<u8> = vec![
-                0xaa,
-                0xbb, // tok1
-                0x10, // tok2
-                // tok3 empty
-                0xff,
-                0x00,
-                0x01 // tok4
-            ];
+            let mut expected_payload: Vec<u8> = Vec::new();
+            for instruction in sample_instructions() {
+                expected_payload.extend_from_slice(&instruction.to_bytecode().unwrap());
+            }
+
             assert_eq!(rest, expected_payload.as_slice());
         }
 
@@ -130,7 +93,6 @@ pub mod bytecode {
             let dir = tempdir().unwrap();
             let path: PathBuf = dir.path().join("empty.atpbc");
 
-            // same reason: canonicalize requires existence
             touch(&path);
 
             let tokens: Vec<TokenWrapper> = vec![];
@@ -148,16 +110,9 @@ pub mod bytecode {
             let dir = tempdir().unwrap();
             let path: PathBuf = dir.path().join("wrong.txt");
 
-            // Create it anyway, because your validator canonicalizes first.
-            // This ensures the error is about extension, not about "no such file".
             touch(&path);
 
-            let tokens: Vec<TokenWrapper> = vec![
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa, 0xbb])), None),
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa])), None),
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xbb])), None),
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[])), None)
-            ];
+            let tokens = sample_tokens();
 
             let err = write_bytecode_to_file(&path, tokens).unwrap_err();
 
@@ -177,16 +132,10 @@ pub mod bytecode {
 
             fs::create_dir_all(&path_is_dir).unwrap();
 
-            let tokens: Vec<TokenWrapper> = vec![
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa, 0xbb])), None),
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xaa])), None),
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[0xbb])), None),
-                TokenWrapper::new(Box::new(DummyToken::new("tok1", &[])), None)
-            ];
+            let tokens = sample_tokens();
 
             let err = write_bytecode_to_file(&path_is_dir, tokens).unwrap_err();
 
-            // Your real behavior: ValidationError("Path is a directory, not a file")
             let msg = format!("{err:?}");
             assert!(
                 msg.contains("Path is a directory") || msg.contains("ValidationError"),
@@ -194,6 +143,7 @@ pub mod bytecode {
             );
         }
     }
+
     #[test]
     fn test_write_bytecode_to_file() {
         use atp::bytecode::writer::write_bytecode_to_file;
@@ -206,15 +156,13 @@ pub mod bytecode {
         let tokens: Vec<TokenWrapper> = vec![
             TokenWrapper::new(Box::new(Atb::new("Banana")), None),
             TokenWrapper::new(Box::new(Ate::new("Pizza")), None),
-            TokenWrapper::new(Box::new(Rpt::new(5 as usize)), None)
+            TokenWrapper::new(Box::new(Rpt::new(5_usize)), None)
         ];
 
         let mut header: Vec<u8> = Vec::new();
 
         let magic_number: Vec<u8> = vec![38, 235, 245, 8, 244, 137, 1, 179];
-
-        let protocol_version = (1 as u64).to_be_bytes();
-
+        let protocol_version = (1_u64).to_be_bytes();
         let instruction_count = (tokens.len() as u32).to_be_bytes();
 
         header.extend_from_slice(&magic_number);
@@ -222,7 +170,6 @@ pub mod bytecode {
         header.extend_from_slice(&instruction_count);
 
         let mut expected_content: Vec<u8> = vec![];
-
         expected_content.extend_from_slice(&header);
 
         for t in tokens.iter() {
@@ -250,36 +197,35 @@ pub mod bytecode {
         use atp::{
             api::atp_processor::{ AtpProcessor, AtpProcessorMethods },
             bytecode::{ reader::read_bytecode_from_file, writer::write_bytecode_to_file },
-            tokens::transforms::{ atb::Atb, ate::Ate, rpt::Rpt }, // ajuste pros tokens reais que você quer
+            tokens::transforms::{ atb::Atb, ate::Ate, rpt::Rpt },
         };
 
-        // 1) cria tokens em memória (exemplo)
+        // atb "Banana" + ate "Pizza" + rpt 5 sobre "Coxinha":
+        // prepend -> append -> repete o resultado 5 vezes.
         let tokens: Vec<TokenWrapper> = vec![
             TokenWrapper::new(Box::new(Atb::new("Banana")), None),
             TokenWrapper::new(Box::new(Ate::new("Pizza")), None),
-            TokenWrapper::new(Box::new(Rpt::new(5 as usize)), None)
+            TokenWrapper::new(Box::new(Rpt::new(5_usize)), None)
         ];
 
         let tmp = Builder::new().prefix("banana_").suffix(".atpbc").tempfile().unwrap();
-
         let file_path = tmp.path().to_path_buf();
         write_bytecode_to_file(Path::new(&file_path), tokens).unwrap();
 
         use std::fs;
-
         let data = fs::read(&file_path).unwrap();
         eprintln!("len = {}", data.len());
-        eprintln!("header bytes = {:02x?}", &data[..(20).min(data.len())]); // 8+8+4 = 20
+        eprintln!("header bytes = {:02x?}", &data[..(20).min(data.len())]);
         eprintln!("first body bytes = {:02x?}", &data[20..(20 + 16).min(data.len())]);
 
         assert!(file_path.exists(), "writer não criou o arquivo: {:?}", file_path);
 
-        // 3) lê de volta
         let read_tokens = read_bytecode_from_file(Path::new(&file_path)).unwrap();
 
-        // 4) processa
         let input = "Coxinha";
-        let expected_output = "BananaCoxinhaLaranjaBananaCoxinhaLaranjaBananaCoxinhaLaranja";
+        // "Banana" + "Coxinha" + "Pizza", repetido 5x — bate com atb "Banana",
+        // ate "Pizza" e rpt 5 aplicados nessa ordem.
+        let expected_output = "BananaCoxinhaPizza".repeat(5);
 
         let mut processor: Box<dyn AtpProcessorMethods> = Box::new(AtpProcessor::new());
         println!("read_tokens len {}", read_tokens.len());
