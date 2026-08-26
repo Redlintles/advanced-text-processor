@@ -71,8 +71,6 @@ impl InstructionMethods for Ctc {
 
         check_chunk_bound_indexes(self.start_index, end, Some(input))?;
 
-        // clamp to avoid overflow
-
         // Convert char indices to byte indices
         let start_byte = input
             .char_indices()
@@ -80,25 +78,41 @@ impl InstructionMethods for Ctc {
             .map(|(byte_idx, _)| byte_idx)
             .unwrap(); // safe: start_index < total_chars
 
-        let end_byte = if end == len {
-            input.len() // go to the end
+        let end_byte = if end + 1 >= len {
+            input.len()
         } else {
             input
                 .char_indices()
-                .nth(end)
+                .nth(end + 1)
                 .map(|(byte_idx, _)| byte_idx)
                 .unwrap()
         };
 
-        // Extract slice safely
+        // Extract slice safely (end_index é inclusivo)
         let slice = &input[start_byte..end_byte];
 
-        // Capitalize all words in the slice
-        let capitalized_chunk = slice
-            .split_whitespace()
-            .map(|w| capitalize(w))
-            .collect::<Vec<_>>()
-            .join(" ");
+        // Capitaliza cada palavra dentro do slice preservando o espaçamento
+        // original (múltiplos espaços, tabs, espaço nas pontas etc.) — ao
+        // contrário de split_whitespace()+join(" "), que normaliza tudo para
+        // um único espaço e descarta espaços nas extremidades, perdendo
+        // informação sempre que o limite do chunk cai perto de um separador.
+        let mut capitalized_chunk = String::with_capacity(slice.len());
+        let mut word = String::new();
+
+        for ch in slice.chars() {
+            if ch.is_whitespace() {
+                if !word.is_empty() {
+                    capitalized_chunk.push_str(&capitalize(&word));
+                    word.clear();
+                }
+                capitalized_chunk.push(ch);
+            } else {
+                word.push(ch);
+            }
+        }
+        if !word.is_empty() {
+            capitalized_chunk.push_str(&capitalize(&word));
+        }
 
         // Rebuild final string
         let prefix = &input[..start_byte];
@@ -108,7 +122,6 @@ impl InstructionMethods for Ctc {
 
         Ok(result)
     }
-
     fn to_atp_line(&self) -> Cow<'static, str> {
         format!("ctc {} {};\n", self.start_index, self.end_index).into()
     }
