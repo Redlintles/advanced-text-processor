@@ -61,7 +61,7 @@ pub mod processor {
 
         let output = processor.process_single(token, &input)?;
 
-        let expected_output = "b".repeat(100);
+        let expected_output = format!("{}{}", "banana", input);
 
         assert_eq!(output, expected_output);
 
@@ -76,7 +76,7 @@ pub mod processor {
 
         let output = processor.process_single_with_debug(token, &input)?;
 
-        let expected_output = "b".repeat(100);
+        let expected_output = format!("{}{}", "banana", input);
 
         assert_eq!(output, expected_output);
 
