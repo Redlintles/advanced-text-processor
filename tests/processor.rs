@@ -87,7 +87,9 @@ pub mod processor {
     fn test_read_from_file() -> Result<(), AtpError> {
         let mut processor = AtpProcessor::new();
 
-        let identifier = processor.read_from_text_file(Path::new("instructions.atp"))?;
+        let identifier = processor.read_from_text_file(
+            Path::new("pipelines/text/simple_pipeline.atp")
+        )?;
 
         let input_string = "Banana";
         let expected_output = "BznzbonanzanzBznznz";
