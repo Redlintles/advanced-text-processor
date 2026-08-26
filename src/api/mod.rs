@@ -1012,15 +1012,14 @@ pub trait AtpBuilderMethods: Sized {
     /// };
     /// let mut processor = AtpProcessor::new();
     /// let id = AtpBuilder::new(&mut processor)
-    ///     .capitalize_chunk(1, 3)
+    ///     .capitalize_chunk(6, 16)
     ///     .unwrap().build();
     ///
-    ///
-    /// let input = "abcdef";
+    /// let input = "hello brave world";
     ///
     /// assert_eq!(
     ///     processor.process_all(&id,&input),
-    ///     Ok("aBCDef".to_string())
+    ///     Ok("hello Brave World".to_string())
     /// );
     /// ```
 
@@ -1060,10 +1059,10 @@ pub trait AtpBuilderMethods: Sized {
     ///     .unwrap().build(); // required because this method returns Result
     ///
     ///
-    /// let input = "abcdef";
+    /// let input = "foo bar mar jar tar rar";
     /// assert_eq!(
     ///     processor.process_all(&id, &input),
-    ///     Ok("aBCDef".to_string())
+    ///     Ok("foo Bar Mar Jar Tar rar".to_string())
     /// );
     /// ```
     fn capitalize_range(
@@ -1263,7 +1262,7 @@ pub trait AtpBuilderMethods: Sized {
     /// let input = "<b>Hello</b>";
     /// assert_eq!(
     ///     processor.process_all(&id, &input),
-    ///     Ok("&lt;b&gt;Hello&lt;/b&gt;".to_string())
+    ///     Ok("&lt;b&gt;Hello&lt;&#x2F;b&gt;".to_string())
     /// );
     /// ```
 

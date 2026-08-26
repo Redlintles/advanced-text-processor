@@ -94,11 +94,12 @@ use crate::utils::validations::check_file_path;
 ///
 /// ```rust
 /// use atp::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
+/// use atp::globals::var::TokenWrapper;
 /// use atp::tokens::transforms::tbs;
 ///
 /// let mut processor = AtpProcessor::new();
 ///
-/// let token = Box::new(tbs::Tbs::default());
+/// let token = TokenWrapper::new(Box::new(tbs::Tbs::default()), None);
 /// let out = processor.process_single(token, "   banana   ")?;
 /// assert_eq!(out, "banana");
 /// # Ok::<(), atp::utils::errors::AtpError>(())
@@ -150,9 +151,9 @@ use crate::utils::validations::check_file_path;
 ///     .capitalize_first_word()?
 ///     .capitalize_single_word(1)?
 ///     .capitalize_last_word()?
-///     .capitalize_range(1, 3)?
+///     .capitalize_range(0, 3)?
 ///     .split_select("B", 1)?
-///     .capitalize_chunk(1, 3)?
+///     .capitalize_chunk(0, 3)?
 ///     .replace_last_with("b", "c")?
 ///     .replace_nth_with("b", "d", 3)?
 ///     .to_url_encoded()?
