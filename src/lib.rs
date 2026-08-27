@@ -24,6 +24,7 @@ pub mod utils;
 
 #[cfg(feature = "test_access")]
 pub mod text;
+
 // Public
 
 pub mod api;
@@ -31,3 +32,6 @@ pub mod api;
 // Bytecode
 #[cfg(feature = "bytecode")]
 pub mod bytecode;
+
+#[cfg(feature = "watchers")]
+pub mod watchers;

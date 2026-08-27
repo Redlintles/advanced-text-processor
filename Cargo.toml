@@ -26,6 +26,7 @@ crate-type = ["rlib"]
 
 default = []
 bytecode = []
+watchers = []
 
 test_access = ["default", "bytecode", "tempfile", "rand", "random-string"]
 
