@@ -28,7 +28,14 @@ default = []
 bytecode = []
 watchers = []
 
-test_access = ["default", "bytecode", "tempfile", "rand", "random-string"]
+test_access = [
+  "default",
+  "bytecode",
+  "tempfile",
+  "rand",
+  "random-string",
+  "watchers",
+]
 
 [[bin]]
 name = "atp"
