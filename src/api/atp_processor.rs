@@ -6,10 +6,13 @@ use uuid::Uuid;
 
 use colored::*;
 use rayon::prelude::*;
-
-use crate::api::atp_builder::AtpBuilder;
+// Feature specific
 #[cfg(feature = "bytecode")]
 use crate::bytecode::{ reader::read_bytecode_from_file, writer::write_bytecode_to_file };
+#[cfg(feature = "watchers")]
+use crate::watchers::{ WatcherContext, WatcherList };
+
+use crate::api::atp_builder::AtpBuilder;
 use crate::context::execution_context::{ GlobalContextMethods, GlobalExecutionContext };
 use crate::globals::var::{ TokenWrapper };
 
@@ -450,6 +453,14 @@ pub trait AtpProcessorMethods {
     fn run_transform(&self, id: &str, input: &str) -> Result<String, AtpError>;
 
     fn process_batch(&self, tasks: Vec<(&Path, &str, &Path)>) -> Vec<Result<(), AtpError>>;
+    #[cfg(feature = "watchers")]
+    fn process_all_with_watchers(
+        &mut self,
+        id: &str,
+        input: &str,
+        watcher_list: &mut WatcherList,
+        report_path: &Path
+    ) -> Result<String, AtpError>;
 }
 
 impl AtpProcessor {
@@ -852,5 +863,60 @@ impl AtpProcessorMethods for AtpProcessor {
                 }
             )
             .collect()
+    }
+
+    #[cfg(feature = "watchers")]
+    fn process_all_with_watchers(
+        &mut self,
+        id: &str,
+        input: &str,
+        watcher_list: &mut WatcherList,
+        report_path: &Path
+    ) -> Result<String, AtpError> {
+        let mut result = String::from(input);
+
+        let tokens = match self.transforms.get(id).ok_or_else(token_array_not_found(id)) {
+            Ok(x) => x,
+            Err(e) => {
+                self.errors.add_error(e.clone());
+                return Err(e);
+            }
+        };
+
+        let mut context = GlobalExecutionContext::new();
+        let mut local_errors = ErrorManager::default();
+
+        // Guarda (before, current, instruction) do passo anterior até sabermos
+        // o "after" dele — que só existe depois de rodar o passo seguinte.
+        let mut pending: Option<(String, String, String)> = None;
+
+        for token in tokens.iter() {
+            let before = result.clone();
+            let after = apply_transform(token, result.as_str(), &mut local_errors, &mut context)?;
+
+            if let Some((prev_before, prev_current, prev_instruction)) = pending.take() {
+                let watcher_ctx = WatcherContext::new(
+                    prev_current,
+                    prev_before,
+                    Some(after.clone()),
+                    prev_instruction
+                );
+                watcher_list.run_watchers(watcher_ctx)?;
+            }
+
+            pending = Some((before, after.clone(), token.to_atp_line().to_string()));
+            result = after;
+        }
+
+        // Última instrução: não existe próximo passo — after = None, explícito.
+        if let Some((before, current, instruction)) = pending.take() {
+            let watcher_ctx = WatcherContext::new(current, before, None, instruction);
+            watcher_list.run_watchers(watcher_ctx)?;
+        }
+
+        watcher_list.to_json(report_path)?;
+        watcher_list.reset();
+
+        Ok(result)
     }
 }
