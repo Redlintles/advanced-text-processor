@@ -5,40 +5,111 @@ use std::borrow::Cow;
 
 pub mod default_watchers;
 
-// A ideia desse enum é decidir quando determinado watcher será executado
-
-#[derive(Clone)]
+/// Snapshot do estado do pipeline no momento em que os watchers agendados
+/// pra uma instrução são executados.
+///
+/// `before` e `current` sempre representam o par (entrada, saída) da
+/// instrução que acabou de rodar. `after` é o resultado da **próxima**
+/// instrução do pipeline — por isso ele só é conhecido com um passo de
+/// atraso em relação a `before`/`current`, e é `None` quando a instrução
+/// observada é a última do pipeline (não existe "próxima").
+///
+/// Instâncias normalmente não são construídas manualmente fora de
+/// `process_all_with_watchers`; use [`WatcherContext::new`] em código de
+/// integração ou testes.
+#[derive(Clone, Debug)]
 pub struct WatcherContext {
+    /// Resultado da instrução observada por este contexto.
     pub current: String,
+    /// Estado do texto imediatamente antes da instrução observada rodar.
     pub before: String,
+    /// Resultado da instrução seguinte, se houver. `None` na última
+    /// instrução do pipeline.
     pub after: Option<String>,
+    /// Representação textual (`to_atp_line()`) da instrução observada.
     pub instruction: String,
 }
 
 impl WatcherContext {
+    /// Constrói um `WatcherContext` a partir de seus quatro campos.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use atp::watchers::WatcherContext;
+    ///
+    /// let ctx = WatcherContext::new(
+    ///     "banana!".to_string(),
+    ///     "banana".to_string(),
+    ///     Some("BANANA!".to_string()),
+    ///     "add_to_end".to_string(),
+    /// );
+    ///
+    /// assert_eq!(ctx.current, "banana!");
+    /// assert_eq!(ctx.after, Some("BANANA!".to_string()));
+    /// ```
     pub fn new(
         current: String,
         before: String,
         after: Option<String>,
         instruction: String
     ) -> Self {
-        WatcherContext {
-            current,
-            before,
-            after,
-            instruction,
-        }
+        WatcherContext { current, before, after, instruction }
     }
 }
 
+/// Decide quando os watchers de uma [`WatcherList`] são executados em
+/// relação às instruções do pipeline.
+///
+/// Atualmente só `All` (todo passo) está implementado; as demais
+/// variantes planejadas ficam comentadas até terem uma execução real
+/// em [`WatcherList::run_watchers`].
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ExecutionWindows {
+    /// O watcher roda em toda instrução do pipeline.
     All = 0,
     // Every(usize),
     // After(usize),
     // Before(usize),
 }
 
+/// Registro de watchers e agenda de execução para um pipeline ATP.
+///
+/// Um `WatcherList` guarda três coisas separadas:
+/// - `watchers`: funções nomeadas que recebem um [`WatcherContext`] e
+///   retornam uma `String` (via [`set_watcher`](WatcherList::set_watcher));
+/// - `schedule`: em quais momentos cada watcher registrado deve rodar
+///   (via [`schedule_watcher`](WatcherList::schedule_watcher));
+/// - `result`: o relatório acumulado, indexado por número do passo do
+///   pipeline (populado por [`run_watchers`](WatcherList::run_watchers),
+///   exportável via [`to_json`](WatcherList::to_json)).
+///
+/// `watchers` e `schedule` sobrevivem a [`reset`](WatcherList::reset) —
+/// só `result` e `counter` são limpos — pra permitir reusar a mesma
+/// instância em múltiplas execuções do pipeline sem reregistrar tudo.
+///
+/// # Examples
+///
+/// ```rust
+/// use atp::watchers::{WatcherList, ExecutionWindows, WatcherContext};
+///
+/// let mut watchers = WatcherList::default();
+///
+/// watchers.set_watcher("current_len", |ctx: WatcherContext| {
+///     ctx.current.len().to_string()
+/// });
+/// watchers.schedule_watcher("current_len", ExecutionWindows::All)?;
+///
+/// let ctx = WatcherContext::new(
+///     "banana".to_string(),
+///     "".to_string(),
+///     None,
+///     "add_to_end".to_string(),
+/// );
+/// watchers.run_watchers(ctx)?;
+/// # Ok::<(), atp::utils::errors::AtpError>(())
+/// ```
+#[derive(Default)]
 pub struct WatcherList {
     result: HashMap<u64, HashMap<String, String>>,
     watchers: HashMap<&'static str, Box<dyn (Fn(WatcherContext) -> String) + 'static>>,
@@ -47,6 +118,35 @@ pub struct WatcherList {
 }
 
 impl WatcherList {
+    /// Cria uma `WatcherList` vazia. Alias de [`Default::default`].
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Limpa o relatório acumulado (`result`) e zera o contador de passos.
+    ///
+    /// Watchers registrados e o agendamento (`watchers`/`schedule`) **não**
+    /// são afetados — a instância continua pronta pra rodar outro pipeline
+    /// sem precisar reregistrar nada.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use atp::watchers::{WatcherList, ExecutionWindows, WatcherContext};
+    ///
+    /// let mut watchers = WatcherList::default();
+    /// watchers.set_watcher("len", |ctx: WatcherContext| ctx.current.len().to_string());
+    /// watchers.schedule_watcher("len", ExecutionWindows::All)?;
+    ///
+    /// let ctx = WatcherContext::new("ab".into(), "".into(), None, "noop".into());
+    /// watchers.run_watchers(ctx)?;
+    ///
+    /// watchers.reset();
+    /// // "len" continua registrado e agendado após o reset.
+    /// let ctx2 = WatcherContext::new("abc".into(), "".into(), None, "noop".into());
+    /// watchers.run_watchers(ctx2)?;
+    /// # Ok::<(), atp::utils::errors::AtpError>(())
+    /// ```
     pub fn reset(&mut self) -> () {
         self.counter = 0;
         self.result = HashMap::new();
@@ -62,11 +162,47 @@ impl WatcherList {
 
         Ok(())
     }
+
+    /// Registra (ou substitui) um watcher sob `watcher_name`.
+    ///
+    /// Registrar um watcher **não** o agenda pra rodar — é preciso chamar
+    /// [`schedule_watcher`](WatcherList::schedule_watcher) separadamente.
+    /// Chamar `set_watcher` de novo com um nome já usado substitui a
+    /// função anterior silenciosamente; o agendamento existente pra esse
+    /// nome (se houver) não é afetado.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use atp::watchers::{WatcherList, WatcherContext};
+    ///
+    /// let mut watchers = WatcherList::default();
+    /// watchers.set_watcher("is_empty", |ctx: WatcherContext| ctx.current.is_empty().to_string());
+    /// ```
     pub fn set_watcher<F>(&mut self, watcher_name: &'static str, watcher: F)
         where F: Fn(WatcherContext) -> String + 'static
     {
         self.watchers.insert(watcher_name, Box::new(watcher));
     }
+
+    /// Agenda um watcher já registrado pra rodar segundo `when`.
+    ///
+    /// # Errors
+    ///
+    /// Retorna `Err` se `watcher_name` não corresponder a nenhum watcher
+    /// registrado via [`set_watcher`](WatcherList::set_watcher).
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use atp::watchers::{WatcherList, ExecutionWindows, WatcherContext};
+    ///
+    /// let mut watchers = WatcherList::default();
+    /// watchers.set_watcher("len", |ctx: WatcherContext| ctx.current.len().to_string());
+    ///
+    /// assert!(watchers.schedule_watcher("len", ExecutionWindows::All).is_ok());
+    /// assert!(watchers.schedule_watcher("nao_existe", ExecutionWindows::All).is_err());
+    /// ```
     pub fn schedule_watcher(
         &mut self,
         watcher_name: &'static str,
@@ -75,7 +211,7 @@ impl WatcherList {
         if self.watchers.contains_key(watcher_name) {
             self.schedule.insert(watcher_name, when);
             return Ok(());
-        } // Erro de placeholder criar tipo novo de erro pra watcher not found depois
+        }
         return Err(
             AtpError::new(
                 crate::utils::errors::AtpErrorCode::WatcherNotFoundError(
@@ -87,36 +223,59 @@ impl WatcherList {
         );
     }
 
+    /// Executa todos os watchers agendados contra `input`, armazenando
+    /// cada resultado sob o passo atual (`counter`) no relatório interno,
+    /// e então incrementa `counter`.
+    ///
+    /// Pensado pra ser chamado uma vez por instrução dentro de um loop de
+    /// processamento (ver `AtpProcessor::process_all_with_watchers`), na
+    /// mesma ordem em que as instruções do pipeline rodam — a correção do
+    /// relatório depende dessa ordem, já que `counter` não é derivado de
+    /// `input`, só da sequência de chamadas.
+    ///
+    /// # Errors
+    ///
+    /// Propaga qualquer erro do watcher subjacente (hoje, apenas o caso
+    /// interno de inconsistência entre `schedule` e `watchers`, que não é
+    /// alcançável através da API pública atual).
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use atp::watchers::{WatcherList, ExecutionWindows, WatcherContext};
+    ///
+    /// let mut watchers = WatcherList::default();
+    /// watchers.set_watcher("len", |ctx: WatcherContext| ctx.current.len().to_string());
+    /// watchers.schedule_watcher("len", ExecutionWindows::All)?;
+    ///
+    /// let ctx = WatcherContext::new("banana".into(), "".into(), None, "add_to_end".into());
+    /// watchers.run_watchers(ctx)?;
+    /// # Ok::<(), atp::utils::errors::AtpError>(())
+    /// ```
     pub fn run_watchers(&mut self, input: WatcherContext) -> Result<(), AtpError> {
-        // iterate over a collected Vec to avoid holding an immutable borrow of
-        // self.schedule while mutably borrowing self later when storing results
         for (watcher_name, when) in self.schedule
             .iter()
             .map(|(k, v)| (*k, *v))
             .collect::<Vec<_>>() {
-            // Lookup and call the watcher inside a short-lived scope so the
-            // immutable borrow of self.watchers ends before we mutably borrow
-            // self to store the result.
             match when {
                 All => {
                     let return_value = {
-                        let watcher_fn = self.watchers.get(watcher_name).ok_or_else(||
-                            AtpError::new(
-                                crate::utils::errors::AtpErrorCode::IndexOutOfRange(
-                                    Cow::from("Watcher Not Found")
-                                ),
-
-                                Cow::from(""),
-                                Cow::from("")
-                            )
-                        )?;
+                        let watcher_fn = self.watchers
+                            .get(watcher_name)
+                            .ok_or_else(||
+                                AtpError::new(
+                                    crate::utils::errors::AtpErrorCode::IndexOutOfRange(
+                                        Cow::from("Watcher Not Found")
+                                    ),
+                                    Cow::from(""),
+                                    Cow::from("")
+                                )
+                            )?;
                         watcher_fn(input.clone())
                     };
 
                     self.add_to_result(self.counter, watcher_name.to_string(), return_value)?;
                 }
-
-                // Lógica para outros executionWindows Aqui
             }
         }
         self.counter += 1;
@@ -124,6 +283,37 @@ impl WatcherList {
         Ok(())
     }
 
+    /// Serializa o relatório acumulado como JSON formatado e escreve em
+    /// `filename`, sobrescrevendo o arquivo se já existir.
+    ///
+    /// O formato é `{ "<passo>": { "<nome_do_watcher>": "<valor>", ... }, ... }`,
+    /// com as chaves de passo serializadas como string (limitação do
+    /// próprio formato JSON, que não tem chaves numéricas).
+    ///
+    /// # Errors
+    ///
+    /// Retorna `Err` se a serialização falhar, ou se o arquivo não puder
+    /// ser aberto/escrito.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use atp::watchers::{WatcherList, ExecutionWindows, WatcherContext};
+    /// use std::env::temp_dir;
+    ///
+    /// let mut watchers = WatcherList::default();
+    /// watchers.set_watcher("len", |ctx: WatcherContext| ctx.current.len().to_string());
+    /// watchers.schedule_watcher("len", ExecutionWindows::All)?;
+    ///
+    /// let ctx = WatcherContext::new("banana".into(), "".into(), None, "add_to_end".into());
+    /// watchers.run_watchers(ctx)?;
+    ///
+    /// let path = temp_dir().join("atp_watcherlist_doctest.json");
+    /// watchers.to_json(&path)?;
+    /// assert!(path.exists());
+    /// # std::fs::remove_file(&path).ok();
+    /// # Ok::<(), atp::utils::errors::AtpError>(())
+    /// ```
     pub fn to_json(&self, filename: &Path) -> Result<(), AtpError> {
         let json = serde_json
             ::to_string_pretty(&self.result)
@@ -164,5 +354,156 @@ impl WatcherList {
             )?;
 
         Ok(())
+    }
+}
+
+#[cfg(all(test, feature = "test_access"))]
+mod tests {
+    use tempfile::NamedTempFile;
+
+    use super::*;
+    use std::fs;
+
+    fn ctx(before: &str, current: &str, after: Option<&str>, instruction: &str) -> WatcherContext {
+        WatcherContext::new(
+            current.to_string(),
+            before.to_string(),
+            after.map(|s| s.to_string()),
+            instruction.to_string()
+        )
+    }
+
+    #[test]
+    fn test_watcher_context_new_stores_fields_verbatim() {
+        let c = ctx("a", "ab", Some("abc"), "add_to_end");
+        assert_eq!(c.before, "a");
+        assert_eq!(c.current, "ab");
+        assert_eq!(c.after, Some("abc".to_string()));
+        assert_eq!(c.instruction, "add_to_end");
+    }
+
+    #[test]
+    fn test_set_watcher_without_schedule_does_not_run() {
+        let mut wl = WatcherList::default();
+        wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
+        // Nunca agendado -> run_watchers não deve produzir nenhuma entrada
+        wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
+        assert!(wl.result.get(&0).is_none());
+    }
+
+    #[test]
+    fn test_schedule_watcher_fails_for_unregistered_name() {
+        let mut wl = WatcherList::default();
+        let res = wl.schedule_watcher("nao_existe", ExecutionWindows::All);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_schedule_watcher_succeeds_for_registered_name() {
+        let mut wl = WatcherList::default();
+        wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
+        assert!(wl.schedule_watcher("len", ExecutionWindows::All).is_ok());
+    }
+
+    #[test]
+    fn test_run_watchers_stores_result_under_current_counter() {
+        let mut wl = WatcherList::default();
+        wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
+        wl.schedule_watcher("len", ExecutionWindows::All).unwrap();
+
+        wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
+
+        let step0 = wl.result.get(&0).expect("step 0 deveria existir");
+        assert_eq!(step0.get("len").unwrap(), "6");
+    }
+
+    #[test]
+    fn test_run_watchers_increments_counter_across_calls() {
+        let mut wl = WatcherList::default();
+        wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
+        wl.schedule_watcher("len", ExecutionWindows::All).unwrap();
+
+        wl.run_watchers(ctx("", "a", None, "add_to_end")).unwrap();
+        wl.run_watchers(ctx("a", "ab", None, "add_to_end")).unwrap();
+        wl.run_watchers(ctx("ab", "abc", None, "add_to_end")).unwrap();
+
+        assert_eq!(wl.result.get(&0).unwrap().get("len").unwrap(), "1");
+        assert_eq!(wl.result.get(&1).unwrap().get("len").unwrap(), "2");
+        assert_eq!(wl.result.get(&2).unwrap().get("len").unwrap(), "3");
+    }
+
+    #[test]
+    fn test_run_watchers_runs_multiple_scheduled_watchers_per_call() {
+        let mut wl = WatcherList::default();
+        wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
+        wl.set_watcher("is_empty", |c: WatcherContext| c.current.is_empty().to_string());
+        wl.schedule_watcher("len", ExecutionWindows::All).unwrap();
+        wl.schedule_watcher("is_empty", ExecutionWindows::All).unwrap();
+
+        wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
+
+        let step0 = wl.result.get(&0).unwrap();
+        assert_eq!(step0.get("len").unwrap(), "6");
+        assert_eq!(step0.get("is_empty").unwrap(), "false");
+    }
+
+    #[test]
+    fn test_reset_clears_result_and_counter_but_keeps_registration() {
+        let mut wl = WatcherList::default();
+        wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
+        wl.schedule_watcher("len", ExecutionWindows::All).unwrap();
+        wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
+
+        wl.reset();
+        assert!(wl.result.is_empty());
+        assert_eq!(wl.counter, 0);
+
+        // "len" continua registrado e agendado: run_watchers volta a produzir resultado
+        // sem precisar chamar set_watcher/schedule_watcher de novo.
+        wl.run_watchers(ctx("", "abcd", None, "add_to_end")).unwrap();
+        assert_eq!(wl.result.get(&0).unwrap().get("len").unwrap(), "4");
+    }
+
+    // NOTA: o branch de erro "Watcher Not Found" dentro de run_watchers (o segundo
+    // ok_or_else, distinto do de schedule_watcher) não é alcançável pela API pública
+    // atual — schedule_watcher só agenda nomes já presentes em `watchers`, e não existe
+    // remove_watcher pra desincronizar os dois mapas depois. Por isso não há teste
+    // exercitando esse caminho; ele é só uma checagem defensiva.
+
+    // ... ctx() e os testes anteriores continuam iguais ...
+
+    #[test]
+    fn test_to_json_writes_valid_json_matching_result() {
+        let mut wl = WatcherList::default();
+        wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
+        wl.schedule_watcher("len", ExecutionWindows::All).unwrap();
+        wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
+        wl.run_watchers(ctx("banana", "banana!", None, "add_to_end")).unwrap();
+
+        let file = NamedTempFile::new().unwrap();
+        wl.to_json(file.path()).unwrap();
+
+        let content = fs::read_to_string(file.path()).unwrap();
+        let parsed: serde_json::Value = serde_json::from_str(&content).unwrap();
+
+        assert_eq!(parsed["0"]["len"], "6");
+        assert_eq!(parsed["1"]["len"], "7");
+        // arquivo é removido automaticamente quando `file` sai de escopo
+    }
+
+    #[test]
+    fn test_to_json_overwrites_existing_file() {
+        let mut wl = WatcherList::default();
+        wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
+        wl.schedule_watcher("len", ExecutionWindows::All).unwrap();
+
+        let file = NamedTempFile::new().unwrap();
+        fs::write(file.path(), "conteudo antigo que deve ser substituido").unwrap();
+
+        wl.run_watchers(ctx("", "ab", None, "add_to_end")).unwrap();
+        wl.to_json(file.path()).unwrap();
+
+        let content = fs::read_to_string(file.path()).unwrap();
+        assert!(!content.contains("conteudo antigo"));
     }
 }
