@@ -158,6 +158,8 @@ pub enum AtpErrorCode {
     TryIntoFailError(Cow<'static, str>),
     IncompatibleTypeError(Cow<'static, str>),
     RequiredContextError(Cow<'static, str>),
+    WatcherNotFoundError(Cow<'static, str>),
+    SerializationError(Cow<'static, str>),
 }
 
 impl Display for AtpErrorCode {
@@ -203,6 +205,8 @@ impl AtpErrorCode {
             Self::TryIntoFailError(_) => 22u16,
             Self::IncompatibleTypeError(_) => 23u16,
             Self::RequiredContextError(_) => 24u16,
+            Self::WatcherNotFoundError(_) => 25u16,
+            Self::SerializationError(_) => 26u16,
         }
     }
 
@@ -237,6 +241,8 @@ impl AtpErrorCode {
             | Self::TryIntoFailError(x)
             | Self::IncompatibleTypeError(x)
             | Self::BytecodeParamNotRecognized(x)
+            | Self::WatcherNotFoundError(x)
+            | Self::SerializationError(x)
             | Self::RequiredContextError(x) => x,
         }
     }
@@ -252,6 +258,8 @@ impl AtpErrorCode {
             | Self::InvalidArgumentNumber(_)
             | Self::BytecodeParsingError(_)
             | Self::BytecodeParamParsingError(_)
+            | Self::WatcherNotFoundError(_)
+            | Self::SerializationError(_)
             | Self::TextParsingError(_) => Color::Red,
             | Self::TryIntoFailError(_)
             // "Missing things" / lookup failures
