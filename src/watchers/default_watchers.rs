@@ -200,13 +200,13 @@ mod tests {
     #[test]
     fn test_uppercase_count() {
         let c = ctx("", "BaNaNa", "to_uppercase_chunk");
-        assert_eq!(uppercase_count(c), "2");
+        assert_eq!(uppercase_count(c), "3");
     }
 
     #[test]
     fn test_lowercase_count() {
         let c = ctx("", "BaNaNa", "to_lowercase_chunk");
-        assert_eq!(lowercase_count(c), "4");
+        assert_eq!(lowercase_count(c), "3");
     }
 
     #[test]
