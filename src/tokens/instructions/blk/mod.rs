@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use crate::{
     context::execution_context::{ GlobalContextMethods, GlobalExecutionContext },
     globals::var::TokenWrapper,
@@ -5,7 +7,7 @@ use crate::{
     to_bytecode,
     tokens::InstructionMethods,
     utils::{
-        errors::{ AtpError, AtpErrorCode::RequiredContextError },
+        errors::{ AtpError, AtpErrorCode::{ self, RequiredContextError } },
         params::AtpParamTypes,
         validations::check_vec_len,
     },
@@ -74,6 +76,18 @@ impl InstructionMethods for Blk {
         self.block_name = parse_args!(params, 0, String, "Block name should be of string type");
 
         self.inner = parse_args!(params, 1, Token, "Block inner should be of token type");
+
+        if self.inner.get_opcode() == self.get_opcode() {
+            return Err(
+                AtpError::new(
+                    AtpErrorCode::NestedBlocksNotAllowedError(
+                        Cow::from("Nested blocks are not allowed")
+                    ),
+                    Cow::from("blk"),
+                    Cow::from("blk")
+                )
+            );
+        }
 
         self.params = vec![
             AtpParamTypes::String(
