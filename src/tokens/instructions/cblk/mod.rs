@@ -40,7 +40,7 @@ impl InstructionMethods for Cblk {
     }
 
     fn to_atp_line(&self) -> std::borrow::Cow<'static, str> {
-        format!("cblk {};", self.block_name).into()
+        format!("cblk {};\n", self.block_name).into()
     }
 
     fn transform(
