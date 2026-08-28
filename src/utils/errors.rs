@@ -160,6 +160,8 @@ pub enum AtpErrorCode {
     RequiredContextError(Cow<'static, str>),
     WatcherNotFoundError(Cow<'static, str>),
     SerializationError(Cow<'static, str>),
+    GenericError(Cow<'static, str>),
+    NestedBlocksNotAllowedError(Cow<'static, str>),
 }
 
 impl Display for AtpErrorCode {
@@ -207,6 +209,8 @@ impl AtpErrorCode {
             Self::RequiredContextError(_) => 24u16,
             Self::WatcherNotFoundError(_) => 25u16,
             Self::SerializationError(_) => 26u16,
+            Self::GenericError(_) => 27u16,
+            Self::NestedBlocksNotAllowedError(_) => 28u16,
         }
     }
 
@@ -243,6 +247,8 @@ impl AtpErrorCode {
             | Self::BytecodeParamNotRecognized(x)
             | Self::WatcherNotFoundError(x)
             | Self::SerializationError(x)
+            | Self::GenericError(x)
+            | Self::NestedBlocksNotAllowedError(x)
             | Self::RequiredContextError(x) => x,
         }
     }
@@ -260,9 +266,11 @@ impl AtpErrorCode {
             | Self::BytecodeParamParsingError(_)
             | Self::WatcherNotFoundError(_)
             | Self::SerializationError(_)
+            | Self::GenericError(_)
+            | Self::NestedBlocksNotAllowedError(_)
             | Self::TextParsingError(_) => Color::Red,
-            | Self::TryIntoFailError(_)
             // "Missing things" / lookup failures
+            | Self::TryIntoFailError(_)
             | Self::FileNotFound(_)
             | Self::FileOpeningError(_)
             | Self::FileReadingError(_)
