@@ -444,5 +444,11 @@ define_token_table! {
                 SyntaxDef::req(SyntaxToken::String),
             ],
         ),
+        (
+            "emj",
+            0x37,
+            || TokenRef::Shared(Arc::new(emj::Emj::default())),
+            [SyntaxDef::req(SyntaxToken::String), SyntaxDef::req(SyntaxToken::String)],
+        ),
     ];
 }
