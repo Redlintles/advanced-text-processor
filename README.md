@@ -1,30 +1,40 @@
-# ATP — Advanced Text Processor
+# TextForge
 
-> A sequential text-transformation DSL built in Rust. Write pipelines once, run them anywhere.
+> A sequential text-transformation DSL built in Rust — with blocks, conditionals, and variables. Write pipelines once, run them anywhere.
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![Status: Pre-release](https://img.shields.io/badge/status-pre--release-orange)
 
+> TextForge was previously known as **ATP (Advanced Text Processor)**. The crate, binary, and file formats have been renamed; some file extensions and example pipelines in this repo may still be catching up.
+
 ---
 
-## What is ATP?
+## What is TextForge?
 
-ATP is a text-processing DSL that executes **sequential pipelines of single-purpose instructions**. Each instruction performs exactly one transformation on the input text, and instructions chain one after another — the output of each step becomes the input of the next.
+TextForge is a text-processing DSL that executes **sequential pipelines of single-purpose instructions**. Each instruction performs exactly one transformation on the input text, and instructions chain one after another — the output of each step becomes the input of the next.
 
 ```
 "  hello world  " → tbs → raw world Rust → tua → "HELLO RUST"
 ```
 
-Pipelines can be written in human-readable `.atp` files, compiled to optimized `.atb` binary files, composed directly in Rust via the `AtpBuilder` API, or — soon — called from JavaScript and Python through native bindings.
+On top of that linear pipeline, TextForge also has a small amount of **control flow**:
+
+- **Blocks** (`blk` / `cblk`) — group a set of instructions under a name and invoke them together, as many times as you want.
+- **Conditionals** (`ifdc`) — run a group of instructions only if the input contains a given value.
+- **Variables** (`val`) — store an immutable value in the pipeline's execution context so other instructions can reference it instead of a hardcoded literal.
+
+Pipelines can be written in human-readable `.textforge` files, compiled to an optimized `.textforgebc` binary format, or composed directly in Rust via the `TextForgeBuilder` API. Native bindings (JS/Python) are on the roadmap but not yet available.
 
 ---
 
-## Why ATP?
+## Why TextForge?
 
-- **Portable pipelines** — write a pipeline once, share it as a `.atp` file, version it with Git, and audit it instruction by instruction.
-- **Optimized binary format** — `.atb` eliminates parsing overhead for production use cases.
-- **Extensible by design** — adding a new instruction touches exactly 4 files and never modifies the core. The instruction set can scale to thousands without architectural changes.
-- **Fluent Rust API** — compose pipelines directly in code via `AtpBuilder` without writing `.atp` files.
+- **Portable pipelines** — write a pipeline once, share it as a `.textforge` file, version it with Git, and audit it instruction by instruction.
+- **Optimized binary format** — `.textforgebc` eliminates parsing overhead for production use cases.
+- **Extensible by design** — adding a new instruction touches a small, fixed set of files and never modifies the core. The instruction set can scale to thousands without architectural changes.
+- **Fluent Rust API** — compose pipelines directly in code via `TextForgeBuilder`/`TextForgeProcessor` without writing `.textforge` files.
+- **Batch processing** — run a pipeline over many input files in parallel (powered by `rayon`).
+- **Built-in observability (optional)** — the `watchers` feature lets you attach probes to a pipeline run and export a JSON report of what happened at each step.
 
 ---
 
@@ -32,12 +42,12 @@ Pipelines can be written in human-readable `.atp` files, compiled to optimized `
 
 | Format | Extension | Use case |
 |--------|-----------|----------|
-| Text pipeline | `.atp` | Human-readable, editable, versionable |
-| Binary pipeline | `.atb` | Optimized for performance and distribution |
+| Text pipeline | `.textforge` | Human-readable, editable, versionable |
+| Binary pipeline | `.textforgebc` | Optimized for performance and distribution (`bytecode` feature) |
 
-### .atp Syntax
+### `.textforge` Syntax
 
-```atp
+```textforge
 // Comments start with //
 // One instruction per line, ending with ;
 
@@ -46,42 +56,68 @@ raw world Rust;
 tua;
 ```
 
+Arguments are split the same way a shell splits a command line, so quoting is optional unless an argument contains whitespace:
+
+```textforge
+atb "banana";
+raw "banana" "laranja";
+```
+
+#### Control flow
+
+```textforge
+// Define a block named "block_1" by adding instructions to it, one `blk` line at a time
+blk block_1 assoc dlf;
+blk block_1 assoc dll;
+blk block_1 assoc ins 5 "banana";
+
+// Run every instruction in "block_1", in the order they were added
+cblk block_1;
+```
+
+`val` declares an immutable variable in the execution context; other instructions can then reference it (by variable name) instead of a hardcoded literal. `ifdc` runs a group of instructions only if the current text contains a given value. Both are easiest to use through the Rust builder API for now — see [`TextForgeConditionalMethods`](src/api/mod.rs) and [`TextForgeBlockMethods`](src/api/mod.rs).
+
 ---
 
 ## Quick Start
 
 ### As a Rust library
 
-Add to your `Cargo.toml`:
+TextForge isn't on crates.io yet — add it as a git dependency:
 
 ```toml
 [dependencies]
-atp = "0.1.0"
+textforge = { git = "https://github.com/redlintles/textforge" }
 ```
 
-Use the builder API:
+Use the builder API through a `TextForgeProcessor`:
 
 ```rust
-use atp::builder::atp_builder::AtpBuilder;
-use atp::builder::atp_processor::AtpProcessorMethods;
+use textforge::api::{
+    textforge_processor::{ TextForgeProcessor, TextForgeProcessorMethods },
+    TextForgeBuilderMethods,
+};
 
-let (mut processor, id) = AtpBuilder::new()
-    .trim_both_sides()
-    .replace_all_with("world", "Rust")
-    .to_uppercase_all()
+let mut processor = TextForgeProcessor::new();
+
+let id = processor
+    .create_pipeline()
+    .trim_both_sides()?
+    .replace_all_with("world", "Rust")?
+    .to_uppercase_all()?
     .build();
 
-let result = processor.process_all(&id, "  hello world  ");
-// Ok("HELLO RUST")
+let result = processor.process_all(&id, "  hello world  ")?;
+assert_eq!(result, "HELLO RUST");
 ```
 
-### From a .atp file (CLI)
+### From a `.textforge` file (CLI)
 
 ```bash
-atp run pipeline.atp --input "  hello world  "
+atp run pipeline.textforge --input "  hello world  "
 ```
 
-> **Note:** The CLI is currently under development and not yet available.
+> **Note:** The CLI is currently under development and not yet available. (The binary is still named `atp` internally; a couple of empty binary stubs for a future shell/game also exist but do nothing yet.)
 
 ---
 
@@ -182,6 +218,17 @@ atp run pipeline.atp --input "  hello world  "
 | `jsone` | JSON escape |
 | `jsonu` | JSON unescape |
 
+### Control Flow
+
+| Mnemonic | Description | Args |
+|----------|-------------|------|
+| `blk` | Add an instruction to a named block (creating it if needed) | `<block_name> assoc <instruction>` |
+| `cblk` | Run every instruction previously added to a named block, in order | `<block_name>` |
+| `ifdc` | Run a group of instructions only if the input contains a value | `<value>` |
+| `val` | Declare an immutable variable in the execution context | `<name> <value>` |
+
+> 🚧 An `emj` instruction (extract all regex matches, join them with a separator) has been implemented but is not yet registered in the instruction table — it isn't usable from `.textforge` files or the builder API yet.
+
 ---
 
 ## Feature Flags
@@ -189,21 +236,28 @@ atp run pipeline.atp --input "  hello world  "
 | Flag | Description |
 |------|-------------|
 | `default` | Core library, no CLI, no bytecode |
-| `bytecode` | Enables `.atb` binary protocol and CLI binary |
-| `test_access` | Enables test helpers (`rand`, `random-string`, `tempfile`) |
+| `bytecode` | Enables the `.textforgebc` binary protocol and the CLI binary |
+| `watchers` | Enables pipeline observability probes and JSON execution reports |
+| `test_access` | Enables test helpers (`rand`, `random-string`, `tempfile`) and pulls in `bytecode`/`watchers` |
+
+---
+
+## Batch Processing
+
+Pipelines can be run over many files in parallel via `TextForgeProcessor::process_batch`, which reads each input file, runs a registered pipeline against it, and writes the result to an output file — backed by `rayon` under the hood.
 
 ---
 
 ## Adding a New Instruction
 
-ATP is designed so that adding a new instruction never modifies the core. Only 4 files are involved:
+TextForge is designed so that adding a new instruction never modifies the core. Involved files:
 
 - Create `src/tokens/transforms/<mnemonic>/mod.rs` — instruction struct + `InstructionMethods` impl
 - Create `src/tokens/transforms/<mnemonic>/test.rs` — unit tests
 - Register the mnemonic in `src/globals/table.rs`
-- Add the builder method in the `AtpBuilder`
+- Add the builder method in `src/api/mod.rs` (`TextForgeBuilderMethods`)
 
-See [`references/instruction-design.md`](references/instruction-design.md) for the full guide with code templates.
+See [`instruction-design.md`](.agents/skills/atp-project/references/instruction-design.md) for the full guide with code templates.
 
 ---
 
@@ -212,22 +266,28 @@ See [`references/instruction-design.md`](references/instruction-design.md) for t
 ```
 src/
 ├── main.rs                    — CLI entrypoint (requires bytecode feature)
-├── api/                       — Public API surface
-├── bytecode/                  — Binary .atb protocol (feature-gated)
+├── bin/                        — additional binaries (shell/game scaffolding, not yet implemented)
+├── api/                        — Public API surface (builder, processor, block/conditional builders)
+├── bytecode/                  — Binary .textforgebc protocol (feature-gated)
 ├── context/
-│   ├── execution_context.rs   — Runtime execution state
+│   ├── execution_context.rs   — Runtime execution state (variables, blocks)
 │   └── static_context.rs      — Static/compile-time context
 ├── globals/
 │   ├── table.rs               — Instruction registry
-│   └── var.rs                 — Variable definitions
+│   └── var.rs                 — Variable/param resolution
 ├── macros/                    — Internal Rust macros
 ├── text/
-│   ├── reader.rs              — .atp file parsing
+│   ├── reader.rs              — .textforge file parsing
 │   └── writer.rs              — Output writing
 ├── tokens/
 │   ├── transforms/            — One subdirectory per transform instruction
 │   └── instructions/          — Control-flow tokens (blk, cblk, ifdc, val)
+├── watchers/                  — Pipeline observability (feature-gated)
 └── utils/                     — Shared utilities
+
+tests/                          — Integration tests (processor, bytecode, params, benchmark)
+pipelines/text/                 — Example pipelines
+data/                           — Sample input files for batch-processing examples
 ```
 
 ---
@@ -235,24 +295,26 @@ src/
 ## Roadmap
 
 **Done**
-- [x] Core library with 40+ instructions
-- [x] `.atp` text format
-- [x] `.atb` binary protocol
-- [x] `AtpBuilder` Rust API
-- [x] ~80% test coverage
+- [x] Core library with 47+ instructions
+- [x] `.textforge` text format
+- [x] `.textforgebc` binary protocol
+- [x] `TextForgeBuilder`/`TextForgeProcessor` Rust API
+- [x] Control flow: blocks (`blk`/`cblk`), conditionals (`ifdc`), variables (`val`)
+- [x] Batch processing over multiple files, in parallel (`rayon`)
+- [x] Optional pipeline observability (`watchers` feature, JSON reports)
 
 **In progress**
 - [ ] Complete CLI
-- [ ] Pipeline chaining (`pipeline1.atp | pipeline2.atp`)
+- [ ] `emj` instruction registration (implemented, not yet wired in)
+- [ ] Error accumulation / diagnostics API (`ErrorManager` is an internal sink for now)
+- [ ] Pipeline chaining (`pipeline1.textforge | pipeline2.textforge`)
+- [ ] REPL and `textforge-game` (binary scaffolding exists; no behavior yet)
 
 **Planned**
-- [ ] REPL (interactive shell)
-- [ ] Batch processing with parallel pipeline execution
 - [ ] C FFI (`cdylib`)
 - [ ] JavaScript bindings (WASM / NAPI)
 - [ ] Python bindings (PyO3)
 - [ ] Public pipeline repository
-- [ ] `atp-game` — learn ATP by playing
 - [ ] Project website
 - [ ] Publish to crates.io
 
@@ -260,7 +322,7 @@ src/
 
 ## Contributing
 
-Contributions are welcome. Before opening a PR, please read [`CONTRIBUTING.md`](CONTRIBUTING.md) for the instruction design pattern, commit conventions, and review process.
+Contributions are welcome. This repo currently doesn't have a root-level `CONTRIBUTING.md` — the instruction design pattern lives in [`.agents/skills/atp-project/`](.agents/skills/atp-project/) instead. *(If you'd rather have a standalone `CONTRIBUTING.md` again, let me know and I'll draft one from that content.)*
 
 All commits, code, and documentation should be in **English**.
 
