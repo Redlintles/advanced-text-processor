@@ -3,7 +3,7 @@ use std::ops::Deref;
 use crate::{
     context::execution_context::{ GlobalContextMethods, GlobalExecutionContext, VarValues },
     globals::table::{ QuerySource, QueryTarget, SyntaxDef, SyntaxToken, TOKEN_TABLE, TargetValue },
-    tokens::{ InstructionMethods, transforms::dlf::Dlf },
+    tokens::{ InstructionMethods, instructions::null::Null },
     utils::{ errors::{ TextForgeError, TextForgeErrorCode }, params::TextForgeParamTypes },
 };
 
@@ -48,7 +48,7 @@ pub struct TokenWrapper {
 
 impl Default for TokenWrapper {
     fn default() -> Self {
-        TokenWrapper { params: Vec::new(), token: Box::new(Dlf::default()) }
+        TokenWrapper { params: Vec::new(), token: Box::new(Null::default()) }
     }
 }
 

@@ -13,9 +13,14 @@ use crate::{
 };
 
 pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, TextForgeError> {
+    let line = token_string.trim();
+
+    if token_string.is_empty() || token_string.starts_with("//") {
+        return Ok(TokenWrapper::default());
+    }
     let chunks = match
         shell_words::split(
-            &token_string
+            &line
                 .trim_end()
                 .strip_suffix(";")
                 .ok_or_else(|| {
@@ -59,7 +64,10 @@ pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, TextForgeError
         TargetValue::Token(token_ref) => {
             let token = token_ref.into_box();
 
-            let parsed_params = TextForgeParamTypes::from_expected(token_param_types, &chunks[1..])?;
+            let parsed_params = TextForgeParamTypes::from_expected(
+                token_param_types,
+                &chunks[1..]
+            )?;
 
             let wrapper = TokenWrapper::new(token, Some(parsed_params));
 
@@ -91,8 +99,14 @@ pub fn read_from_file(path: &Path) -> Result<Vec<TokenWrapper>, TextForgeError> 
     let reader = BufReader::new(file);
 
     for line in reader.lines() {
-        let line_text = match line {
-            Ok(x) => x,
+        match line {
+            Ok(l) => {
+                let trimmed = l.trim();
+                if trimmed.is_empty() || trimmed.starts_with("//") {
+                    continue;
+                }
+                result.push(read_from_text(&l)?);
+            }
             Err(_) => {
                 return Err(
                     TextForgeError::new(
@@ -104,9 +118,7 @@ pub fn read_from_file(path: &Path) -> Result<Vec<TokenWrapper>, TextForgeError> 
                     )
                 );
             }
-        };
-
-        result.push(read_from_text(&line_text)?);
+        }
     }
 
     Ok(result)
