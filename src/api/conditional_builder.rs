@@ -1,18 +1,18 @@
 use crate::{
-    api::AtpBuilderMethods,
+    api::TextForgeBuilderMethods,
     globals::var::TokenWrapper,
     tokens::InstructionMethods,
-    utils::{ errors::AtpError, params::AtpParamTypes },
+    utils::{ errors::TextForgeError, params::TextForgeParamTypes },
 };
 
 pub struct ConditionalBuilderEach {
     token: Box<dyn InstructionMethods>,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
     conditional_tokens: Vec<Box<dyn InstructionMethods>>,
 }
 
 impl ConditionalBuilderEach {
-    pub fn new(token: Box<dyn InstructionMethods>, params: Vec<AtpParamTypes>) -> Self {
+    pub fn new(token: Box<dyn InstructionMethods>, params: Vec<TextForgeParamTypes>) -> Self {
         ConditionalBuilderEach {
             token,
             params,
@@ -26,8 +26,8 @@ impl ConditionalBuilderEach {
 }
 
 // push_token funciona normalmente para incrementar conditional_tokens
-impl AtpBuilderMethods for ConditionalBuilderEach {
-    fn push_token(&mut self, t: impl Into<TokenWrapper>) -> Result<(), AtpError> {
+impl TextForgeBuilderMethods for ConditionalBuilderEach {
+    fn push_token(&mut self, t: impl Into<TokenWrapper>) -> Result<(), TextForgeError> {
         let mut new_token: Box<dyn InstructionMethods> = self.token.clone();
 
         let mut param_vec = self.params.clone();

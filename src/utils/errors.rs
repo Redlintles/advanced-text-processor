@@ -9,19 +9,19 @@ use colored::{ Color, Colorize };
 pub struct ErrorManager {
     panic_with_error: bool,
     show_warnings: bool,
-    error_vec: Vec<AtpError>,
+    error_vec: Vec<TextForgeError>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct AtpError {
-    pub error_code: AtpErrorCode,
+pub struct TextForgeError {
+    pub error_code: TextForgeErrorCode,
     pub instruction: Cow<'static, str>,
     pub input: Cow<'static, str>,
 }
 
-impl Error for AtpError {}
+impl Error for TextForgeError {}
 
-impl Display for AtpError {
+impl Display for TextForgeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // Presentation only. No semantic changes.
         let title = "Erro".bold().red();
@@ -42,11 +42,11 @@ impl Display for AtpError {
     }
 }
 
-impl AtpError {
-    pub fn new<I, T>(error_code: AtpErrorCode, instruction: I, input: T) -> Self
+impl TextForgeError {
+    pub fn new<I, T>(error_code: TextForgeErrorCode, instruction: I, input: T) -> Self
         where I: Into<Cow<'static, str>>, T: Into<Cow<'static, str>>
     {
-        AtpError {
+        TextForgeError {
             error_code,
             instruction: instruction.into(),
             input: input.into(),
@@ -74,7 +74,7 @@ impl ErrorManager {
         colored::control::set_override(val);
     }
 
-    pub fn add_error(&mut self, err: AtpError) {
+    pub fn add_error(&mut self, err: TextForgeError) {
         self.error_vec.push(err);
     }
 
@@ -119,7 +119,7 @@ impl ErrorManager {
 
     /// Optional: consistent behavior when you want to both store and act on an error.
     /// Does not change any existing behavior unless you choose to use it.
-    pub fn handle_error(&mut self, err: AtpError) {
+    pub fn handle_error(&mut self, err: TextForgeError) {
         self.add_error(err.clone());
 
         if self.show_warnings {
@@ -133,7 +133,7 @@ impl ErrorManager {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum AtpErrorCode {
+pub enum TextForgeErrorCode {
     FileNotFound(Cow<'static, str>),
     BytecodeParamNotRecognized(Cow<'static, str>),
     TokenNotFound(Cow<'static, str>),
@@ -164,7 +164,7 @@ pub enum AtpErrorCode {
     NestedBlocksNotAllowedError(Cow<'static, str>),
 }
 
-impl Display for AtpErrorCode {
+impl Display for TextForgeErrorCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // Use severity to color the code/message, but keep raw values available via getters.
         let severity = self.severity_color();
@@ -180,7 +180,7 @@ impl Display for AtpErrorCode {
     }
 }
 
-impl AtpErrorCode {
+impl TextForgeErrorCode {
     pub fn get_error_code(&self) -> u16 {
         match self {
             Self::FileNotFound(_) => 1u16,
@@ -290,9 +290,9 @@ impl AtpErrorCode {
     }
 }
 
-pub fn token_array_not_found(identifier: &str) -> impl Fn() -> AtpError {
-    let message = AtpError::new(
-        AtpErrorCode::TokenArrayNotFound(
+pub fn token_array_not_found(identifier: &str) -> impl Fn() -> TextForgeError {
+    let message = TextForgeError::new(
+        TextForgeErrorCode::TokenArrayNotFound(
             format!("Token array not found, is {} a valid identifier for this processor?", identifier).into()
         ),
         Cow::Borrowed("get identifier"),
@@ -313,15 +313,15 @@ mod tests {
     }
 
     // ============================================================
-    // AtpError
+    // TextForgeError
     // ============================================================
 
     #[test]
-    fn atp_error_new_sets_fields_and_helpers_return_strs() {
+    fn textforge_error_new_sets_fields_and_helpers_return_strs() {
         disable_colors();
 
-        let err = AtpError::new(
-            AtpErrorCode::ValidationError(Cow::Borrowed("bad params")),
+        let err = TextForgeError::new(
+            TextForgeErrorCode::ValidationError(Cow::Borrowed("bad params")),
             Cow::Borrowed("raw"),
             Cow::Borrowed("banana")
         );
@@ -334,11 +334,11 @@ mod tests {
     }
 
     #[test]
-    fn atp_error_display_contains_sections_and_no_weird_comma() {
+    fn textforge_error_display_contains_sections_and_no_weird_comma() {
         disable_colors();
 
-        let err = AtpError::new(
-            AtpErrorCode::InvalidIndex(Cow::Borrowed("index inválido")),
+        let err = TextForgeError::new(
+            TextForgeErrorCode::InvalidIndex(Cow::Borrowed("index inválido")),
             "dlc",
             "banana"
         );
@@ -361,12 +361,12 @@ mod tests {
     }
 
     // ============================================================
-    // AtpErrorCode (message/get_message, Display, get_error_code, severity_color)
+    // TextForgeErrorCode (message/get_message, Display, get_error_code, severity_color)
     // ============================================================
 
     #[test]
     fn error_code_message_and_get_message_match_and_are_borrowed() {
-        let code = AtpErrorCode::TokenNotFound(Cow::Borrowed("no token"));
+        let code = TextForgeErrorCode::TokenNotFound(Cow::Borrowed("no token"));
         assert_eq!(code.message().as_ref(), "no token");
         assert_eq!(code.get_message().as_ref(), "no token");
     }
@@ -375,7 +375,7 @@ mod tests {
     fn error_code_display_includes_labels_code_and_message() {
         disable_colors();
 
-        let code = AtpErrorCode::FileNotFound(Cow::Borrowed("missing file"));
+        let code = TextForgeErrorCode::FileNotFound(Cow::Borrowed("missing file"));
         let s = format!("{code}");
 
         assert!(s.contains("Código:"));
@@ -387,7 +387,7 @@ mod tests {
 
     #[test]
     fn get_error_code_matches_all_variants() {
-        use AtpErrorCode::*;
+        use TextForgeErrorCode::*;
 
         // cobre todos os braços do match de get_error_code()
         assert_eq!(FileNotFound(Cow::Borrowed("x")).get_error_code(), 1);
@@ -418,7 +418,7 @@ mod tests {
 
     #[test]
     fn severity_color_red_for_hard_errors() {
-        use AtpErrorCode::*;
+        use TextForgeErrorCode::*;
 
         assert_eq!(ZeroDivisionError(Cow::Borrowed("x")).severity_color(), Color::Red);
         assert_eq!(InvalidOperands(Cow::Borrowed("x")).severity_color(), Color::Red);
@@ -432,7 +432,7 @@ mod tests {
 
     #[test]
     fn severity_color_yellow_for_missing_things() {
-        use AtpErrorCode::*;
+        use TextForgeErrorCode::*;
 
         assert_eq!(FileNotFound(Cow::Borrowed("x")).severity_color(), Color::Yellow);
         assert_eq!(FileOpeningError(Cow::Borrowed("x")).severity_color(), Color::Yellow);
@@ -449,7 +449,7 @@ mod tests {
 
     #[test]
     fn severity_color_magenta_for_indexish() {
-        use AtpErrorCode::*;
+        use TextForgeErrorCode::*;
 
         assert_eq!(InvalidIndex(Cow::Borrowed("x")).severity_color(), Color::Magenta);
         assert_eq!(IndexOutOfRange(Cow::Borrowed("x")).severity_color(), Color::Magenta);
@@ -459,7 +459,7 @@ mod tests {
     fn message_returns_the_same_inner_reference_for_all_variants() {
         // cobre o match "achatado" (| A(x) | B(x) => x) do method message()
         // com alguns exemplos de grupos diferentes.
-        use AtpErrorCode::*;
+        use TextForgeErrorCode::*;
 
         let m1 = FileNotFound(Cow::Borrowed("a")).message().as_ref();
         let m2 = InvalidOperands(Cow::Borrowed("b")).message().as_ref();
@@ -483,7 +483,7 @@ mod tests {
         let mut mgr = ErrorManager::default();
         assert!(!mgr.has_errors());
 
-        mgr.add_error(AtpError::new(AtpErrorCode::TokenNotFound(Cow::Borrowed("x")), "inst", "in"));
+        mgr.add_error(TextForgeError::new(TextForgeErrorCode::TokenNotFound(Cow::Borrowed("x")), "inst", "in"));
 
         assert!(mgr.has_errors());
         assert_eq!(mgr.error_vec.len(), 1);
@@ -528,10 +528,10 @@ mod tests {
 
         let mut mgr = ErrorManager::default();
         mgr.add_error(
-            AtpError::new(AtpErrorCode::TokenNotFound(Cow::Borrowed("first")), "inst1", "in1")
+            TextForgeError::new(TextForgeErrorCode::TokenNotFound(Cow::Borrowed("first")), "inst1", "in1")
         );
         mgr.add_error(
-            AtpError::new(AtpErrorCode::InvalidIndex(Cow::Borrowed("second")), "inst2", "in2")
+            TextForgeError::new(TextForgeErrorCode::InvalidIndex(Cow::Borrowed("second")), "inst2", "in2")
         );
 
         let mut buf: Vec<u8> = vec![];
@@ -567,7 +567,7 @@ mod tests {
         mgr.will_panic(false);
 
         mgr.handle_error(
-            AtpError::new(AtpErrorCode::ValidationError(Cow::Borrowed("oops")), "inst", "input")
+            TextForgeError::new(TextForgeErrorCode::ValidationError(Cow::Borrowed("oops")), "inst", "input")
         );
 
         assert!(mgr.has_errors());
@@ -584,8 +584,8 @@ mod tests {
         mgr.will_log(false);
         mgr.will_panic(true);
 
-        let err = AtpError::new(
-            AtpErrorCode::ZeroDivisionError(Cow::Borrowed("div0")),
+        let err = TextForgeError::new(
+            TextForgeErrorCode::ZeroDivisionError(Cow::Borrowed("div0")),
             "div",
             "10/0"
         );
@@ -619,7 +619,7 @@ mod tests {
         assert_eq!(e1.input, Cow::Borrowed(""));
 
         match &e1.error_code {
-            AtpErrorCode::TokenArrayNotFound(m) => {
+            TextForgeErrorCode::TokenArrayNotFound(m) => {
                 assert!(m.contains("Token array not found"));
                 assert!(m.contains("abc"));
             }

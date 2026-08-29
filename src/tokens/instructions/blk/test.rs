@@ -8,15 +8,15 @@ mod common {
         context::execution_context::{ GlobalContextMethods, GlobalExecutionContext },
         globals::var::TokenWrapper,
         tokens::{ InstructionMethods, instructions::blk::Blk, transforms::{ atb::Atb, dlf::Dlf } },
-        utils::{ errors::AtpErrorCode, params::AtpParamTypes },
+        utils::{ errors::TextForgeErrorCode, params::TextForgeParamTypes },
     };
 
-    // Small helper: builds the exact `Vec<AtpParamTypes>` a `blk name assoc <token>;`
+    // Small helper: builds the exact `Vec<TextForgeParamTypes>` a `blk name assoc <token>;`
     // line resolves to, so tests don't repeat the same boilerplate.
-    fn blk_params(name: &str, inner: Box<dyn InstructionMethods>) -> Vec<AtpParamTypes> {
+    fn blk_params(name: &str, inner: Box<dyn InstructionMethods>) -> Vec<TextForgeParamTypes> {
         return vec![
-            AtpParamTypes::String(name.to_string()),
-            AtpParamTypes::Token(TokenWrapper::new(inner, None))
+            TextForgeParamTypes::String(name.to_string()),
+            TextForgeParamTypes::Token(TokenWrapper::new(inner, None))
         ];
     }
 
@@ -26,7 +26,7 @@ mod common {
 
         assert_eq!(t.get_string_repr(), "blk");
         // Default inner token is `Dlf::default()` -> "dlf;\n"
-        assert_eq!(t.to_atp_line().as_ref(), "blk x assoc dlf;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "blk x assoc dlf;\n");
         assert_eq!(t.get_params().len(), 2);
     }
 
@@ -36,50 +36,50 @@ mod common {
         let params = blk_params("greet", Box::new(Atb::new("foo")));
 
         assert!(t.from_params(&params).is_ok());
-        assert_eq!(t.to_atp_line().as_ref(), "blk greet assoc atb foo;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "blk greet assoc atb foo;\n");
     }
 
     #[test]
     fn from_params_rejects_wrong_param_count_too_few() {
         let mut t = Blk::default();
-        let params = vec![AtpParamTypes::String("only_one".to_string())];
+        let params = vec![TextForgeParamTypes::String("only_one".to_string())];
 
         let err = t.from_params(&params).unwrap_err();
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
     fn from_params_rejects_wrong_param_count_too_many() {
         let mut t = Blk::default();
         let params = vec![
-            AtpParamTypes::String("a".to_string()),
-            AtpParamTypes::Token(TokenWrapper::default()),
-            AtpParamTypes::String("extra".to_string())
+            TextForgeParamTypes::String("a".to_string()),
+            TextForgeParamTypes::Token(TokenWrapper::default()),
+            TextForgeParamTypes::String("extra".to_string())
         ];
 
         let err = t.from_params(&params).unwrap_err();
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
     fn from_params_rejects_wrong_type_for_block_name() {
         let mut t = Blk::default();
-        let params = vec![AtpParamTypes::Usize(1), AtpParamTypes::Token(TokenWrapper::default())];
+        let params = vec![TextForgeParamTypes::Usize(1), TextForgeParamTypes::Token(TokenWrapper::default())];
 
         let err = t.from_params(&params).unwrap_err();
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidParameters(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidParameters(_)));
     }
 
     #[test]
     fn from_params_rejects_wrong_type_for_inner() {
         let mut t = Blk::default();
         let params = vec![
-            AtpParamTypes::String("name".to_string()),
-            AtpParamTypes::String("not a token".to_string())
+            TextForgeParamTypes::String("name".to_string()),
+            TextForgeParamTypes::String("not a token".to_string())
         ];
 
         let err = t.from_params(&params).unwrap_err();
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidParameters(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidParameters(_)));
     }
 
     #[test]
@@ -93,11 +93,11 @@ mod common {
         assert_eq!(stored.len(), 2);
 
         match &stored[0] {
-            AtpParamTypes::String(s) => assert_eq!(s, "qux"),
+            TextForgeParamTypes::String(s) => assert_eq!(s, "qux"),
             _ => panic!("Expected first param to be String"),
         }
         match &stored[1] {
-            AtpParamTypes::Token(tok) => assert_eq!(tok.to_atp_line().as_ref(), "atb baz;\n"),
+            TextForgeParamTypes::Token(tok) => assert_eq!(tok.to_textforge_line().as_ref(), "atb baz;\n"),
             _ => panic!("Expected second param to be Token"),
         }
     }
@@ -107,7 +107,7 @@ mod common {
         let t = Blk::default();
         let err = t.transform("input", None).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::RequiredContextError(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::RequiredContextError(_)));
     }
 
     #[test]
@@ -130,7 +130,7 @@ mod common {
 
         let block = ctx.take_block("greet").unwrap();
         assert_eq!(block.len(), 1);
-        assert_eq!(block[0].to_atp_line().as_ref(), "atb foo;\n");
+        assert_eq!(block[0].to_textforge_line().as_ref(), "atb foo;\n");
     }
 
     #[test]
@@ -147,8 +147,8 @@ mod common {
 
         let block = ctx.take_block("greet").unwrap();
         assert_eq!(block.len(), 2);
-        assert_eq!(block[0].to_atp_line().as_ref(), "atb foo;\n");
-        assert_eq!(block[1].to_atp_line().as_ref(), "dlf;\n");
+        assert_eq!(block[0].to_textforge_line().as_ref(), "atb foo;\n");
+        assert_eq!(block[1].to_textforge_line().as_ref(), "dlf;\n");
     }
 
     #[test]
@@ -168,8 +168,8 @@ mod common {
 
         assert_eq!(block_a.len(), 1);
         assert_eq!(block_b.len(), 1);
-        assert_eq!(block_a[0].to_atp_line().as_ref(), "atb 1;\n");
-        assert_eq!(block_b[0].to_atp_line().as_ref(), "atb 2;\n");
+        assert_eq!(block_a[0].to_textforge_line().as_ref(), "atb 1;\n");
+        assert_eq!(block_b[0].to_textforge_line().as_ref(), "atb 2;\n");
     }
 
     #[test]
@@ -192,7 +192,7 @@ mod common {
 
         let block = ctx.take_block("greet").unwrap();
         assert_eq!(block.len(), 1);
-        assert_eq!(block[0].to_atp_line().as_ref(), "dlf;\n");
+        assert_eq!(block[0].to_textforge_line().as_ref(), "dlf;\n");
     }
 }
 
@@ -201,7 +201,7 @@ mod bytecode {
     use crate::{
         globals::var::TokenWrapper,
         tokens::{ InstructionMethods, instructions::blk::Blk, transforms::atb::Atb },
-        utils::params::AtpParamTypes,
+        utils::params::TextForgeParamTypes,
     };
 
     #[test]
@@ -215,8 +215,8 @@ mod bytecode {
         let mut t = Blk::default();
 
         let params = vec![
-            AtpParamTypes::String("greet".to_string()),
-            AtpParamTypes::Token(TokenWrapper::new(Box::new(Atb::new("foo")), None))
+            TextForgeParamTypes::String("greet".to_string()),
+            TextForgeParamTypes::Token(TokenWrapper::new(Box::new(Atb::new("foo")), None))
         ];
         t.from_params(&params).unwrap();
 
@@ -275,16 +275,16 @@ mod bytecode {
         let mut t1 = Blk::default();
         t1.from_params(
             &vec![
-                AtpParamTypes::String("a".to_string()),
-                AtpParamTypes::Token(TokenWrapper::new(Box::new(Atb::new("x")), None))
+                TextForgeParamTypes::String("a".to_string()),
+                TextForgeParamTypes::Token(TokenWrapper::new(Box::new(Atb::new("x")), None))
             ]
         ).unwrap();
 
         let mut t2 = Blk::default();
         t2.from_params(
             &vec![
-                AtpParamTypes::String("bbbb".to_string()),
-                AtpParamTypes::Token(TokenWrapper::new(Box::new(Atb::new("x")), None))
+                TextForgeParamTypes::String("bbbb".to_string()),
+                TextForgeParamTypes::Token(TokenWrapper::new(Box::new(Atb::new("x")), None))
             ]
         ).unwrap();
 

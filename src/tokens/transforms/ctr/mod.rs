@@ -4,9 +4,9 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::errors::{ AtpError };
+use crate::utils::errors::{ TextForgeError };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
 use crate::{
     tokens::InstructionMethods,
@@ -21,7 +21,7 @@ use crate::{
 /// Words are defined as sequences of characters separated by whitespace,
 /// following the behavior of `input.split_whitespace()`.
 ///
-/// If `start_index` is out of bounds for the number of words in the `input``, an `AtpError` is returned.
+/// If `start_index` is out of bounds for the number of words in the `input``, an `TextForgeError` is returned.
 /// If `end_index` is out of bound for the number of words in the input, it's clamped up to the number of words in `input`
 ///
 /// # Example
@@ -36,11 +36,11 @@ use crate::{
 pub struct Ctr {
     pub start_index: usize,
     pub end_index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Ctr {
-    pub fn new(start_index: usize, end_index: usize) -> Result<Self, AtpError> {
+    pub fn new(start_index: usize, end_index: usize) -> Result<Self, TextForgeError> {
         check_chunk_bound_indexes(start_index, end_index, None)?;
         Ok(Ctr {
             start_index,
@@ -51,7 +51,7 @@ impl Ctr {
 }
 
 impl InstructionMethods for Ctr {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
@@ -61,7 +61,7 @@ impl InstructionMethods for Ctr {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         if input.trim().is_empty() {
             return Ok("".to_string());
         }
@@ -88,10 +88,10 @@ impl InstructionMethods for Ctr {
         Ok(result)
     }
 
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("ctr {} {};\n", self.start_index, self.end_index).into()
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 2, "ctr", "")?;
@@ -107,11 +107,11 @@ impl InstructionMethods for Ctr {
         0x1c
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::Usize(self.start_index),
-            AtpParamTypes::Usize(self.end_index),
+            TextForgeParamTypes::Usize(self.start_index),
+            TextForgeParamTypes::Usize(self.end_index),
         ]);
         Ok(result)
     }

@@ -6,7 +6,7 @@ macro_rules! to_bytecode {
         use crate::context::execution_context::GlobalExecutionContext;
 
         // Coleta os params pra contar e iterar
-        let params_vec: Vec<crate::utils::params::AtpParamTypes> = vec![$($param),*];
+        let params_vec: Vec<crate::utils::params::TextForgeParamTypes> = vec![$($param),*];
 
         let opcode_u32: u32 = $opcode;
         let param_count_u8: u8 = params_vec
@@ -38,14 +38,14 @@ macro_rules! to_bytecode {
     };
 
     // 2) Nova forma: recebe um "container" (vec, slice, &vec, etc.)
-    //    que vire uma fatia via AsRef<[AtpParamTypes]>
+    //    que vire uma fatia via AsRef<[TextForgeParamTypes]>
     ($opcode:expr, $params:expr) => {
         {
         use crate::context::execution_context::GlobalExecutionContext;
 
         // Importante: fixa o tipo para evitar inferência ruim
-        let params_slice: &[crate::utils::params::AtpParamTypes] =
-            ::core::convert::AsRef::<[crate::utils::params::AtpParamTypes]>::as_ref(&$params);
+        let params_slice: &[crate::utils::params::TextForgeParamTypes] =
+            ::core::convert::AsRef::<[crate::utils::params::TextForgeParamTypes]>::as_ref(&$params);
 
         let opcode_u32: u32 = $opcode;
         let param_count_u8: u8 = params_slice

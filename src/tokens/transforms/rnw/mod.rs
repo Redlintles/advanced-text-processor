@@ -11,9 +11,9 @@ use crate::{
 
 use regex::Regex;
 
-use crate::{ tokens::InstructionMethods, utils::{ errors::{ AtpError, AtpErrorCode } } };
+use crate::{ tokens::InstructionMethods, utils::{ errors::{ TextForgeError, TextForgeErrorCode } } };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 /// RLW - Replace Last With
 ///
 /// Replace the `nth`` ocurrency of `pattern` in `input` with `text_to_replace`
@@ -40,7 +40,7 @@ pub struct Rnw {
     pub pattern: Regex,
     pub text_to_replace: String,
     pub index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Rnw {
@@ -71,10 +71,10 @@ impl Default for Rnw {
 }
 
 impl InstructionMethods for Rnw {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("rnw {} {} {};\n", self.pattern, self.text_to_replace, self.index).into()
     }
 
@@ -82,7 +82,7 @@ impl InstructionMethods for Rnw {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let mut count = 0;
 
         let mut idx = None;
@@ -109,14 +109,14 @@ impl InstructionMethods for Rnw {
     fn get_string_repr(&self) -> &'static str {
         "rnw"
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(&params, 3, "rnw", "")?;
 
         let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
 
         self.pattern = Regex::new(&pattern_payload.clone()).map_err(|_| {
-            AtpError::new(
-                AtpErrorCode::TextParsingError("Failed to create regex".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
                 pattern_payload.clone()
             )
@@ -143,12 +143,12 @@ impl InstructionMethods for Rnw {
         0x1f
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.pattern.to_string()),
-            AtpParamTypes::String(self.text_to_replace.clone()),
-            AtpParamTypes::Usize(self.index),
+            TextForgeParamTypes::String(self.pattern.to_string()),
+            TextForgeParamTypes::String(self.text_to_replace.clone()),
+            TextForgeParamTypes::Usize(self.index),
         ]);
         Ok(result)
     }

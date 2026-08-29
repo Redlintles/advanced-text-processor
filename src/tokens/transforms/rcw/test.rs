@@ -5,7 +5,7 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::rcw::Rcw;
-    use crate::utils::errors::{ AtpErrorCode };
+    use crate::utils::errors::{ TextForgeErrorCode };
 
     #[test]
     fn get_string_repr_is_rcw() {
@@ -28,9 +28,9 @@ mod tests {
     }
 
     #[test]
-    fn to_atp_line_contains_pattern_replacement_and_count() {
+    fn to_textforge_line_contains_pattern_replacement_and_count() {
         let t = Rcw::new("a+", "b", 3).unwrap();
-        let line = t.to_atp_line();
+        let line = t.to_textforge_line();
         assert_eq!(line.as_ref(), "rcw a+ b 3;\n");
     }
 
@@ -72,7 +72,7 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::params::AtpParamTypes;
+        use crate::utils::params::TextForgeParamTypes;
 
         #[test]
         fn get_opcode_is_0x10() {
@@ -85,9 +85,9 @@ mod tests {
             let mut t = Rcw::default();
 
             let params = vec![
-                AtpParamTypes::String("a+".to_string()),
-                AtpParamTypes::String("b".to_string()),
-                AtpParamTypes::Usize(3)
+                TextForgeParamTypes::String("a+".to_string()),
+                TextForgeParamTypes::String("b".to_string()),
+                TextForgeParamTypes::Usize(3)
             ];
 
             assert_eq!(t.from_params(&params), Ok(()));
@@ -101,13 +101,13 @@ mod tests {
             let mut t = Rcw::default();
 
             let params = vec![
-                AtpParamTypes::String("a+".to_string()),
-                AtpParamTypes::String("b".to_string())
+                TextForgeParamTypes::String("a+".to_string()),
+                TextForgeParamTypes::String("b".to_string())
             ];
 
             let err = t.from_params(&params).unwrap_err();
 
-            assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+            assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
         }
 
         #[test]
@@ -115,16 +115,16 @@ mod tests {
             let mut t = Rcw::default();
 
             let params = vec![
-                AtpParamTypes::Usize(7), // deveria ser String (pattern)
-                AtpParamTypes::String("b".to_string()),
-                AtpParamTypes::Usize(3)
+                TextForgeParamTypes::Usize(7), // deveria ser String (pattern)
+                TextForgeParamTypes::String("b".to_string()),
+                TextForgeParamTypes::Usize(3)
             ];
 
             let got = t.from_params(&params);
 
             let expected = Err(
-                crate::utils::errors::AtpError::new(
-                    AtpErrorCode::InvalidParameters("Pattern should be of string type".into()),
+                crate::utils::errors::TextForgeError::new(
+                    TextForgeErrorCode::InvalidParameters("Pattern should be of string type".into()),
                     "",
                     ""
                 )
@@ -138,16 +138,16 @@ mod tests {
             let mut t = Rcw::default();
 
             let params = vec![
-                AtpParamTypes::String("(".to_string()),
-                AtpParamTypes::String("b".to_string()),
-                AtpParamTypes::Usize(3)
+                TextForgeParamTypes::String("(".to_string()),
+                TextForgeParamTypes::String("b".to_string()),
+                TextForgeParamTypes::Usize(3)
             ];
 
             let got = t.from_params(&params);
 
             let expected = Err(
-                crate::utils::errors::AtpError::new(
-                    AtpErrorCode::TextParsingError("Failed to create regex".into()),
+                crate::utils::errors::TextForgeError::new(
+                    TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                     "sslt",
                     "(".to_string()
                 )

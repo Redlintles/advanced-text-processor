@@ -5,8 +5,8 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::clw::Clw;
-    use crate::utils::errors::{ AtpErrorCode };
-    use crate::utils::params::AtpParamTypes;
+    use crate::utils::errors::{ TextForgeErrorCode };
+    use crate::utils::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_clw() {
@@ -15,9 +15,9 @@ mod tests {
     }
 
     #[test]
-    fn to_atp_line_is_constant() {
+    fn to_textforge_line_is_constant() {
         let t = Clw::default();
-        assert_eq!(t.to_atp_line().as_ref(), "clw;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "clw;\n");
     }
 
     #[test]
@@ -66,7 +66,7 @@ mod tests {
     #[test]
     fn from_params_accepts_empty_param_list() {
         let mut t = Clw::default();
-        let params: Vec<AtpParamTypes> = vec![];
+        let params: Vec<TextForgeParamTypes> = vec![];
 
         assert_eq!(t.from_params(&params), Ok(()));
     }
@@ -74,11 +74,11 @@ mod tests {
     #[test]
     fn from_params_rejects_any_params() {
         let mut t = Clw::default();
-        let params = vec![AtpParamTypes::String("x".to_string())];
+        let params = vec![TextForgeParamTypes::String("x".to_string())];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

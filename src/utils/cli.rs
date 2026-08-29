@@ -1,16 +1,16 @@
 use std::borrow::Cow;
 
 use crate::{
-    api::processor::{ AtpProcessor, AtpProcessorMethods },
-    utils::{ errors::AtpError, transforms::get_safe_utf8_char_index },
+    api::processor::{ TextForgeProcessor, TextForgeProcessorMethods },
+    utils::{ errors::TextForgeError, transforms::get_safe_utf8_char_index },
 };
 
 fn process_run(
-    processor: &mut AtpProcessor,
+    processor: &mut TextForgeProcessor,
     identifier: &str,
     input: &str,
     debug: bool
-) -> Result<String, AtpError> {
+) -> Result<String, TextForgeError> {
     if debug {
         return Ok(processor.process_all_with_debug(identifier, input)?);
     } else {
@@ -19,11 +19,11 @@ fn process_run(
 }
 
 pub fn process_input_single_chunk(
-    processor: &mut AtpProcessor,
+    processor: &mut TextForgeProcessor,
     identifier: &str,
     input: &str,
     debug: bool
-) -> Result<String, AtpError> {
+) -> Result<String, TextForgeError> {
     if input.is_empty() {
         return Ok(String::new());
     }
@@ -31,11 +31,11 @@ pub fn process_input_single_chunk(
 }
 
 pub fn process_input_line_by_line(
-    processor: &mut AtpProcessor,
+    processor: &mut TextForgeProcessor,
     identifier: &str,
     input: &str,
     debug: bool
-) -> Result<String, AtpError> {
+) -> Result<String, TextForgeError> {
     if input.is_empty() {
         return Ok(String::new());
     }
@@ -52,19 +52,19 @@ pub fn process_input_line_by_line(
 }
 
 pub fn process_input_by_chunks(
-    processor: &mut AtpProcessor,
+    processor: &mut TextForgeProcessor,
     identifier: &str,
     input: &str,
     chunk_size: usize,
     debug: bool
-) -> Result<String, AtpError> {
+) -> Result<String, TextForgeError> {
     if input.is_empty() {
         return Ok(String::new());
     }
     if chunk_size == 0 {
         return Err(
-            AtpError::new(
-                super::errors::AtpErrorCode::ZeroDivisionError("chunk size == 0".into()),
+            TextForgeError::new(
+                super::errors::TextForgeErrorCode::ZeroDivisionError("chunk size == 0".into()),
                 Cow::Borrowed("process_input_by_chunks"),
                 Cow::Owned(input.to_string())
             )
@@ -102,13 +102,13 @@ pub fn process_input_by_chunks(
 mod cli_tests {
     mod process_input_by_chunks_tests {
         use crate::{
-            api::{ AtpBuilderMethods, processor::AtpProcessor },
-            utils::{ cli::process_input_by_chunks, errors::AtpError },
+            api::{ TextForgeBuilderMethods, processor::TextForgeProcessor },
+            utils::{ cli::process_input_by_chunks, errors::TextForgeError },
         };
 
         #[test]
-        fn it_works_correctly() -> Result<(), AtpError> {
-            let mut processor = AtpProcessor::new();
+        fn it_works_correctly() -> Result<(), TextForgeError> {
+            let mut processor = TextForgeProcessor::new();
 
             let id = processor.create_pipeline().add_to_beginning("b")?.add_to_end("l")?.build();
 
@@ -125,13 +125,13 @@ mod cli_tests {
 
     mod process_input_line_by_line_tests {
         use crate::{
-            api::{ AtpBuilderMethods, processor::AtpProcessor },
-            utils::{ cli::process_input_line_by_line, errors::AtpError },
+            api::{ TextForgeBuilderMethods, processor::TextForgeProcessor },
+            utils::{ cli::process_input_line_by_line, errors::TextForgeError },
         };
 
         #[test]
-        fn it_works_correctly() -> Result<(), AtpError> {
-            let mut processor = AtpProcessor::new();
+        fn it_works_correctly() -> Result<(), TextForgeError> {
+            let mut processor = TextForgeProcessor::new();
 
             let id = processor.create_pipeline().add_to_beginning("b")?.add_to_end("l")?.build();
 
@@ -148,13 +148,13 @@ mod cli_tests {
 
     mod process_input_single_chunk_tests {
         use crate::{
-            api::{ AtpBuilderMethods, processor::AtpProcessor },
-            utils::{ cli::process_input_single_chunk, errors::AtpError },
+            api::{ TextForgeBuilderMethods, processor::TextForgeProcessor },
+            utils::{ cli::process_input_single_chunk, errors::TextForgeError },
         };
 
         #[test]
-        fn it_works_correctly() -> Result<(), AtpError> {
-            let mut processor = AtpProcessor::new();
+        fn it_works_correctly() -> Result<(), TextForgeError> {
+            let mut processor = TextForgeProcessor::new();
 
             let id = processor.create_pipeline().add_to_beginning("b")?.add_to_end("l")?.build();
 

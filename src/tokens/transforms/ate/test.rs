@@ -5,8 +5,8 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::ate::Ate;
-    use crate::utils::errors::{ AtpError, AtpErrorCode };
-    use crate::utils::params::AtpParamTypes;
+    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::utils::params::TextForgeParamTypes;
 
     #[test]
     fn params_sets_text() {
@@ -21,9 +21,9 @@ mod tests {
     }
 
     #[test]
-    fn to_atp_line_formats_correctly() {
+    fn to_textforge_line_formats_correctly() {
         let t = Ate::new("xyz");
-        assert_eq!(t.to_atp_line().as_ref(), "ate xyz;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "ate xyz;\n");
     }
 
     #[test]
@@ -54,19 +54,19 @@ mod tests {
     fn from_params_rejects_wrong_param_count() {
         let mut t = Ate::default();
         let params = vec![
-            AtpParamTypes::String("a".to_string()),
-            AtpParamTypes::String("b".to_string())
+            TextForgeParamTypes::String("a".to_string()),
+            TextForgeParamTypes::String("b".to_string())
         ];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
     fn from_params_accepts_single_string_param() {
         let mut t = Ate::default();
-        let params = vec![AtpParamTypes::String(" bar".to_string())];
+        let params = vec![TextForgeParamTypes::String(" bar".to_string())];
 
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.text, " bar".to_string());
@@ -75,13 +75,13 @@ mod tests {
     #[test]
     fn from_params_rejects_wrong_param_type() {
         let mut t = Ate::default();
-        let params = vec![AtpParamTypes::Usize(123)];
+        let params = vec![TextForgeParamTypes::Usize(123)];
 
         let got = t.from_params(&params);
 
         let expected = Err(
-            AtpError::new(
-                AtpErrorCode::InvalidParameters("Text should be of string type".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters("Text should be of string type".into()),
                 "",
                 ""
             )
@@ -96,7 +96,7 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::params::AtpParamTypes;
+        use crate::utils::params::TextForgeParamTypes;
 
         #[test]
         fn get_opcode_is_02() {
@@ -142,11 +142,11 @@ mod tests {
             let param_payload_for_decoder = bc[param_start..param_end].to_vec();
 
             // Agora dá pra usar seu decoder de param:
-            let decoded = AtpParamTypes::from_bytecode(param_payload_for_decoder).unwrap();
+            let decoded = TextForgeParamTypes::from_bytecode(param_payload_for_decoder).unwrap();
 
             match decoded {
-                AtpParamTypes::String(s) => assert_eq!(s, " bar".to_string()),
-                _ => panic!("Expected AtpParamTypes::String"),
+                TextForgeParamTypes::String(s) => assert_eq!(s, " bar".to_string()),
+                _ => panic!("Expected TextForgeParamTypes::String"),
             }
         }
     }

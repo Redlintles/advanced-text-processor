@@ -6,8 +6,8 @@ use std::borrow::Cow;
 use crate::context::execution_context::GlobalExecutionContext;
 use crate::tokens::InstructionMethods;
 
-use crate::utils::errors::{ AtpError };
-use crate::utils::params::AtpParamTypes;
+use crate::utils::errors::{ TextForgeError };
+use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
 
 /// SPLC - Split Characters
@@ -26,21 +26,21 @@ use crate::utils::validations::check_vec_len;
 ///
 #[derive(Clone, Default)]
 pub struct Splc {
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl InstructionMethods for Splc {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
         "splc"
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         "splc;\n".into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, TextForgeError> {
         Ok(
             input
                 .chars()
@@ -49,7 +49,7 @@ impl InstructionMethods for Splc {
                 .join(" ")
         )
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(&params, 0, "rmws", "")?;
         Ok(())
     }
@@ -58,7 +58,7 @@ impl InstructionMethods for Splc {
         0x23
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), []);
         Ok(result)

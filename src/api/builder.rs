@@ -1,19 +1,19 @@
 use crate::{
-    api::{ AtpBlockMethods, AtpBuilderMethods, AtpConditionalMethods },
+    api::{ TextForgeBlockMethods, TextForgeBuilderMethods, TextForgeConditionalMethods },
     globals::var::TokenWrapper,
-    utils::errors::AtpError,
+    utils::errors::TextForgeError,
 };
 
-use super::processor::{ AtpProcessor, AtpProcessorMethods };
+use super::processor::{ TextForgeProcessor, TextForgeProcessorMethods };
 
-pub struct AtpBuilder<'ap> {
+pub struct TextForgeBuilder<'ap> {
     tokens: Vec<TokenWrapper>,
-    processor: &'ap mut AtpProcessor,
+    processor: &'ap mut TextForgeProcessor,
 }
 
-impl<'ap> AtpBuilder<'ap> {
-    pub fn new(processor: &'ap mut AtpProcessor) -> AtpBuilder<'ap> {
-        AtpBuilder { tokens: Vec::new(), processor }
+impl<'ap> TextForgeBuilder<'ap> {
+    pub fn new(processor: &'ap mut TextForgeProcessor) -> TextForgeBuilder<'ap> {
+        TextForgeBuilder { tokens: Vec::new(), processor }
     }
 
     pub fn build(&mut self) -> String {
@@ -23,12 +23,12 @@ impl<'ap> AtpBuilder<'ap> {
     }
 }
 
-impl<'ap> AtpBuilderMethods for AtpBuilder<'ap> {
-    fn push_token(&mut self, t: impl Into<TokenWrapper>) -> Result<(), AtpError> {
+impl<'ap> TextForgeBuilderMethods for TextForgeBuilder<'ap> {
+    fn push_token(&mut self, t: impl Into<TokenWrapper>) -> Result<(), TextForgeError> {
         self.tokens.push(t.into());
         Ok(())
     }
 }
 
-impl<'ap> AtpConditionalMethods for AtpBuilder<'ap> {}
-impl<'ap> AtpBlockMethods for AtpBuilder<'ap> {}
+impl<'ap> TextForgeConditionalMethods for TextForgeBuilder<'ap> {}
+impl<'ap> TextForgeBlockMethods for TextForgeBuilder<'ap> {}

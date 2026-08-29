@@ -4,16 +4,16 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::{ check_index_against_input, check_vec_len };
 use crate::{ tokens::InstructionMethods };
 
-use crate::utils::errors::{ AtpError, AtpErrorCode };
+use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 
 /// Dla - Delete After
 /// Delete all characters after `index` in the specified `input`
 ///
-/// It will throw an `AtpError` if index does not exists in the current `input`
+/// It will throw an `TextForgeError` if index does not exists in the current `input`
 ///
 /// # Example:
 ///
@@ -28,7 +28,7 @@ use crate::utils::errors::{ AtpError, AtpErrorCode };
 #[derive(Clone, Default)]
 pub struct Dla {
     pub index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Dla {
@@ -38,10 +38,10 @@ impl Dla {
 }
 
 impl InstructionMethods for Dla {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("dla {};\n", self.index).into()
     }
 
@@ -49,7 +49,7 @@ impl InstructionMethods for Dla {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         check_index_against_input(self.index, input)?;
 
         let mut s = String::from(input);
@@ -63,11 +63,11 @@ impl InstructionMethods for Dla {
             return Ok(s);
         }
         Err(
-            AtpError::new(
-                AtpErrorCode::IndexOutOfRange(
+            TextForgeError::new(
+                TextForgeErrorCode::IndexOutOfRange(
                     "Index is out of range for the desired string".into()
                 ),
-                self.to_atp_line(),
+                self.to_textforge_line(),
                 input.to_string()
             )
         )
@@ -76,7 +76,7 @@ impl InstructionMethods for Dla {
     fn get_string_repr(&self) -> &'static str {
         "dla"
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 1, "dla", "")?;
@@ -90,9 +90,9 @@ impl InstructionMethods for Dla {
         0x09
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [AtpParamTypes::Usize(self.index)]);
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
         Ok(result)
     }
 }

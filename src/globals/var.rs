@@ -4,38 +4,38 @@ use crate::{
     context::execution_context::{ GlobalContextMethods, GlobalExecutionContext, VarValues },
     globals::table::{ QuerySource, QueryTarget, SyntaxDef, SyntaxToken, TOKEN_TABLE, TargetValue },
     tokens::{ InstructionMethods, transforms::dlf::Dlf },
-    utils::{ errors::{ AtpError, AtpErrorCode }, params::AtpParamTypes },
+    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, params::TextForgeParamTypes },
 };
 
 #[cfg(feature = "bytecode")]
 use crate::to_bytecode;
 #[derive(Clone, Debug)]
 pub enum ValType {
-    Literal(AtpParamTypes),
+    Literal(TextForgeParamTypes),
     VarRef(String),
 }
 
 impl From<String> for ValType {
     fn from(value: String) -> Self {
-        return Self::Literal(AtpParamTypes::String(value));
+        return Self::Literal(TextForgeParamTypes::String(value));
     }
 }
 impl From<&str> for ValType {
     fn from(value: &str) -> Self {
-        return Self::Literal(AtpParamTypes::String(value.to_string()));
+        return Self::Literal(TextForgeParamTypes::String(value.to_string()));
     }
 }
 impl From<usize> for ValType {
     fn from(value: usize) -> Self {
-        return Self::Literal(AtpParamTypes::Usize(value));
+        return Self::Literal(TextForgeParamTypes::Usize(value));
     }
 }
 
-impl From<ValType> for AtpParamTypes {
+impl From<ValType> for TextForgeParamTypes {
     fn from(value: ValType) -> Self {
         match value {
             ValType::Literal(v) => v,
-            ValType::VarRef(name) => AtpParamTypes::VarRef(name),
+            ValType::VarRef(name) => TextForgeParamTypes::VarRef(name),
         }
     }
 }
@@ -102,7 +102,7 @@ impl TokenWrapper {
         &self,
         input: &str,
         context: &mut GlobalExecutionContext
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let parsed_params = ValType::resolve_variables(&self.token, &self.params, &mut *context)?;
         let mut t = self.token.clone();
         t.from_params(&parsed_params)?;
@@ -115,15 +115,15 @@ impl TokenWrapper {
     pub fn to_text_line_resolved(
         &self,
         context: &mut GlobalExecutionContext
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let parsed_params = ValType::resolve_variables(&self.token, &self.params, &mut *context)?;
         let mut t = self.token.clone();
         t.from_params(&parsed_params)?;
 
-        Ok(t.to_atp_line().into())
+        Ok(t.to_textforge_line().into())
     }
 
-    pub fn to_text_line_unresolved(&self) -> Result<String, AtpError> {
+    pub fn to_text_line_unresolved(&self) -> Result<String, TextForgeError> {
         let mut parsed_params = Vec::new();
 
         for param in self.params.iter() {
@@ -131,7 +131,7 @@ impl TokenWrapper {
                 ValType::Literal(x) => parsed_params.push(x.clone()),
                 ValType::VarRef(var_name) => {
                     parsed_params.push(
-                        AtpParamTypes::String(format!("{{{{{}}}}}", var_name.clone()))
+                        TextForgeParamTypes::String(format!("{{{{{}}}}}", var_name.clone()))
                     );
                 }
             }
@@ -141,13 +141,13 @@ impl TokenWrapper {
 
         t.from_params(&parsed_params)?;
 
-        Ok(t.to_atp_line().into())
+        Ok(t.to_textforge_line().into())
     }
     #[cfg(feature = "bytecode")]
     pub fn to_bytecode_resolved(
         &self,
         context: &mut GlobalExecutionContext
-    ) -> Result<Vec<u8>, AtpError> {
+    ) -> Result<Vec<u8>, TextForgeError> {
         let parsed_params = ValType::resolve_variables(&self.token, &self.params, &mut *context)?;
         let mut t = self.token.clone();
         t.from_params(&parsed_params)?;
@@ -155,13 +155,13 @@ impl TokenWrapper {
         Ok(t.to_bytecode()?)
     }
     #[cfg(feature = "bytecode")]
-    pub fn to_bytecode_unresolved(&self) -> Result<Vec<u8>, AtpError> {
-        let mut unresolved_params: Vec<AtpParamTypes> = Vec::new();
+    pub fn to_bytecode_unresolved(&self) -> Result<Vec<u8>, TextForgeError> {
+        let mut unresolved_params: Vec<TextForgeParamTypes> = Vec::new();
         for val in self.params.iter() {
             match val {
                 ValType::Literal(x) => unresolved_params.push(x.clone()),
                 ValType::VarRef(name) =>
-                    unresolved_params.push(AtpParamTypes::VarRef(name.to_string())),
+                    unresolved_params.push(TextForgeParamTypes::VarRef(name.to_string())),
             }
         }
 
@@ -188,7 +188,7 @@ impl ValType {
         t: &Box<dyn InstructionMethods>,
         values: &Vec<ValType>,
         context: &mut GlobalExecutionContext
-    ) -> Result<Vec<AtpParamTypes>, AtpError> {
+    ) -> Result<Vec<TextForgeParamTypes>, TextForgeError> {
         let mut result = Vec::new();
 
         let query_result = TOKEN_TABLE.find((
@@ -204,8 +204,8 @@ impl ValType {
         );
         if values.len() != expected_params.len() {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::InvalidParameters("Param count mismatch".into()),
+                TextForgeError::new(
+                    TextForgeErrorCode::InvalidParameters("Param count mismatch".into()),
                     "resolve_variables",
                     format!(
                         "token={}, expected={}, got={}",
@@ -221,19 +221,19 @@ impl ValType {
             match v {
                 ValType::Literal(literal) => {
                     match (literal, expected_params[i]) {
-                        (AtpParamTypes::String(_), SyntaxToken::String) => {
+                        (TextForgeParamTypes::String(_), SyntaxToken::String) => {
                             result.push(literal.clone());
                         }
-                        (AtpParamTypes::Usize(_), SyntaxToken::Usize) => {
+                        (TextForgeParamTypes::Usize(_), SyntaxToken::Usize) => {
                             result.push(literal.clone());
                         }
-                        (AtpParamTypes::Token(_), SyntaxToken::Token) => {
+                        (TextForgeParamTypes::Token(_), SyntaxToken::Token) => {
                             result.push(literal.clone());
                         }
                         _ => {
                             return Err(
-                                AtpError::new(
-                                    AtpErrorCode::IncompatibleTypeError(
+                                TextForgeError::new(
+                                    TextForgeErrorCode::IncompatibleTypeError(
                                         "Literal type and required param type are different".into()
                                     ),
                                     "resolve_variables()",
@@ -247,18 +247,18 @@ impl ValType {
                     let variable = context.get_var(name)?;
                     match (variable.value.clone(), expected_params[i]) {
                         (VarValues::String(v), SyntaxToken::String) => {
-                            result.push(AtpParamTypes::String(v));
+                            result.push(TextForgeParamTypes::String(v));
                         }
                         (VarValues::Usize(v), SyntaxToken::Usize) => {
-                            result.push(AtpParamTypes::Usize(v));
+                            result.push(TextForgeParamTypes::Usize(v));
                         }
                         (VarValues::Token(v), SyntaxToken::Token) => {
-                            result.push(AtpParamTypes::Token(v));
+                            result.push(TextForgeParamTypes::Token(v));
                         }
                         _ => {
                             return Err(
-                                AtpError::new(
-                                    AtpErrorCode::IncompatibleTypeError(
+                                TextForgeError::new(
+                                    TextForgeErrorCode::IncompatibleTypeError(
                                         "Var type and required param type are different".into()
                                     ),
                                     "resolve_variables()",

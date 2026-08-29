@@ -5,7 +5,7 @@ mod tests {
     use crate::{
         context::execution_context::GlobalExecutionContext,
         tokens::{ InstructionMethods, transforms::rmws::Rmws },
-        utils::params::AtpParamTypes,
+        utils::params::TextForgeParamTypes,
     };
 
     #[test]
@@ -15,9 +15,9 @@ mod tests {
     }
 
     #[test]
-    fn rmws_to_atp_line_ok() {
+    fn rmws_to_textforge_line_ok() {
         let t = Rmws::default();
-        assert_eq!(t.to_atp_line().as_ref(), "rmws;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "rmws;\n");
     }
 
     #[test]
@@ -70,14 +70,14 @@ mod tests {
     #[test]
     fn rmws_from_params_ok_empty() {
         let mut t = Rmws::default();
-        let v: Vec<AtpParamTypes> = vec![];
+        let v: Vec<TextForgeParamTypes> = vec![];
         assert!(t.from_params(&v).is_ok());
     }
 
     #[test]
     fn rmws_from_params_err_when_not_empty() {
         let mut t = Rmws::default();
-        let v: Vec<AtpParamTypes> = vec![AtpParamTypes::Usize(0)];
+        let v: Vec<TextForgeParamTypes> = vec![TextForgeParamTypes::Usize(0)];
         assert!(t.from_params(&v).is_err());
     }
     #[cfg(feature = "bytecode")]

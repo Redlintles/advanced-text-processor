@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::{ globals::var::{ TokenWrapper }, utils::errors::{ AtpError, AtpErrorCode } };
+use crate::{ globals::var::{ TokenWrapper }, utils::errors::{ TextForgeError, TextForgeErrorCode } };
 #[derive(Clone)]
 pub enum VarValues {
     String(String),
@@ -44,16 +44,16 @@ pub struct GlobalExecutionContext {
 // cblk {name}; will execute all instructions stored in the {name} block;
 
 pub trait GlobalContextMethods {
-    fn add_to_block(&mut self, block_id: &str, token: TokenWrapper) -> Result<(), AtpError>;
-    fn get_formatted_block_items(&mut self, block_id: &str) -> Result<String, AtpError>;
+    fn add_to_block(&mut self, block_id: &str, token: TokenWrapper) -> Result<(), TextForgeError>;
+    fn get_formatted_block_items(&mut self, block_id: &str) -> Result<String, TextForgeError>;
 
-    fn add_var(&mut self, id: &str, var_entry: VarEntry) -> Result<(), AtpError>;
-    fn get_var(&self, var_id: &str) -> Result<&VarEntry, AtpError>;
-    fn get_mut_var(&mut self, var_id: &str) -> Result<&mut VarEntry, AtpError>;
+    fn add_var(&mut self, id: &str, var_entry: VarEntry) -> Result<(), TextForgeError>;
+    fn get_var(&self, var_id: &str) -> Result<&VarEntry, TextForgeError>;
+    fn get_mut_var(&mut self, var_id: &str) -> Result<&mut VarEntry, TextForgeError>;
 
-    // It would require a more complex implementation. but would help optimizing atp in the future. This will remove data that will no longer be used from the context.
+    // It would require a more complex implementation. but would help optimizing textforge in the future. This will remove data that will no longer be used from the context.
     fn clean_context(&mut self) -> () {}
-    fn take_block(&mut self, block_id: &str) -> Result<Vec<TokenWrapper>, AtpError>;
+    fn take_block(&mut self, block_id: &str) -> Result<Vec<TokenWrapper>, TextForgeError>;
     fn put_block(&mut self, block_id: &str, block: Vec<TokenWrapper>);
 }
 
@@ -64,7 +64,7 @@ impl GlobalExecutionContext {
 }
 
 impl GlobalContextMethods for GlobalExecutionContext {
-    fn add_to_block(&mut self, block_id: &str, token: TokenWrapper) -> Result<(), AtpError> {
+    fn add_to_block(&mut self, block_id: &str, token: TokenWrapper) -> Result<(), TextForgeError> {
         match self.blocks.get_mut(block_id) {
             Some(tokens) => {
                 tokens.push(token);
@@ -80,12 +80,12 @@ impl GlobalContextMethods for GlobalExecutionContext {
         Ok(())
     }
 
-    fn take_block(&mut self, block_id: &str) -> Result<Vec<TokenWrapper>, AtpError> {
+    fn take_block(&mut self, block_id: &str) -> Result<Vec<TokenWrapper>, TextForgeError> {
         self.blocks
             .remove(block_id)
             .ok_or_else(|| {
-                AtpError::new(
-                    AtpErrorCode::BlockNotFound("Block not found".into()),
+                TextForgeError::new(
+                    TextForgeErrorCode::BlockNotFound("Block not found".into()),
                     "context.take_block",
                     block_id.to_string()
                 )
@@ -96,7 +96,7 @@ impl GlobalContextMethods for GlobalExecutionContext {
         self.blocks.insert(block_id.to_string(), block);
     }
 
-    fn get_formatted_block_items(&mut self, block_id: &str) -> Result<String, AtpError> {
+    fn get_formatted_block_items(&mut self, block_id: &str) -> Result<String, TextForgeError> {
         use colored::Colorize;
 
         let block_items = self.take_block(block_id)?;
@@ -122,7 +122,7 @@ impl GlobalContextMethods for GlobalExecutionContext {
                 "".normal()
             };
 
-            result.push_str(&format!("\t\t\t\t{}{}\n", prefix, token.to_atp_line().yellow()));
+            result.push_str(&format!("\t\t\t\t{}{}\n", prefix, token.to_textforge_line().yellow()));
         }
 
         self.put_block(block_id, block_items);
@@ -130,18 +130,18 @@ impl GlobalContextMethods for GlobalExecutionContext {
         Ok(result)
     }
 
-    fn add_var(&mut self, id: &str, var_entry: VarEntry) -> Result<(), AtpError> {
+    fn add_var(&mut self, id: &str, var_entry: VarEntry) -> Result<(), TextForgeError> {
         self.variables.insert(id.to_string(), var_entry);
         Ok(())
     }
 
-    fn get_var(&self, var_id: &str) -> Result<&VarEntry, AtpError> {
+    fn get_var(&self, var_id: &str) -> Result<&VarEntry, TextForgeError> {
         Ok(
             self.variables
                 .get(var_id)
                 .ok_or_else(||
-                    AtpError::new(
-                        AtpErrorCode::VariableNotFound("Variable not found".into()),
+                    TextForgeError::new(
+                        TextForgeErrorCode::VariableNotFound("Variable not found".into()),
                         "get_var",
                         var_id.to_string()
                     )
@@ -149,12 +149,12 @@ impl GlobalContextMethods for GlobalExecutionContext {
         )
     }
 
-    fn get_mut_var(&mut self, var_id: &str) -> Result<&mut VarEntry, AtpError> {
+    fn get_mut_var(&mut self, var_id: &str) -> Result<&mut VarEntry, TextForgeError> {
         let v = self.variables
             .get_mut(var_id)
             .ok_or_else(||
-                AtpError::new(
-                    AtpErrorCode::VariableNotFound("Variable not found".into()),
+                TextForgeError::new(
+                    TextForgeErrorCode::VariableNotFound("Variable not found".into()),
                     "get_var",
                     var_id.to_string()
                 )
@@ -163,8 +163,8 @@ impl GlobalContextMethods for GlobalExecutionContext {
             Ok(v)
         } else {
             Err(
-                AtpError::new(
-                    AtpErrorCode::NonMutableVariableError("Variable is not mutable".into()),
+                TextForgeError::new(
+                    TextForgeErrorCode::NonMutableVariableError("Variable is not mutable".into()),
                     "get_mut_var",
                     var_id.to_string()
                 )

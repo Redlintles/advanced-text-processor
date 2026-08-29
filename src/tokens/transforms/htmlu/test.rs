@@ -5,8 +5,8 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::htmlu::Htmlu;
-    use crate::utils::errors::AtpErrorCode;
-    use crate::utils::params::AtpParamTypes;
+    use crate::utils::errors::TextForgeErrorCode;
+    use crate::utils::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_htmlu() {
@@ -15,9 +15,9 @@ mod tests {
     }
 
     #[test]
-    fn to_atp_line_is_constant() {
+    fn to_textforge_line_is_constant() {
         let t = Htmlu::default();
-        assert_eq!(t.to_atp_line().as_ref(), "htmlu;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "htmlu;\n");
     }
 
     #[test]
@@ -70,7 +70,7 @@ mod tests {
     #[test]
     fn from_params_accepts_empty_param_list() {
         let mut t = Htmlu::default();
-        let params: Vec<AtpParamTypes> = vec![];
+        let params: Vec<TextForgeParamTypes> = vec![];
 
         assert_eq!(t.from_params(&params), Ok(()));
     }
@@ -78,11 +78,11 @@ mod tests {
     #[test]
     fn from_params_rejects_any_params() {
         let mut t = Htmlu::default();
-        let params = vec![AtpParamTypes::Usize(1)];
+        let params = vec![TextForgeParamTypes::Usize(1)];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

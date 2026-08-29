@@ -6,10 +6,10 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::AtpError, transforms::capitalize, validations::check_vec_len },
+    utils::{ errors::TextForgeError, transforms::capitalize, validations::check_vec_len },
 };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 
 /// JPSC - Join to PascalCase
 ///
@@ -27,22 +27,22 @@ use crate::utils::params::AtpParamTypes;
 ///
 #[derive(Clone, Default)]
 pub struct Jpsc {
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl InstructionMethods for Jpsc {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
         "jpsc"
     }
 
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         "jpsc;\n".into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, TextForgeError> {
         let v = input.split_whitespace().collect::<Vec<_>>();
 
         let processed = v
@@ -54,7 +54,7 @@ impl InstructionMethods for Jpsc {
         Ok(processed)
     }
 
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(&params, 0, "jpsc", "")?;
         Ok(())
     }
@@ -63,7 +63,7 @@ impl InstructionMethods for Jpsc {
         0x2e
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), []);
         Ok(result)

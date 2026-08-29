@@ -6,10 +6,10 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::AtpError, validations::check_vec_len },
+    utils::{ errors::TextForgeError, validations::check_vec_len },
 };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 
 /// Token `Atb` — Add to Beginning
 ///
@@ -30,7 +30,7 @@ use crate::utils::params::AtpParamTypes;
 #[derive(Clone, Default)]
 pub struct Atb {
     pub text: String,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Atb {
@@ -43,10 +43,10 @@ impl Atb {
 }
 
 impl InstructionMethods for Atb {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         return &self.params;
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("atb {};\n", self.text).into()
     }
 
@@ -54,7 +54,7 @@ impl InstructionMethods for Atb {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let mut s = String::from(&self.text);
         s.push_str(input);
         Ok(s)
@@ -64,9 +64,9 @@ impl InstructionMethods for Atb {
         "atb"
     }
 
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
-        use crate::utils::params::AtpParamTypesJoin;
+        use crate::utils::params::TextForgeParamTypesJoin;
 
         check_vec_len(&params, 1, "atb", params.join(""))?;
 
@@ -83,10 +83,10 @@ impl InstructionMethods for Atb {
     }
 
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.text.clone()),
+            TextForgeParamTypes::String(self.text.clone()),
         ]);
         Ok(result)
     }

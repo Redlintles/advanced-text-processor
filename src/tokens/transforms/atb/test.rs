@@ -7,7 +7,7 @@ mod common {
     use crate::{
         context::execution_context::GlobalExecutionContext,
         tokens::{ InstructionMethods, transforms::atb::Atb },
-        utils::{ errors::AtpErrorCode, params::AtpParamTypes },
+        utils::{ errors::TextForgeErrorCode, params::TextForgeParamTypes },
     };
 
     #[test]
@@ -40,9 +40,9 @@ mod common {
     }
 
     #[test]
-    fn to_atp_line_exact_format() {
+    fn to_textforge_line_exact_format() {
         let t = Atb::new("foo");
-        let line = t.to_atp_line();
+        let line = t.to_textforge_line();
         assert_eq!(line.as_ref(), "atb foo;\n");
     }
 
@@ -56,7 +56,7 @@ mod common {
         let mut t = Atb::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        let params = vec![AtpParamTypes::String("foo".to_string())];
+        let params = vec![TextForgeParamTypes::String("foo".to_string())];
 
         t.from_params(&params).unwrap();
         assert_eq!(t.text, "foo");
@@ -68,25 +68,25 @@ mod common {
     fn atb_from_params_rejects_wrong_param_count() {
         let mut t = Atb::default();
         let params = vec![
-            AtpParamTypes::String("a".to_string()),
-            AtpParamTypes::String("b".to_string())
+            TextForgeParamTypes::String("a".to_string()),
+            TextForgeParamTypes::String("b".to_string())
         ];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
     fn atb_to_bytecode_can_be_parsed_into_params_and_feed_from_params() {
         // Fluxo real:
-        // Atb::to_bytecode -> extrair param -> AtpParamTypes::from_bytecode(param bytes) -> Atb::from_params
+        // Atb::to_bytecode -> extrair param -> TextForgeParamTypes::from_bytecode(param bytes) -> Atb::from_params
         //
         // Layout:
         // [u64 instruction_total_size][u32 opcode][u8 param_count]
         // [u64 param_total_size][u32 param_type][u32 payload_size][payload]
         //
-        // E AtpParamTypes::from_bytecode espera:
+        // E TextForgeParamTypes::from_bytecode espera:
         // [u32 type][u32 payload_size][payload]
         //
         // Então pulamos o u64 param_total_size.
@@ -108,7 +108,7 @@ mod common {
         // Agora o sub-slice começa em [u32 param_type][u32 payload_size][payload...]
         let param_slice = bytes[idx..].to_vec();
 
-        let parsed_param = AtpParamTypes::from_bytecode(param_slice).unwrap();
+        let parsed_param = TextForgeParamTypes::from_bytecode(param_slice).unwrap();
 
         let mut rebuilt = Atb::default();
         rebuilt.from_params(&vec![parsed_param]).unwrap();
@@ -123,10 +123,10 @@ mod bytecode {
     use crate::{
         context::execution_context::GlobalExecutionContext,
         tokens::{ InstructionMethods, transforms::atb::Atb },
-        utils::{ errors::AtpError, params::AtpParamTypes },
+        utils::{ errors::TextForgeError, params::TextForgeParamTypes },
     };
 
-    // Helper: encode a param in the exact format that AtpParamTypes::from_bytecode expects:
+    // Helper: encode a param in the exact format that TextForgeParamTypes::from_bytecode expects:
     // [type: u32][payload_size: u32][payload: bytes]
     fn encode_param_for_decoder(param_type: u32, payload: &[u8]) -> Vec<u8> {
         let mut v = Vec::with_capacity(4 + 4 + payload.len());
@@ -143,31 +143,31 @@ mod bytecode {
     }
 
     #[test]
-    fn atpparam_from_bytecode_string_roundtrip_decoder_format() {
+    fn textforgeparam_from_bytecode_string_roundtrip_decoder_format() {
         let raw = encode_param_for_decoder(0x01, b"abc");
-        let parsed = AtpParamTypes::from_bytecode(raw).unwrap();
+        let parsed = TextForgeParamTypes::from_bytecode(raw).unwrap();
 
         match parsed {
-            AtpParamTypes::String(s) => assert_eq!(s, "abc"),
+            TextForgeParamTypes::String(s) => assert_eq!(s, "abc"),
             other => panic!("Expected String, got type code {}", other.get_param_type_code()),
         }
     }
 
     #[test]
-    fn atpparam_from_bytecode_usize_decoder_format() {
+    fn textforgeparam_from_bytecode_usize_decoder_format() {
         let n: usize = 123;
         let raw = encode_param_for_decoder(0x02, &n.to_be_bytes());
-        let parsed = AtpParamTypes::from_bytecode(raw).unwrap();
+        let parsed = TextForgeParamTypes::from_bytecode(raw).unwrap();
 
         match parsed {
-            AtpParamTypes::Usize(x) => assert_eq!(x, 123),
+            TextForgeParamTypes::Usize(x) => assert_eq!(x, 123),
             other => panic!("Expected Usize, got type code {}", other.get_param_type_code()),
         }
     }
 
     #[test]
-    fn atpparam_param_to_bytecode_has_internal_structure() -> Result<(), AtpError> {
-        let p = AtpParamTypes::String("abc".to_string());
+    fn textforgeparam_param_to_bytecode_has_internal_structure() -> Result<(), TextForgeError> {
+        let p = TextForgeParamTypes::String("abc".to_string());
         let mut dummy_context = GlobalExecutionContext::new();
         let (total_u64, b) = p.param_to_bytecode(&mut dummy_context)?;
 

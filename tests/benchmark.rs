@@ -2,21 +2,21 @@
 #[cfg(test)]
 pub mod benchmark {
     use textforge::{
-        api::{ processor::{ AtpProcessor, AtpProcessorMethods } },
+        api::{ processor::{ TextForgeProcessor, TextForgeProcessorMethods } },
         utils::test_helpers::build_all_tokens_pipeline_safe,
     };
     use std::time::Instant;
 
-    use textforge::utils::errors::AtpError;
+    use textforge::utils::errors::TextForgeError;
 
     #[test]
-    fn debug_overhead_too_high() -> Result<(), AtpError> {
-        let debug_exectime_cb = || -> Result<f64, AtpError> {
+    fn debug_overhead_too_high() -> Result<(), TextForgeError> {
+        let debug_exectime_cb = || -> Result<f64, TextForgeError> {
             let runs = 100;
 
             let mut total = 0.0;
 
-            let mut processor = AtpProcessor::new();
+            let mut processor = TextForgeProcessor::new();
 
             let identifier = build_all_tokens_pipeline_safe(&mut processor)?;
 
@@ -37,12 +37,12 @@ pub mod benchmark {
             Ok(avg)
         };
 
-        let no_debug_exectime_cb = || -> Result<f64, AtpError> {
+        let no_debug_exectime_cb = || -> Result<f64, TextForgeError> {
             let runs = 100;
 
             let mut total = 0.0;
 
-            let mut processor = AtpProcessor::new();
+            let mut processor = TextForgeProcessor::new();
 
             let identifier = build_all_tokens_pipeline_safe(&mut processor)?;
 
@@ -76,12 +76,12 @@ pub mod benchmark {
     }
 
     #[test]
-    fn process_sbs_all_tokens() -> Result<(), AtpError> {
+    fn process_sbs_all_tokens() -> Result<(), TextForgeError> {
         let runs = 100;
 
         let mut total = 0.0;
 
-        let mut processor = AtpProcessor::new();
+        let mut processor = TextForgeProcessor::new();
 
         let identifier = build_all_tokens_pipeline_safe(&mut processor)?;
 
@@ -109,12 +109,12 @@ pub mod benchmark {
         Ok(())
     }
     #[test]
-    fn process_all_tokens() -> Result<(), AtpError> {
+    fn process_all_tokens() -> Result<(), TextForgeError> {
         let runs = 100;
 
         let mut total = 0.0;
 
-        let mut processor = AtpProcessor::new();
+        let mut processor = TextForgeProcessor::new();
 
         let identifier = build_all_tokens_pipeline_safe(&mut processor)?;
 

@@ -4,8 +4,8 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::{ InstructionMethods, transforms::tucc::Tucc };
-    use crate::utils::errors::{ AtpErrorCode };
-    use crate::utils::params::AtpParamTypes;
+    use crate::utils::errors::{ TextForgeErrorCode };
+    use crate::utils::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_tucc() {
@@ -14,9 +14,9 @@ mod tests {
     }
 
     #[test]
-    fn to_atp_line_is_correct() {
+    fn to_textforge_line_is_correct() {
         let t = Tucc::new(1, 4).unwrap();
-        assert_eq!(t.to_atp_line().as_ref(), "tucc 1 4;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "tucc 1 4;\n");
     }
 
     #[test]
@@ -31,20 +31,20 @@ mod tests {
     #[test]
     fn from_params_accepts_two_usize() {
         let mut t = Tucc::default();
-        let params = vec![AtpParamTypes::Usize(1), AtpParamTypes::Usize(4)];
+        let params = vec![TextForgeParamTypes::Usize(1), TextForgeParamTypes::Usize(4)];
 
         assert_eq!(t.from_params(&params), Ok(()));
-        assert_eq!(t.to_atp_line().as_ref(), "tucc 1 4;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "tucc 1 4;\n");
     }
 
     #[test]
     fn from_params_rejects_wrong_len() {
         let mut t = Tucc::default();
-        let params = vec![AtpParamTypes::Usize(1)];
+        let params = vec![TextForgeParamTypes::Usize(1)];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

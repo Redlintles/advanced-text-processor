@@ -1,6 +1,6 @@
 use std::{ borrow::Cow, collections::HashMap, sync::{ Arc, LazyLock } };
 
-use crate::{ tokens::InstructionMethods, utils::errors::{ AtpError, AtpErrorCode } };
+use crate::{ tokens::InstructionMethods, utils::errors::{ TextForgeError, TextForgeErrorCode } };
 
 use crate::tokens::{ instructions::*, transforms::* };
 
@@ -61,10 +61,10 @@ impl TokenTable {
     pub fn find(
         &self,
         (query_source, query_target): (QuerySource, QueryTarget)
-    ) -> Result<TargetValue, AtpError> {
+    ) -> Result<TargetValue, TextForgeError> {
         let err = || {
-            AtpError::new(
-                AtpErrorCode::TokenNotFound("Token Not Found in mapping".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::TokenNotFound("Token Not Found in mapping".into()),
                 "TOKEN_TABLE.find()",
                 "query"
             )

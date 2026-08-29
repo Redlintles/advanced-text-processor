@@ -4,11 +4,11 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
 use crate::{ tokens::InstructionMethods, utils::validations::check_chunk_bound_indexes };
 
-use crate::utils::errors::{ AtpError };
+use crate::utils::errors::{ TextForgeError };
 
 /// Slt - Select
 ///
@@ -30,11 +30,11 @@ use crate::utils::errors::{ AtpError };
 pub struct Slt {
     pub start_index: usize,
     pub end_index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Slt {
-    pub fn new(start_index: usize, end_index: usize) -> Result<Self, AtpError> {
+    pub fn new(start_index: usize, end_index: usize) -> Result<Self, TextForgeError> {
         check_chunk_bound_indexes(start_index, end_index, None)?;
         Ok(Slt {
             start_index,
@@ -45,7 +45,7 @@ impl Slt {
 }
 
 impl InstructionMethods for Slt {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
@@ -55,7 +55,7 @@ impl InstructionMethods for Slt {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let len = input.chars().count();
         let mut end = self.end_index;
 
@@ -81,14 +81,14 @@ impl InstructionMethods for Slt {
         Ok(input[start_byte..end_byte_exclusive].to_string())
     }
 
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("slt {} {};\n", self.start_index, self.end_index).into()
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
         0x11
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 2, "slt", "")?;
@@ -100,11 +100,11 @@ impl InstructionMethods for Slt {
         return Ok(());
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::Usize(self.start_index),
-            AtpParamTypes::Usize(self.end_index),
+            TextForgeParamTypes::Usize(self.start_index),
+            TextForgeParamTypes::Usize(self.end_index),
         ]);
         Ok(result)
     }

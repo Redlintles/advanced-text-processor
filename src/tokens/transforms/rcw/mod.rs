@@ -6,9 +6,9 @@ use std::borrow::Cow;
 use regex::Regex;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::errors::{ AtpError, AtpErrorCode };
+use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
 use crate::{ tokens::InstructionMethods };
 
@@ -38,7 +38,7 @@ pub struct Rcw {
     pub pattern: Regex,
     pub count: usize,
     pub text_to_replace: String,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Rcw {
@@ -69,10 +69,10 @@ impl Default for Rcw {
 }
 
 impl InstructionMethods for Rcw {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("rcw {} {} {};\n", self.pattern, self.text_to_replace, self.count).into()
     }
 
@@ -80,7 +80,7 @@ impl InstructionMethods for Rcw {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         if self.count == 0 {
             return Ok(input.to_string());
         }
@@ -90,7 +90,7 @@ impl InstructionMethods for Rcw {
     fn get_string_repr(&self) -> &'static str {
         "rcw"
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 3, "rcw", "")?;
@@ -98,8 +98,8 @@ impl InstructionMethods for Rcw {
         let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
 
         self.pattern = Regex::new(&pattern_payload.clone()).map_err(|_| {
-            AtpError::new(
-                AtpErrorCode::TextParsingError("Failed to create regex".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
                 pattern_payload.clone()
             )
@@ -125,12 +125,12 @@ impl InstructionMethods for Rcw {
         0x10
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.pattern.to_string()),
-            AtpParamTypes::String(self.text_to_replace.clone()),
-            AtpParamTypes::Usize(self.count),
+            TextForgeParamTypes::String(self.pattern.to_string()),
+            TextForgeParamTypes::String(self.text_to_replace.clone()),
+            TextForgeParamTypes::Usize(self.count),
         ]);
         Ok(result)
     }

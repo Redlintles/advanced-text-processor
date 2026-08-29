@@ -6,11 +6,11 @@ use std::borrow::Cow;
 use regex::Regex;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
 use crate::{ tokens::InstructionMethods };
 
-use crate::utils::errors::{ AtpError, AtpErrorCode };
+use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 
 /// SSLT - Split Select
 ///
@@ -31,13 +31,13 @@ use crate::utils::errors::{ AtpError, AtpErrorCode };
 pub struct Sslt {
     pub pattern: Regex,
     pub index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Sslt {
-    pub fn new(pattern: &str, index: usize) -> Result<Self, AtpError> {
+    pub fn new(pattern: &str, index: usize) -> Result<Self, TextForgeError> {
         let pattern = Regex::new(&pattern).map_err(|e| {
-            AtpError::new(AtpErrorCode::TextParsingError(e.to_string().into()), "", "")
+            TextForgeError::new(TextForgeErrorCode::TextParsingError(e.to_string().into()), "", "")
         })?;
         Ok(Sslt { index, params: vec![pattern.to_string().into(), index.into()], pattern })
     }
@@ -54,7 +54,7 @@ impl Default for Sslt {
 }
 
 impl InstructionMethods for Sslt {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
@@ -64,16 +64,16 @@ impl InstructionMethods for Sslt {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let item = self.pattern
             .split(input)
             .nth(self.index)
             .ok_or_else(|| {
-                AtpError::new(
-                    AtpErrorCode::IndexOutOfRange(
+                TextForgeError::new(
+                    TextForgeErrorCode::IndexOutOfRange(
                         "Index does not exist in the splitted vec".into()
                     ),
-                    self.to_atp_line(),
+                    self.to_textforge_line(),
                     input.to_string()
                 )
             })?;
@@ -81,10 +81,10 @@ impl InstructionMethods for Sslt {
         Ok(item.to_string())
     }
 
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("sslt {} {};\n", self.pattern, self.index).into()
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 2, "sslt", "")?;
@@ -92,8 +92,8 @@ impl InstructionMethods for Sslt {
         let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
 
         self.pattern = Regex::new(&pattern_payload.clone()).map_err(|_| {
-            AtpError::new(
-                AtpErrorCode::TextParsingError("Failed to create regex".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
                 pattern_payload.clone()
             )
@@ -110,11 +110,11 @@ impl InstructionMethods for Sslt {
         0x1a
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.pattern.to_string()),
-            AtpParamTypes::Usize(self.index),
+            TextForgeParamTypes::String(self.pattern.to_string()),
+            TextForgeParamTypes::Usize(self.index),
         ]);
         Ok(result)
     }

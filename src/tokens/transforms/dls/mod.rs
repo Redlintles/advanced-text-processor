@@ -6,16 +6,16 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::AtpError, validations::{ check_index_against_input, check_vec_len } },
+    utils::{ errors::TextForgeError, validations::{ check_index_against_input, check_vec_len } },
 };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 
 /// DLS - Delete Single
 ///
 /// Delete's a single character specified by `index` in `input`
 ///
-/// It will throw an `AtpError` if index does not exists in `input`
+/// It will throw an `TextForgeError` if index does not exists in `input`
 ///
 /// # Example
 ///
@@ -29,7 +29,7 @@ use crate::utils::params::AtpParamTypes;
 #[derive(Clone, Default)]
 pub struct Dls {
     pub index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Dls {
@@ -39,13 +39,13 @@ impl Dls {
 }
 
 impl InstructionMethods for Dls {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
         "dls"
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("dls {};\n", self.index).into()
     }
 
@@ -53,7 +53,7 @@ impl InstructionMethods for Dls {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         check_index_against_input(self.index, input)?;
         Ok(
             input
@@ -70,7 +70,7 @@ impl InstructionMethods for Dls {
         )
     }
 
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 1, "dls", "")?;
@@ -85,9 +85,9 @@ impl InstructionMethods for Dls {
         0x32
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [AtpParamTypes::Usize(self.index)]);
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
         Ok(result)
     }
 }

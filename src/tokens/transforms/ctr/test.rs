@@ -5,8 +5,8 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::ctr::Ctr;
-    use crate::utils::errors::{ AtpError, AtpErrorCode };
-    use crate::utils::params::AtpParamTypes;
+    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::utils::params::TextForgeParamTypes;
 
     #[test]
     fn params_accepts_valid_range() {
@@ -22,9 +22,9 @@ mod tests {
     }
 
     #[test]
-    fn to_atp_line_formats_correctly() {
+    fn to_textforge_line_formats_correctly() {
         let t = Ctr::new(2, 7).unwrap();
-        assert_eq!(t.to_atp_line().as_ref(), "ctr 2 7;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "ctr 2 7;\n");
     }
 
     #[test]
@@ -68,24 +68,24 @@ mod tests {
         let t = Ctr::new(5, 6).unwrap(); // relação ok, mas input tem poucas palavras
         let mut ctx = GlobalExecutionContext::new();
 
-        let got: Result<String, AtpError> = t.transform("one two", Some(&mut ctx));
+        let got: Result<String, TextForgeError> = t.transform("one two", Some(&mut ctx));
         assert!(got.is_err());
     }
 
     #[test]
     fn from_params_rejects_wrong_param_count() {
         let mut t = Ctr::default();
-        let params = vec![AtpParamTypes::Usize(1)];
+        let params = vec![TextForgeParamTypes::Usize(1)];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
     fn from_params_accepts_two_usize_params() {
         let mut t = Ctr::default();
-        let params = vec![AtpParamTypes::Usize(2), AtpParamTypes::Usize(7)];
+        let params = vec![TextForgeParamTypes::Usize(2), TextForgeParamTypes::Usize(7)];
 
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.start_index, 2);
@@ -95,13 +95,13 @@ mod tests {
     #[test]
     fn from_params_rejects_wrong_param_type() {
         let mut t = Ctr::default();
-        let params = vec![AtpParamTypes::String("x".to_string()), AtpParamTypes::Usize(7)];
+        let params = vec![TextForgeParamTypes::String("x".to_string()), TextForgeParamTypes::Usize(7)];
 
         let got = t.from_params(&params);
 
         let expected = Err(
-            crate::utils::errors::AtpError::new(
-                AtpErrorCode::InvalidParameters("Index should be of usize type".into()),
+            crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
                 "",
                 ""
             )
@@ -116,7 +116,7 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::params::AtpParamTypes;
+        use crate::utils::params::TextForgeParamTypes;
 
         #[test]
         fn get_opcode_is_1c() {
@@ -154,9 +154,9 @@ mod tests {
             let p1_payload = bc[p1_start..p1_end].to_vec();
             i = p1_end;
 
-            let decoded1 = AtpParamTypes::from_bytecode(p1_payload).unwrap();
+            let decoded1 = TextForgeParamTypes::from_bytecode(p1_payload).unwrap();
             match decoded1 {
-                AtpParamTypes::Usize(n) => assert_eq!(n, 2),
+                TextForgeParamTypes::Usize(n) => assert_eq!(n, 2),
                 _ => panic!("Expected Usize param #1"),
             }
 
@@ -167,9 +167,9 @@ mod tests {
             let p2_end = p2_start + (p2_total - 8);
             let p2_payload = bc[p2_start..p2_end].to_vec();
 
-            let decoded2 = AtpParamTypes::from_bytecode(p2_payload).unwrap();
+            let decoded2 = TextForgeParamTypes::from_bytecode(p2_payload).unwrap();
             match decoded2 {
-                AtpParamTypes::Usize(n) => assert_eq!(n, 7),
+                TextForgeParamTypes::Usize(n) => assert_eq!(n, 7),
                 _ => panic!("Expected Usize param #2"),
             }
         }

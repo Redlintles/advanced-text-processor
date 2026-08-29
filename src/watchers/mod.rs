@@ -1,6 +1,6 @@
 use std::{ collections::HashMap, fs::OpenOptions, io::Write, path::Path };
 
-use crate::{ utils::{ errors::AtpError }, watchers::ExecutionWindows::All };
+use crate::{ utils::{ errors::TextForgeError }, watchers::ExecutionWindows::All };
 use std::borrow::Cow;
 
 pub mod default_watchers;
@@ -26,7 +26,7 @@ pub struct WatcherContext {
     /// Resultado da instrução seguinte, se houver. `None` na última
     /// instrução do pipeline.
     pub after: Option<String>,
-    /// Representação textual (`to_atp_line()`) da instrução observada.
+    /// Representação textual (`to_textforge_line()`) da instrução observada.
     pub instruction: String,
 }
 
@@ -107,7 +107,7 @@ pub enum ExecutionWindows {
 ///     "add_to_end".to_string(),
 /// );
 /// watchers.run_watchers(ctx)?;
-/// # Ok::<(), atp::utils::errors::AtpError>(())
+/// # Ok::<(), textforge::utils::errors::TextForgeError>(())
 /// ```
 #[derive(Default)]
 pub struct WatcherList {
@@ -145,7 +145,7 @@ impl WatcherList {
     /// // "len" continua registrado e agendado após o reset.
     /// let ctx2 = WatcherContext::new("abc".into(), "".into(), None, "noop".into());
     /// watchers.run_watchers(ctx2)?;
-    /// # Ok::<(), atp::utils::errors::AtpError>(())
+    /// # Ok::<(), textforge::utils::errors::TextForgeError>(())
     /// ```
     pub fn reset(&mut self) -> () {
         self.counter = 0;
@@ -157,7 +157,7 @@ impl WatcherList {
         counter: u64,
         watcher_name: String,
         return_value: String
-    ) -> Result<(), AtpError> {
+    ) -> Result<(), TextForgeError> {
         self.result.entry(counter).or_insert_with(HashMap::new).insert(watcher_name, return_value);
 
         Ok(())
@@ -207,14 +207,14 @@ impl WatcherList {
         &mut self,
         watcher_name: &'static str,
         when: ExecutionWindows
-    ) -> Result<(), AtpError> {
+    ) -> Result<(), TextForgeError> {
         if self.watchers.contains_key(watcher_name) {
             self.schedule.insert(watcher_name, when);
             return Ok(());
         }
         return Err(
-            AtpError::new(
-                crate::utils::errors::AtpErrorCode::WatcherNotFoundError(
+            TextForgeError::new(
+                crate::utils::errors::TextForgeErrorCode::WatcherNotFoundError(
                     Cow::from(format!("Watcher {} not found", watcher_name))
                 ),
                 Cow::from("WatcherList.schedule_watcher"),
@@ -228,7 +228,7 @@ impl WatcherList {
     /// e então incrementa `counter`.
     ///
     /// Pensado pra ser chamado uma vez por instrução dentro de um loop de
-    /// processamento (ver `AtpProcessor::process_all_with_watchers`), na
+    /// processamento (ver `TextForgeProcessor::process_all_with_watchers`), na
     /// mesma ordem em que as instruções do pipeline rodam — a correção do
     /// relatório depende dessa ordem, já que `counter` não é derivado de
     /// `input`, só da sequência de chamadas.
@@ -250,9 +250,9 @@ impl WatcherList {
     ///
     /// let ctx = WatcherContext::new("banana".into(), "".into(), None, "add_to_end".into());
     /// watchers.run_watchers(ctx)?;
-    /// # Ok::<(), atp::utils::errors::AtpError>(())
+    /// # Ok::<(), textforge::utils::errors::TextForgeError>(())
     /// ```
-    pub fn run_watchers(&mut self, input: WatcherContext) -> Result<(), AtpError> {
+    pub fn run_watchers(&mut self, input: WatcherContext) -> Result<(), TextForgeError> {
         for (watcher_name, when) in self.schedule
             .iter()
             .map(|(k, v)| (*k, *v))
@@ -263,8 +263,8 @@ impl WatcherList {
                         let watcher_fn = self.watchers
                             .get(watcher_name)
                             .ok_or_else(||
-                                AtpError::new(
-                                    crate::utils::errors::AtpErrorCode::IndexOutOfRange(
+                                TextForgeError::new(
+                                    crate::utils::errors::TextForgeErrorCode::IndexOutOfRange(
                                         Cow::from("Watcher Not Found")
                                     ),
                                     Cow::from(""),
@@ -308,18 +308,18 @@ impl WatcherList {
     /// let ctx = WatcherContext::new("banana".into(), "".into(), None, "add_to_end".into());
     /// watchers.run_watchers(ctx)?;
     ///
-    /// let path = temp_dir().join("atp_watcherlist_doctest.json");
+    /// let path = temp_dir().join("textforge_watcherlist_doctest.json");
     /// watchers.to_json(&path)?;
     /// assert!(path.exists());
     /// # std::fs::remove_file(&path).ok();
-    /// # Ok::<(), atp::utils::errors::AtpError>(())
+    /// # Ok::<(), textforge::utils::errors::TextForgeError>(())
     /// ```
-    pub fn to_json(&self, filename: &Path) -> Result<(), AtpError> {
+    pub fn to_json(&self, filename: &Path) -> Result<(), TextForgeError> {
         let json = serde_json
             ::to_string_pretty(&self.result)
             .map_err(|e|
-                AtpError::new(
-                    crate::utils::errors::AtpErrorCode::SerializationError(
+                TextForgeError::new(
+                    crate::utils::errors::TextForgeErrorCode::SerializationError(
                         Cow::from(e.to_string())
                     ),
                     Cow::from("WatcherList.to_json"),
@@ -332,8 +332,8 @@ impl WatcherList {
             .truncate(true)
             .open(filename)
             .map_err(|_|
-                AtpError::new(
-                    crate::utils::errors::AtpErrorCode::FileOpeningError(
+                TextForgeError::new(
+                    crate::utils::errors::TextForgeErrorCode::FileOpeningError(
                         "Failed opening File".into()
                     ),
                     "",
@@ -344,9 +344,9 @@ impl WatcherList {
         file
             .write(json.as_bytes())
             .map_err(|_|
-                AtpError::new(
-                    crate::utils::errors::AtpErrorCode::FileWritingError(
-                        "Failed writing text to atp file".into()
+                TextForgeError::new(
+                    crate::utils::errors::TextForgeErrorCode::FileWritingError(
+                        "Failed writing text to textforge file".into()
                     ),
                     "",
                     ""

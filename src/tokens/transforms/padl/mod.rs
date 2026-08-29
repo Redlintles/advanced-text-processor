@@ -6,12 +6,12 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::AtpError, transforms::extend_string, validations::check_vec_len },
+    utils::{ errors::TextForgeError, transforms::extend_string, validations::check_vec_len },
 };
 
 use crate::parse_args;
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 
 /// PADL - Pad Left
 ///
@@ -34,7 +34,7 @@ use crate::utils::params::AtpParamTypes;
 pub struct Padl {
     pub text: String,
     pub max_len: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Padl {
@@ -48,20 +48,20 @@ impl Padl {
 }
 
 impl InstructionMethods for Padl {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
         "padl"
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("padl {} {};\n", self.text, self.max_len).into()
     }
     fn transform(
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let character_count = input.chars().count();
 
         if character_count >= self.max_len {
@@ -72,7 +72,7 @@ impl InstructionMethods for Padl {
 
         Ok(format!("{}{}", s, input))
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(&params, 2, "padl", "")?;
 
         self.text = parse_args!(params, 0, String, "Text_to_insert should be of String type");
@@ -86,11 +86,11 @@ impl InstructionMethods for Padl {
         0x2f
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.text.clone()),
-            AtpParamTypes::Usize(self.max_len),
+            TextForgeParamTypes::String(self.text.clone()),
+            TextForgeParamTypes::Usize(self.max_len),
         ]);
         Ok(result)
     }

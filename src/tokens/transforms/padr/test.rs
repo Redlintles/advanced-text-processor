@@ -5,8 +5,8 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::padr::Padr;
-    use crate::utils::errors::AtpErrorCode;
-    use crate::utils::params::AtpParamTypes;
+    use crate::utils::errors::TextForgeErrorCode;
+    use crate::utils::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_padr() {
@@ -15,9 +15,9 @@ mod tests {
     }
 
     #[test]
-    fn to_atp_line_matches_params() {
+    fn to_textforge_line_matches_params() {
         let t = Padr::new("xy", 7);
-        assert_eq!(t.to_atp_line().as_ref(), "padr xy 7;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "padr xy 7;\n");
     }
 
     #[test]
@@ -52,7 +52,7 @@ mod tests {
     fn from_params_accepts_text_then_max_len() {
         let mut t = Padr::default();
 
-        let params = vec![AtpParamTypes::String("xy".to_string()), AtpParamTypes::Usize(7)];
+        let params = vec![TextForgeParamTypes::String("xy".to_string()), TextForgeParamTypes::Usize(7)];
 
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.text, "xy".to_string());
@@ -63,11 +63,11 @@ mod tests {
     fn from_params_rejects_wrong_param_count() {
         let mut t = Padr::default();
 
-        let params = vec![AtpParamTypes::String("xy".to_string())];
+        let params = vec![TextForgeParamTypes::String("xy".to_string())];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
@@ -75,14 +75,14 @@ mod tests {
         let mut t = Padr::default();
 
         // invertido propositalmente
-        let params = vec![AtpParamTypes::Usize(7), AtpParamTypes::String("xy".to_string())];
+        let params = vec![TextForgeParamTypes::Usize(7), TextForgeParamTypes::String("xy".to_string())];
 
         let got = t.from_params(&params);
 
         // parse_args! retorna InvalidParameters com a msg do callsite
         let expected = Err(
-            crate::utils::errors::AtpError::new(
-                AtpErrorCode::InvalidParameters("Text_to_insert should be of String type".into()),
+            crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters("Text_to_insert should be of String type".into()),
                 "",
                 ""
             )

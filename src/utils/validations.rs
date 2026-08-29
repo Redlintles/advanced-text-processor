@@ -1,14 +1,14 @@
 use std::{borrow::Cow, path::Path};
 
-use crate::utils::errors::{AtpError, AtpErrorCode};
+use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
-pub fn check_file_path(path: &Path, ext: Option<&str>) -> Result<(), AtpError> {
-    let parsed_ext = ext.unwrap_or("atp");
+pub fn check_file_path(path: &Path, ext: Option<&str>) -> Result<(), TextForgeError> {
+    let parsed_ext = ext.unwrap_or("textforge");
 
     // canonicalize() exige que o path exista; isso é ok aqui porque queremos validar um arquivo real.
     let path = path.canonicalize().map_err(|e| {
-        AtpError::new(
-            AtpErrorCode::ValidationError("Path canonicalization failed".into()),
+        TextForgeError::new(
+            TextForgeErrorCode::ValidationError("Path canonicalization failed".into()),
             Cow::Borrowed("canonicalize"),
             format!("{:?} - {}", path, e),
         )
@@ -16,16 +16,16 @@ pub fn check_file_path(path: &Path, ext: Option<&str>) -> Result<(), AtpError> {
 
     // Extensão
     let os_ext = path.extension().and_then(|x| x.to_str()).ok_or_else(|| {
-        AtpError::new(
-            AtpErrorCode::ValidationError("No file extension found".into()),
+        TextForgeError::new(
+            TextForgeErrorCode::ValidationError("No file extension found".into()),
             Cow::Borrowed("check_file_path"),
             path.to_string_lossy().to_string(),
         )
     })?;
 
     if os_ext != parsed_ext {
-        return Err(AtpError::new(
-            AtpErrorCode::ValidationError("Wrong file extension".into()),
+        return Err(TextForgeError::new(
+            TextForgeErrorCode::ValidationError("Wrong file extension".into()),
             Cow::Borrowed("check_file_path"),
             path.to_string_lossy().to_string(),
         ));
@@ -33,24 +33,24 @@ pub fn check_file_path(path: &Path, ext: Option<&str>) -> Result<(), AtpError> {
 
     // Diretório pai (redundante depois do canonicalize, mas mantém a intenção explícita)
     let parent = path.parent().ok_or_else(|| {
-        AtpError::new(
-            AtpErrorCode::ValidationError("Path has no parent directory".into()),
+        TextForgeError::new(
+            TextForgeErrorCode::ValidationError("Path has no parent directory".into()),
             Cow::Borrowed("check_file_path"),
             path.to_string_lossy().to_string(),
         )
     })?;
 
     if !parent.exists() {
-        return Err(AtpError::new(
-            AtpErrorCode::ValidationError("Parent directory does not exist".into()),
+        return Err(TextForgeError::new(
+            TextForgeErrorCode::ValidationError("Parent directory does not exist".into()),
             Cow::Borrowed("check_file_path"),
             parent.to_string_lossy().to_string(),
         ));
     }
 
     if path.is_dir() {
-        return Err(AtpError::new(
-            AtpErrorCode::ValidationError("Path is a directory, not a file".into()),
+        return Err(TextForgeError::new(
+            TextForgeErrorCode::ValidationError("Path is a directory, not a file".into()),
             Cow::Borrowed("check_file_path"),
             path.to_string_lossy().to_string(),
         ));
@@ -72,12 +72,12 @@ pub fn check_chunk_bound_indexes(
     start_index: usize,
     end_index: usize,
     check_against: Option<&str>,
-) -> Result<(), AtpError> {
+) -> Result<(), TextForgeError> {
     // regra estrutural (independente do texto)
     if start_index >= end_index {
         let fmt_err = format!("check_chunk_bound_indexes {} {};", start_index, end_index);
-        return Err(AtpError::new(
-            AtpErrorCode::InvalidIndex("Start index must be smaller than end index".into()),
+        return Err(TextForgeError::new(
+            TextForgeErrorCode::InvalidIndex("Start index must be smaller than end index".into()),
             Cow::Owned(fmt_err),
             format!("Start Index: {}, End Index: {}", start_index, end_index),
         ));
@@ -88,8 +88,8 @@ pub fn check_chunk_bound_indexes(
 
         // start precisa existir
         if !(0..total_chars).contains(&start_index) {
-            return Err(AtpError::new(
-                AtpErrorCode::IndexOutOfRange(
+            return Err(TextForgeError::new(
+                TextForgeErrorCode::IndexOutOfRange(
                     "Start index does not exist in current string!".into(),
                 ),
                 Cow::Borrowed("check_chunk_bound_indexes"),
@@ -99,8 +99,8 @@ pub fn check_chunk_bound_indexes(
 
         // end também precisa existir
         if !(0..total_chars).contains(&end_index) {
-            return Err(AtpError::new(
-                AtpErrorCode::IndexOutOfRange("End index does not exist in current string!".into()),
+            return Err(TextForgeError::new(
+                TextForgeErrorCode::IndexOutOfRange("End index does not exist in current string!".into()),
                 Cow::Borrowed("check_chunk_bound_indexes"),
                 text.to_string(),
             ));
@@ -110,11 +110,11 @@ pub fn check_chunk_bound_indexes(
     Ok(())
 }
 
-pub fn check_index_against_input(index: usize, input: &str) -> Result<(), AtpError> {
+pub fn check_index_against_input(index: usize, input: &str) -> Result<(), TextForgeError> {
     let character_count = input.chars().count();
     if !(0..character_count).contains(&index) {
-        return Err(AtpError::new(
-            AtpErrorCode::IndexOutOfRange(
+        return Err(TextForgeError::new(
+            TextForgeErrorCode::IndexOutOfRange(
                 format!(
                     "Index {} does not exist for {}, only indexes between 0-{} are allowed!",
                     index,
@@ -131,12 +131,12 @@ pub fn check_index_against_input(index: usize, input: &str) -> Result<(), AtpErr
     Ok(())
 }
 
-pub fn check_index_against_words(index: usize, input: &str) -> Result<(), AtpError> {
+pub fn check_index_against_words(index: usize, input: &str) -> Result<(), TextForgeError> {
     let word_count = input.split_whitespace().count();
 
     if word_count == 0 {
-        return Err(AtpError::new(
-            AtpErrorCode::IndexOutOfRange("Input has no words".into()),
+        return Err(TextForgeError::new(
+            TextForgeErrorCode::IndexOutOfRange("Input has no words".into()),
             Cow::Borrowed("check_index_against_words"),
             input.to_string(),
         ));
@@ -144,8 +144,8 @@ pub fn check_index_against_words(index: usize, input: &str) -> Result<(), AtpErr
 
     if !(0..word_count).contains(&index) {
         return Err(
-            AtpError::new(
-                AtpErrorCode::IndexOutOfRange(
+            TextForgeError::new(
+                TextForgeErrorCode::IndexOutOfRange(
                     format!(
                         "Word index {} does not exist for input, only indexes between 0-{} are allowed!",
                         index,
@@ -166,12 +166,12 @@ pub fn check_vec_len<T>(
     expected_len: usize,
     ctx: impl Into<Cow<'static, str>>,
     payload: impl Into<String>,
-) -> Result<(), AtpError> {
+) -> Result<(), TextForgeError> {
     if v.len() == expected_len {
         Ok(())
     } else {
-        Err(AtpError::new(
-            AtpErrorCode::InvalidArgumentNumber(
+        Err(TextForgeError::new(
+            TextForgeErrorCode::InvalidArgumentNumber(
                 format!(
                     "Only {} arguments are allowed for this instruction, passed {}",
                     expected_len,
@@ -223,11 +223,11 @@ mod tests {
 
             assert!(result.is_err());
 
-            // Se AtpError tiver Display, isso geralmente vira uma checagem bem útil
+            // Se TextForgeError tiver Display, isso geralmente vira uma checagem bem útil
             let err = result.unwrap_err();
             let msg = format!("{err}");
 
-            // Não assumo a estrutura interna do AtpError, então valido por mensagem
+            // Não assumo a estrutura interna do TextForgeError, então valido por mensagem
             assert!(
                 msg.contains("Only 3 arguments are allowed") || msg.contains("Only 3 arguments")
             );
@@ -248,13 +248,13 @@ mod tests {
         #[cfg(feature = "bytecode")]
         mod bytecode_tests {
             use super::check_vec_len;
-            use crate::utils::params::AtpParamTypes;
+            use crate::utils::params::TextForgeParamTypes;
 
             #[test]
-            fn check_vec_len_ok_for_atpparamtypes_vec() {
-                let instruction: Vec<AtpParamTypes> = vec![
-                    AtpParamTypes::Usize(1),
-                    AtpParamTypes::String("abc".to_string()),
+            fn check_vec_len_ok_for_textforgeparamtypes_vec() {
+                let instruction: Vec<TextForgeParamTypes> = vec![
+                    TextForgeParamTypes::Usize(1),
+                    TextForgeParamTypes::String("abc".to_string()),
                 ];
 
                 let result = check_vec_len(
@@ -268,10 +268,10 @@ mod tests {
             }
 
             #[test]
-            fn check_vec_len_err_for_atpparamtypes_vec() {
-                let instruction: Vec<AtpParamTypes> = vec![
-                    AtpParamTypes::Usize(1),
-                    AtpParamTypes::String("abc".to_string()),
+            fn check_vec_len_err_for_textforgeparamtypes_vec() {
+                let instruction: Vec<TextForgeParamTypes> = vec![
+                    TextForgeParamTypes::Usize(1),
+                    TextForgeParamTypes::String("abc".to_string()),
                 ];
 
                 let result = check_vec_len(
@@ -297,11 +297,11 @@ mod tests {
         use super::*;
 
         #[test]
-        fn ok_for_existing_file_with_default_ext_atp() {
-            let dir = unique_tmp_dir("atp_check_file_path_ok");
+        fn ok_for_existing_file_with_default_ext_textforge() {
+            let dir = unique_tmp_dir("textforge_check_file_path_ok");
             fs::create_dir_all(&dir).unwrap();
 
-            let file = dir.join("input.atp");
+            let file = dir.join("input.textforge");
             fs::write(&file, "banana").unwrap();
 
             assert!(check_file_path(&file, None).is_ok());
@@ -311,20 +311,20 @@ mod tests {
 
         #[test]
         fn ok_for_existing_file_with_custom_ext() {
-            let dir = unique_tmp_dir("atp_check_file_path_custom_ext");
+            let dir = unique_tmp_dir("textforge_check_file_path_custom_ext");
             fs::create_dir_all(&dir).unwrap();
 
-            let file = dir.join("input.atpbc");
+            let file = dir.join("input.textforgebc");
             fs::write(&file, "banana").unwrap();
 
-            assert!(check_file_path(&file, Some("atpbc")).is_ok());
+            assert!(check_file_path(&file, Some("textforgebc")).is_ok());
 
             let _ = fs::remove_dir_all(&dir);
         }
 
         #[test]
         fn err_for_wrong_extension() {
-            let dir = unique_tmp_dir("atp_check_file_path_wrong_ext");
+            let dir = unique_tmp_dir("textforge_check_file_path_wrong_ext");
             fs::create_dir_all(&dir).unwrap();
 
             let file = dir.join("input.txt");
@@ -338,7 +338,7 @@ mod tests {
 
         #[test]
         fn err_for_missing_extension() {
-            let dir = unique_tmp_dir("atp_check_file_path_no_ext");
+            let dir = unique_tmp_dir("textforge_check_file_path_no_ext");
             fs::create_dir_all(&dir).unwrap();
 
             let file = dir.join("input");
@@ -352,7 +352,7 @@ mod tests {
 
         #[test]
         fn err_for_directory_path() {
-            let dir = unique_tmp_dir("atp_check_file_path_is_dir");
+            let dir = unique_tmp_dir("textforge_check_file_path_is_dir");
             fs::create_dir_all(&dir).unwrap();
 
             // canonicalize vai funcionar, mas is_dir deve falhar
@@ -364,9 +364,9 @@ mod tests {
 
         #[test]
         fn err_for_nonexistent_path_canonicalize_fails() {
-            let dir = unique_tmp_dir("atp_check_file_path_missing");
+            let dir = unique_tmp_dir("textforge_check_file_path_missing");
             // não cria diretório/arquivo
-            let file = dir.join("missing.atp");
+            let file = dir.join("missing.textforge");
 
             let r = check_file_path(&file, None);
             assert!(r.is_err());

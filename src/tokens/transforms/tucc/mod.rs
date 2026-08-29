@@ -6,10 +6,10 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::AtpError, validations::{ check_chunk_bound_indexes, check_vec_len } },
+    utils::{ errors::TextForgeError, validations::{ check_chunk_bound_indexes, check_vec_len } },
 };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 /// TUCC - To uppercase Chunk
 ///
 /// Lowercases every character from a chunk delimited by `start_index` and `end_index`(inclusive) in `input`
@@ -28,11 +28,11 @@ use crate::utils::params::AtpParamTypes;
 pub struct Tucc {
     start_index: usize,
     end_index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Tucc {
-    pub fn new(start_index: usize, end_index: usize) -> Result<Self, AtpError> {
+    pub fn new(start_index: usize, end_index: usize) -> Result<Self, TextForgeError> {
         check_chunk_bound_indexes(start_index, end_index, None)?;
         Ok(Tucc {
             start_index,
@@ -43,21 +43,21 @@ impl Tucc {
 }
 
 impl InstructionMethods for Tucc {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
         "tucc"
     }
 
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("tucc {} {};\n", self.start_index, self.end_index).into()
     }
     fn transform(
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         check_chunk_bound_indexes(self.start_index, self.end_index, Some(input))?;
 
         // Since the user will probably not know the length of the string in the middle of the processing
@@ -82,7 +82,7 @@ impl InstructionMethods for Tucc {
         Ok(result)
     }
 
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 2, "tucc", "")?;
@@ -98,11 +98,11 @@ impl InstructionMethods for Tucc {
         0x16
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::Usize(self.start_index),
-            AtpParamTypes::Usize(self.end_index),
+            TextForgeParamTypes::Usize(self.start_index),
+            TextForgeParamTypes::Usize(self.end_index),
         ]);
         Ok(result)
     }

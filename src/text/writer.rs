@@ -2,19 +2,19 @@ use std::{ fs::OpenOptions, io::Write, path::Path };
 
 use crate::{
     globals::var::TokenWrapper,
-    utils::{ errors::AtpError, validations::check_file_path },
+    utils::{ errors::TextForgeError, validations::check_file_path },
 };
 
-pub fn write_to_file(path: &Path, tokens: &Vec<TokenWrapper>) -> Result<(), AtpError> {
-    check_file_path(path, Some("atp"))?;
+pub fn write_to_file(path: &Path, tokens: &Vec<TokenWrapper>) -> Result<(), TextForgeError> {
+    check_file_path(path, Some("textforge"))?;
     let mut file = OpenOptions::new()
         .create(true)
         .write(true)
         .truncate(true)
         .open(path)
         .map_err(|_| {
-            AtpError::new(
-                crate::utils::errors::AtpErrorCode::FileOpeningError("Failed opening File".into()),
+            TextForgeError::new(
+                crate::utils::errors::TextForgeErrorCode::FileOpeningError("Failed opening File".into()),
                 "",
                 format!("{:?}", path)
             )
@@ -37,9 +37,9 @@ pub fn write_to_file(path: &Path, tokens: &Vec<TokenWrapper>) -> Result<(), AtpE
         true => Ok(()),
         false =>
             Err(
-                AtpError::new(
-                    crate::utils::errors::AtpErrorCode::FileWritingError(
-                        "Failed writing text to atp file".into()
+                TextForgeError::new(
+                    crate::utils::errors::TextForgeErrorCode::FileWritingError(
+                        "Failed writing text to textforge file".into()
                     ),
                     "",
                     ""

@@ -1,9 +1,9 @@
 use std::borrow::Cow;
 
 use crate::context::execution_context::{ GlobalExecutionContext };
-use crate::utils::errors::AtpError;
+use crate::utils::errors::TextForgeError;
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 
 pub mod instructions;
 pub mod transforms;
@@ -12,10 +12,10 @@ pub mod transforms;
 ///
 /// Basic Contract which every token should implement
 pub trait InstructionMethods: InstructionMethodsClone + Send + Sync {
-    /// to_atp_line
+    /// to_textforge_line
     ///
-    /// Converts the token to an ATP line to be written in an .atp file
-    fn to_atp_line(&self) -> Cow<'static, str>;
+    /// Converts the token to an ATP line to be written in an .textforge file
+    fn to_textforge_line(&self) -> Cow<'static, str>;
     /// transform
     ///
     /// Responsible for applying the respective token transformation to `input`
@@ -23,19 +23,19 @@ pub trait InstructionMethods: InstructionMethodsClone + Send + Sync {
         &self,
         input: &str,
         context: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError>;
+    ) -> Result<String, TextForgeError>;
 
     /// get_string_repr
     ///
     /// Converts the token to a string representation without parameters, to be used in the mappings
     fn get_string_repr(&self) -> &'static str;
 
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError>;
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError>;
 
-    fn get_params(&self) -> &Vec<AtpParamTypes>;
+    fn get_params(&self) -> &Vec<TextForgeParamTypes>;
     /// BytecodeMethods
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError>;
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError>;
 
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32;

@@ -1,8 +1,8 @@
 use crate::{
-    api::{ AtpBuilderMethods, AtpConditionalMethods },
+    api::{ TextForgeBuilderMethods, TextForgeConditionalMethods },
     globals::var::TokenWrapper,
     tokens::{ InstructionMethods, instructions::blk::Blk },
-    utils::{ errors::AtpError, params::AtpParamTypes },
+    utils::{ errors::TextForgeError, params::TextForgeParamTypes },
 };
 
 pub struct BlockBuilder {
@@ -23,9 +23,9 @@ impl BlockBuilder {
     }
 }
 
-impl AtpBuilderMethods for BlockBuilder {
-    fn push_token(&mut self, t: impl Into<TokenWrapper>) -> Result<(), AtpError> {
-        let param_vec: Vec<AtpParamTypes> = vec![
+impl TextForgeBuilderMethods for BlockBuilder {
+    fn push_token(&mut self, t: impl Into<TokenWrapper>) -> Result<(), TextForgeError> {
+        let param_vec: Vec<TextForgeParamTypes> = vec![
             self.block_name.to_string().into(),
             t.into().into()
         ];
@@ -38,4 +38,4 @@ impl AtpBuilderMethods for BlockBuilder {
     }
 }
 
-impl AtpConditionalMethods for BlockBuilder {}
+impl TextForgeConditionalMethods for BlockBuilder {}

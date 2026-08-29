@@ -3,8 +3,8 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::{ InstructionMethods, transforms::rpt::Rpt };
-    use crate::utils::errors::{ AtpErrorCode };
-    use crate::utils::params::AtpParamTypes;
+    use crate::utils::errors::{ TextForgeErrorCode };
+    use crate::utils::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_rpt() {
@@ -13,9 +13,9 @@ mod tests {
     }
 
     #[test]
-    fn to_atp_line_contains_times() {
+    fn to_textforge_line_contains_times() {
         let t = Rpt::new(3);
-        assert_eq!(t.to_atp_line().as_ref(), "rpt 3;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "rpt 3;\n");
     }
 
     #[test]
@@ -46,7 +46,7 @@ mod tests {
     fn from_params_parses_single_usize() {
         let mut t = Rpt::default();
 
-        let params = vec![AtpParamTypes::Usize(5)];
+        let params = vec![TextForgeParamTypes::Usize(5)];
 
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.times, 5);
@@ -60,14 +60,14 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
     fn from_params_rejects_wrong_type() {
         let mut t = Rpt::default();
 
-        let params = vec![AtpParamTypes::String("x".to_string())];
+        let params = vec![TextForgeParamTypes::String("x".to_string())];
 
         assert!(t.from_params(&params).is_err());
     }

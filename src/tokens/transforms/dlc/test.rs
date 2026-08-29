@@ -5,8 +5,8 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::dlc::Dlc;
-    use crate::utils::errors::{ AtpErrorCode };
-    use crate::utils::params::AtpParamTypes;
+    use crate::utils::errors::{ TextForgeErrorCode };
+    use crate::utils::params::TextForgeParamTypes;
 
     #[test]
     fn params_sets_indices() {
@@ -22,9 +22,9 @@ mod tests {
     }
 
     #[test]
-    fn to_atp_line_formats_correctly() {
+    fn to_textforge_line_formats_correctly() {
         let t = Dlc::new(2, 5).unwrap();
-        assert_eq!(t.to_atp_line().as_ref(), "dlc 2 5;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "dlc 2 5;\n");
     }
 
     #[test]
@@ -67,17 +67,17 @@ mod tests {
     #[test]
     fn from_params_rejects_wrong_param_count() {
         let mut t = Dlc::default();
-        let params = vec![AtpParamTypes::Usize(1)];
+        let params = vec![TextForgeParamTypes::Usize(1)];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
     fn from_params_accepts_two_usize_params() {
         let mut t = Dlc::default();
-        let params = vec![AtpParamTypes::Usize(2), AtpParamTypes::Usize(4)];
+        let params = vec![TextForgeParamTypes::Usize(2), TextForgeParamTypes::Usize(4)];
 
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.start_index, 2);
@@ -87,13 +87,13 @@ mod tests {
     #[test]
     fn from_params_rejects_wrong_param_type() {
         let mut t = Dlc::default();
-        let params = vec![AtpParamTypes::String("x".to_string()), AtpParamTypes::Usize(2)];
+        let params = vec![TextForgeParamTypes::String("x".to_string()), TextForgeParamTypes::Usize(2)];
 
         let got = t.from_params(&params);
 
         let expected = Err(
-            crate::utils::errors::AtpError::new(
-                AtpErrorCode::InvalidParameters("Index should be of usize type".into()),
+            crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
                 "",
                 ""
             )
@@ -108,7 +108,7 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::params::AtpParamTypes;
+        use crate::utils::params::TextForgeParamTypes;
 
         #[test]
         fn get_opcode_is_08() {
@@ -146,9 +146,9 @@ mod tests {
             let p1_payload = bc[p1_start..p1_end].to_vec();
             i = p1_end;
 
-            let decoded1 = AtpParamTypes::from_bytecode(p1_payload).unwrap();
+            let decoded1 = TextForgeParamTypes::from_bytecode(p1_payload).unwrap();
             match decoded1 {
-                AtpParamTypes::Usize(n) => assert_eq!(n, 2),
+                TextForgeParamTypes::Usize(n) => assert_eq!(n, 2),
                 _ => panic!("Expected Usize param #1"),
             }
 
@@ -159,9 +159,9 @@ mod tests {
             let p2_end = p2_start + (p2_total - 8);
             let p2_payload = bc[p2_start..p2_end].to_vec();
 
-            let decoded2 = AtpParamTypes::from_bytecode(p2_payload).unwrap();
+            let decoded2 = TextForgeParamTypes::from_bytecode(p2_payload).unwrap();
             match decoded2 {
-                AtpParamTypes::Usize(n) => assert_eq!(n, 7),
+                TextForgeParamTypes::Usize(n) => assert_eq!(n, 7),
                 _ => panic!("Expected Usize param #2"),
             }
         }

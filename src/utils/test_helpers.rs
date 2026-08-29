@@ -1,8 +1,8 @@
-use crate::api::{ AtpBlockMethods, AtpConditionalMethods };
-use crate::utils::errors::AtpError;
-use crate::api::{ AtpBuilderMethods, processor::AtpProcessor };
+use crate::api::{ TextForgeBlockMethods, TextForgeConditionalMethods };
+use crate::utils::errors::TextForgeError;
+use crate::api::{ TextForgeBuilderMethods, processor::TextForgeProcessor };
 
-pub fn build_all_tokens_pipeline_safe(processor: &mut AtpProcessor) -> Result<String, AtpError> {
+pub fn build_all_tokens_pipeline_safe(processor: &mut TextForgeProcessor) -> Result<String, TextForgeError> {
     let id = processor
         .create_pipeline()
 

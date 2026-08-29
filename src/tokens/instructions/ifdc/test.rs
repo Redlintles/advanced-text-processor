@@ -6,12 +6,12 @@ mod tests {
     use crate::globals::var::TokenWrapper;
     use crate::tokens::instructions::ifdc::Ifdc;
     use crate::tokens::{ InstructionMethods };
-    use crate::utils::errors::{ AtpErrorCode };
+    use crate::utils::errors::{ TextForgeErrorCode };
 
     #[test]
-    fn to_atp_line_ok() {
+    fn to_textforge_line_ok() {
         let token = Ifdc::new("xy", TokenWrapper::default());
-        let s = token.to_atp_line();
+        let s = token.to_textforge_line();
         assert!(s.contains("ifdc xy do"), "ifdc header ok");
     }
 
@@ -32,7 +32,7 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::params::AtpParamTypes;
+        use crate::utils::params::TextForgeParamTypes;
 
         #[test]
         fn opcode_ok() {
@@ -43,20 +43,20 @@ mod tests {
         #[test]
         fn from_params_rejects_wrong_len() {
             let mut t = Ifdc::default();
-            let params: Vec<AtpParamTypes> = vec![AtpParamTypes::String("xy".to_string())];
+            let params: Vec<TextForgeParamTypes> = vec![TextForgeParamTypes::String("xy".to_string())];
 
             let err = t.from_params(&params).unwrap_err();
 
-            assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+            assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
         }
 
         #[test]
         fn from_params_accepts_string_as_first_param() {
             let mut t = Ifdc::default();
-            let params: Vec<AtpParamTypes> = vec![
-                AtpParamTypes::String("xy".to_string()),
+            let params: Vec<TextForgeParamTypes> = vec![
+                TextForgeParamTypes::String("xy".to_string()),
                 // depende de como você representa tokens no bytecode:
-                AtpParamTypes::Token(TokenWrapper::default())
+                TextForgeParamTypes::Token(TokenWrapper::default())
             ];
 
             assert_eq!(t.from_params(&params), Ok(()));

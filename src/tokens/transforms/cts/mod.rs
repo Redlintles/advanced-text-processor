@@ -9,9 +9,9 @@ use crate::{
     utils::{ transforms::capitalize, validations::{ check_index_against_input, check_vec_len } },
 };
 
-use crate::utils::errors::{ AtpError };
+use crate::utils::errors::{ TextForgeError };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 
 /// Token `Cts` — Capitalize Single
 ///
@@ -20,7 +20,7 @@ use crate::utils::params::AtpParamTypes;
 /// Words are defined as sequences of characters separated by whitespace,
 /// following the behavior of `input.split_whitespace()`.
 ///
-/// If `i` is out of bounds for the number of words in the input, an `AtpError` is returned.
+/// If `i` is out of bounds for the number of words in the input, an `TextForgeError` is returned.
 ///
 /// # Example
 ///
@@ -33,7 +33,7 @@ use crate::utils::params::AtpParamTypes;
 #[derive(Clone, Default)]
 pub struct Cts {
     pub index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Cts {
@@ -43,7 +43,7 @@ impl Cts {
 }
 
 impl InstructionMethods for Cts {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
@@ -53,7 +53,7 @@ impl InstructionMethods for Cts {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         check_index_against_input(self.index, input)?;
         let v = input.split_whitespace().collect::<Vec<_>>();
 
@@ -69,10 +69,10 @@ impl InstructionMethods for Cts {
         )
     }
 
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("cts {};\n", self.index).into()
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 1, "cts", "")?;
@@ -87,9 +87,9 @@ impl InstructionMethods for Cts {
         0x1d
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [AtpParamTypes::Usize(self.index)]);
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
         Ok(result)
     }
 }

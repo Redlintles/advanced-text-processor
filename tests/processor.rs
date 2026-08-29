@@ -4,16 +4,16 @@ pub mod processor {
     use std::{ path::Path };
 
     use textforge::{
-        api::{ AtpBuilderMethods, processor::{ AtpProcessor, AtpProcessorMethods } },
+        api::{ TextForgeBuilderMethods, processor::{ TextForgeProcessor, TextForgeProcessorMethods } },
         globals::var::TokenWrapper,
         tokens::{ transforms::{ atb::Atb, ate::Ate, rpt::Rpt } },
-        utils::errors::AtpError,
+        utils::errors::TextForgeError,
     };
     use uuid::Uuid;
 
     #[test]
-    fn test_process_all() -> Result<(), AtpError> {
-        let mut processor = AtpProcessor::new();
+    fn test_process_all() -> Result<(), TextForgeError> {
+        let mut processor = TextForgeProcessor::new();
         let identifier = processor
             .create_pipeline()
             .add_to_beginning("Banana")?
@@ -32,8 +32,8 @@ pub mod processor {
         Ok(())
     }
     #[test]
-    fn test_process_all_with_debug() -> Result<(), AtpError> {
-        let mut processor = AtpProcessor::new();
+    fn test_process_all_with_debug() -> Result<(), TextForgeError> {
+        let mut processor = TextForgeProcessor::new();
         let identifier = processor
             .create_pipeline()
             .add_to_beginning("Banana")?
@@ -53,8 +53,8 @@ pub mod processor {
     }
 
     #[test]
-    fn test_process_single() -> Result<(), AtpError> {
-        let mut processor = AtpProcessor::new();
+    fn test_process_single() -> Result<(), TextForgeError> {
+        let mut processor = TextForgeProcessor::new();
         let token = TokenWrapper::new(Box::new(Atb::new("banana")), None);
 
         let input = "a".repeat(100);
@@ -68,8 +68,8 @@ pub mod processor {
         Ok(())
     }
     #[test]
-    fn test_process_single_with_debug() -> Result<(), AtpError> {
-        let mut processor: Box<dyn AtpProcessorMethods> = Box::new(AtpProcessor::new());
+    fn test_process_single_with_debug() -> Result<(), TextForgeError> {
+        let mut processor: Box<dyn TextForgeProcessorMethods> = Box::new(TextForgeProcessor::new());
         let token = TokenWrapper::new(Box::new(Atb::new("banana")), None);
 
         let input = "a".repeat(100);
@@ -84,11 +84,11 @@ pub mod processor {
     }
 
     #[test]
-    fn test_read_from_file() -> Result<(), AtpError> {
-        let mut processor = AtpProcessor::new();
+    fn test_read_from_file() -> Result<(), TextForgeError> {
+        let mut processor = TextForgeProcessor::new();
 
         let identifier = processor.read_from_text_file(
-            Path::new("pipelines/text/simple_pipeline.atp")
+            Path::new("pipelines/text/simple_pipeline.textforge")
         )?;
 
         let input_string = "Banana";
@@ -104,17 +104,17 @@ pub mod processor {
     }
 
     #[test]
-    fn test_write_to_file() -> Result<(), AtpError> {
+    fn test_write_to_file() -> Result<(), TextForgeError> {
         use std::fs::File;
         use std::io::Read;
 
         use tempfile::Builder;
 
-        let file = Builder::new().suffix(".atp").tempfile().expect("Error opening archive");
+        let file = Builder::new().suffix(".textforge").tempfile().expect("Error opening archive");
 
         let path = file.path();
 
-        let mut processor = AtpProcessor::new();
+        let mut processor = TextForgeProcessor::new();
         let identifier = processor
             .create_pipeline()
             .add_to_beginning("Banana")?
@@ -151,7 +151,7 @@ pub mod processor {
             TokenWrapper::new(Box::new(Rpt::new(5 as usize)), None)
         ];
 
-        let mut processor = AtpProcessor::new();
+        let mut processor = TextForgeProcessor::new();
 
         let identifier = processor.add_transform(tokens);
 

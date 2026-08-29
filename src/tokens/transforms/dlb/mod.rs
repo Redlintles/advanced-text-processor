@@ -4,16 +4,16 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::errors::{ AtpError, AtpErrorCode };
+use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::{ check_index_against_input, check_vec_len };
 use crate::{ tokens::InstructionMethods };
 
 /// Dlb - Delete Before
 /// Delete all characters before `index` in the specified `input`
 ///
-/// It will throw an `AtpError` if index does not exists in the current `input`
+/// It will throw an `TextForgeError` if index does not exists in the current `input`
 ///
 /// # Example:
 ///
@@ -28,7 +28,7 @@ use crate::{ tokens::InstructionMethods };
 #[derive(Clone, Default)]
 pub struct Dlb {
     pub index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Dlb {
@@ -38,10 +38,10 @@ impl Dlb {
 }
 
 impl InstructionMethods for Dlb {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("dlb {};\n", self.index).into()
     }
 
@@ -49,7 +49,7 @@ impl InstructionMethods for Dlb {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let mut s = String::from(input);
 
         check_index_against_input(self.index, input)?;
@@ -65,15 +65,15 @@ impl InstructionMethods for Dlb {
         }
 
         Err(
-            AtpError::new(
-                AtpErrorCode::IndexOutOfRange(
+            TextForgeError::new(
+                TextForgeErrorCode::IndexOutOfRange(
                     format!(
                         "Supported indexes 0-{}, entered index {}",
                         input.chars().count().saturating_sub(1),
                         self.index
                     ).into()
                 ),
-                self.to_atp_line(),
+                self.to_textforge_line(),
                 input.to_string()
             )
         )
@@ -81,7 +81,7 @@ impl InstructionMethods for Dlb {
     fn get_string_repr(&self) -> &'static str {
         "dlb"
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 1, "dlb", "")?;
@@ -96,9 +96,9 @@ impl InstructionMethods for Dlb {
         0x0a
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [AtpParamTypes::Usize(self.index)]);
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
         Ok(result)
     }
 }

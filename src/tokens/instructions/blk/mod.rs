@@ -7,8 +7,8 @@ use crate::{
     to_bytecode,
     tokens::InstructionMethods,
     utils::{
-        errors::{ AtpError, AtpErrorCode::{ self, RequiredContextError } },
-        params::AtpParamTypes,
+        errors::{ TextForgeError, TextForgeErrorCode::{ self, RequiredContextError } },
+        params::TextForgeParamTypes,
         validations::check_vec_len,
     },
 };
@@ -19,7 +19,7 @@ pub mod test;
 pub struct Blk {
     block_name: String,
     inner: TokenWrapper,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Default for Blk {
@@ -28,15 +28,15 @@ impl Default for Blk {
             block_name: "x".to_string(),
             inner: TokenWrapper::default(),
             params: vec![
-                AtpParamTypes::String("x".to_string()),
-                AtpParamTypes::Token(TokenWrapper::default())
+                TextForgeParamTypes::String("x".to_string()),
+                TextForgeParamTypes::Token(TokenWrapper::default())
             ],
         }
     }
 }
 
 impl InstructionMethods for Blk {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         return &self.params;
     }
     #[cfg(feature = "bytecode")]
@@ -47,17 +47,17 @@ impl InstructionMethods for Blk {
         "blk".into()
     }
 
-    fn to_atp_line(&self) -> std::borrow::Cow<'static, str> {
-        format!("blk {} assoc {}", self.block_name, self.inner.to_atp_line()).into()
+    fn to_textforge_line(&self) -> std::borrow::Cow<'static, str> {
+        format!("blk {} assoc {}", self.block_name, self.inner.to_textforge_line()).into()
     }
 
     fn transform(
         &self,
         input: &str,
         context: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, crate::utils::errors::AtpError> {
+    ) -> Result<String, crate::utils::errors::TextForgeError> {
         let context = context.ok_or_else(||
-            AtpError::new(
+            TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("val"),
                 std::borrow::Cow::Borrowed("")
@@ -69,8 +69,8 @@ impl InstructionMethods for Blk {
 
     fn from_params(
         &mut self,
-        params: &Vec<crate::utils::params::AtpParamTypes>
-    ) -> Result<(), crate::utils::errors::AtpError> {
+        params: &Vec<crate::utils::params::TextForgeParamTypes>
+    ) -> Result<(), crate::utils::errors::TextForgeError> {
         check_vec_len(&params, 2, "block assoc", "param parsing error, invalid vec len")?;
 
         self.block_name = parse_args!(params, 0, String, "Block name should be of string type");
@@ -79,8 +79,8 @@ impl InstructionMethods for Blk {
 
         if self.inner.get_string_repr() == "blk" {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::NestedBlocksNotAllowedError(
+                TextForgeError::new(
+                    TextForgeErrorCode::NestedBlocksNotAllowedError(
                         Cow::from("Nested blocks are not allowed")
                     ),
                     Cow::from("blk"),
@@ -90,10 +90,10 @@ impl InstructionMethods for Blk {
         }
 
         self.params = vec![
-            AtpParamTypes::String(
+            TextForgeParamTypes::String(
                 parse_args!(params, 0, String, "Block name should be of string type")
             ),
-            AtpParamTypes::Token(
+            TextForgeParamTypes::Token(
                 parse_args!(params, 1, Token, "Block inner should be of token type")
             )
         ];
@@ -101,10 +101,10 @@ impl InstructionMethods for Blk {
         Ok(())
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         let result = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.block_name.to_string()),
-            AtpParamTypes::Token(self.inner.clone()),
+            TextForgeParamTypes::String(self.block_name.to_string()),
+            TextForgeParamTypes::Token(self.inner.clone()),
         ]);
 
         Ok(result)

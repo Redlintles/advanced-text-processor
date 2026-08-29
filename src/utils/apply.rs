@@ -1,7 +1,7 @@
 use crate::{
     context::execution_context::GlobalExecutionContext,
     globals::var::TokenWrapper,
-    utils::errors::{ AtpError, ErrorManager },
+    utils::errors::{ TextForgeError, ErrorManager },
 };
 
 pub fn apply_transform(
@@ -9,7 +9,7 @@ pub fn apply_transform(
     input: &str,
     error_manager: &mut ErrorManager,
     context: &mut GlobalExecutionContext
-) -> Result<String, AtpError> {
+) -> Result<String, TextForgeError> {
     match token.apply_token(input, &mut *context) {
         Ok(x) => Ok(x),
         Err(e) => {

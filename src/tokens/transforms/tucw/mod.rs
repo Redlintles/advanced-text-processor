@@ -4,10 +4,10 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 use crate::{
     tokens::InstructionMethods,
-    utils::{ errors::{ AtpError }, validations::{ check_index_against_words, check_vec_len } },
+    utils::{ errors::{ TextForgeError }, validations::{ check_index_against_words, check_vec_len } },
 };
 /// TUCW - To Uppercase Word
 ///
@@ -26,7 +26,7 @@ use crate::{
 #[derive(Clone, Default)]
 pub struct Tucw {
     index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Tucw {
@@ -35,14 +35,14 @@ impl Tucw {
     }
 }
 impl InstructionMethods for Tucw {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
         "tucw"
     }
 
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("tucw {};\n", self.index).into()
     }
 
@@ -50,7 +50,7 @@ impl InstructionMethods for Tucw {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         check_index_against_words(self.index, input)?;
         Ok(
             input
@@ -65,7 +65,7 @@ impl InstructionMethods for Tucw {
         )
     }
 
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
         check_vec_len(&params, 1, "tucw", "")?;
 
@@ -79,9 +79,9 @@ impl InstructionMethods for Tucw {
         0x2a
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [AtpParamTypes::Usize(self.index)]);
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
         Ok(result)
     }
 }

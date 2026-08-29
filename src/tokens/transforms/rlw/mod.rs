@@ -8,10 +8,10 @@ use regex::Regex;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::{ AtpError, AtpErrorCode }, validations::check_vec_len },
+    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_vec_len },
 };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 /// RLW - Replace Last With
 ///
 /// Replace the last ocurrency of `pattern` in `input` with `text_to_replace`
@@ -37,7 +37,7 @@ use crate::utils::params::AtpParamTypes;
 pub struct Rlw {
     pub pattern: Regex,
     pub text_to_replace: String,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Rlw {
@@ -62,10 +62,10 @@ impl Default for Rlw {
 }
 
 impl InstructionMethods for Rlw {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("rlw {} {};\n", self.pattern, self.text_to_replace).into()
     }
 
@@ -73,7 +73,7 @@ impl InstructionMethods for Rlw {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let caps: Vec<_> = self.pattern.find_iter(input).collect();
 
         if let Some(m) = caps.last() {
@@ -93,7 +93,7 @@ impl InstructionMethods for Rlw {
     fn get_string_repr(&self) -> &'static str {
         "rlw"
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 2, "rlw", "")?;
@@ -101,8 +101,8 @@ impl InstructionMethods for Rlw {
         let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
 
         self.pattern = Regex::new(&pattern_payload.clone()).map_err(|_| {
-            AtpError::new(
-                AtpErrorCode::TextParsingError("Failed to create regex".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
                 pattern_payload.clone()
             )
@@ -127,11 +127,11 @@ impl InstructionMethods for Rlw {
         0x1e
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.pattern.to_string()),
-            AtpParamTypes::String(self.text_to_replace.clone()),
+            TextForgeParamTypes::String(self.pattern.to_string()),
+            TextForgeParamTypes::String(self.text_to_replace.clone()),
         ]);
         Ok(result)
     }

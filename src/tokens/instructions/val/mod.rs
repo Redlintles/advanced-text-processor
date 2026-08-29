@@ -10,8 +10,8 @@ use crate::{
     to_bytecode,
     tokens::InstructionMethods,
     utils::{
-        errors::{ AtpError, AtpErrorCode::RequiredContextError },
-        params::AtpParamTypes,
+        errors::{ TextForgeError, TextForgeErrorCode::RequiredContextError },
+        params::TextForgeParamTypes,
         validations::check_vec_len,
     },
 };
@@ -21,25 +21,25 @@ pub mod test;
 #[derive(Clone)]
 pub struct Val {
     val_name: String,
-    val_value: AtpParamTypes,
-    params: Vec<AtpParamTypes>,
+    val_value: TextForgeParamTypes,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Default for Val {
     fn default() -> Self {
         Val {
             val_name: "x".to_string(),
-            val_value: AtpParamTypes::String("".to_string()),
+            val_value: TextForgeParamTypes::String("".to_string()),
             params: vec![
-                AtpParamTypes::String("x".to_string()),
-                AtpParamTypes::Token(TokenWrapper::default())
+                TextForgeParamTypes::String("x".to_string()),
+                TextForgeParamTypes::Token(TokenWrapper::default())
             ],
         }
     }
 }
 
 impl InstructionMethods for Val {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         return &self.params;
     }
     #[cfg(feature = "bytecode")]
@@ -50,7 +50,7 @@ impl InstructionMethods for Val {
         "val".into()
     }
 
-    fn to_atp_line(&self) -> std::borrow::Cow<'static, str> {
+    fn to_textforge_line(&self) -> std::borrow::Cow<'static, str> {
         format!("val {} = {}", self.val_name, self.val_value.to_string()).into()
     }
 
@@ -58,16 +58,16 @@ impl InstructionMethods for Val {
         &self,
         input: &str,
         context: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, crate::utils::errors::AtpError> {
+    ) -> Result<String, crate::utils::errors::TextForgeError> {
         let context = context.ok_or_else(||
-            AtpError::new(
+            TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("val"),
                 std::borrow::Cow::Borrowed("")
             )
         )?;
         let value = match &self.val_value {
-            AtpParamTypes::VarRef(name) => context.get_var(name)?.value.clone(),
+            TextForgeParamTypes::VarRef(name) => context.get_var(name)?.value.clone(),
             other => VarValues::try_from(other.clone())?,
         };
 
@@ -81,8 +81,8 @@ impl InstructionMethods for Val {
 
     fn from_params(
         &mut self,
-        params: &Vec<crate::utils::params::AtpParamTypes>
-    ) -> Result<(), crate::utils::errors::AtpError> {
+        params: &Vec<crate::utils::params::TextForgeParamTypes>
+    ) -> Result<(), crate::utils::errors::TextForgeError> {
         check_vec_len(&params, 2, "val", "param parsing error, invalid vec len")?;
 
         self.val_name = parse_args!(params, 0, String, "Val name should be of string type");
@@ -93,9 +93,9 @@ impl InstructionMethods for Val {
         Ok(())
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         let result = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.val_name.clone()),
+            TextForgeParamTypes::String(self.val_name.clone()),
             self.val_value.clone(),
         ]);
         Ok(result)

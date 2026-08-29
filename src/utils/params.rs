@@ -18,12 +18,12 @@ use crate::{
         var::{ TokenWrapper, ValType },
     },
     tokens::InstructionMethods,
-    utils::{ errors::{ AtpError, AtpErrorCode }, transforms::string_to_usize },
+    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, transforms::string_to_usize },
 };
 
 /// Tipos resolvidos (sem variáveis pendentes)
 #[derive(Clone)]
-pub enum AtpParamTypes {
+pub enum TextForgeParamTypes {
     String(String),
     Usize(usize),
     Token(TokenWrapper),
@@ -34,55 +34,55 @@ pub enum AtpParamTypes {
 // Conversions
 // --------------------------
 
-impl From<String> for AtpParamTypes {
+impl From<String> for TextForgeParamTypes {
     fn from(value: String) -> Self {
-        AtpParamTypes::String(value)
+        TextForgeParamTypes::String(value)
     }
 }
 
-impl From<usize> for AtpParamTypes {
+impl From<usize> for TextForgeParamTypes {
     fn from(value: usize) -> Self {
-        AtpParamTypes::Usize(value)
+        TextForgeParamTypes::Usize(value)
     }
 }
 
-impl From<TokenWrapper> for AtpParamTypes {
+impl From<TokenWrapper> for TextForgeParamTypes {
     fn from(value: TokenWrapper) -> Self {
-        AtpParamTypes::Token(value)
+        TextForgeParamTypes::Token(value)
     }
 }
-impl From<Box<dyn InstructionMethods>> for AtpParamTypes {
+impl From<Box<dyn InstructionMethods>> for TextForgeParamTypes {
     fn from(value: Box<dyn InstructionMethods>) -> Self {
-        AtpParamTypes::Token(TokenWrapper::new(value, None))
+        TextForgeParamTypes::Token(TokenWrapper::new(value, None))
     }
 }
 
-impl TryFrom<AtpParamTypes> for String {
-    type Error = AtpError;
-    fn try_from(value: AtpParamTypes) -> Result<String, Self::Error> {
+impl TryFrom<TextForgeParamTypes> for String {
+    type Error = TextForgeError;
+    fn try_from(value: TextForgeParamTypes) -> Result<String, Self::Error> {
         Ok(match value {
-            AtpParamTypes::String(v) => v,
-            AtpParamTypes::Usize(v) => v.to_string(),
-            AtpParamTypes::Token(v) => v.to_text_line_unresolved()?,
-            AtpParamTypes::VarRef(v) => v,
+            TextForgeParamTypes::String(v) => v,
+            TextForgeParamTypes::Usize(v) => v.to_string(),
+            TextForgeParamTypes::Token(v) => v.to_text_line_unresolved()?,
+            TextForgeParamTypes::VarRef(v) => v,
         })
     }
 }
 
-impl TryFrom<AtpParamTypes> for VarValues {
-    type Error = AtpError;
-    fn try_from(value: AtpParamTypes) -> Result<Self, AtpError> {
+impl TryFrom<TextForgeParamTypes> for VarValues {
+    type Error = TextForgeError;
+    fn try_from(value: TextForgeParamTypes) -> Result<Self, TextForgeError> {
         Ok(match value {
-            AtpParamTypes::String(s) => VarValues::String(s),
-            AtpParamTypes::Usize(n) => VarValues::Usize(n),
-            AtpParamTypes::Token(t) => VarValues::Token(t),
-            AtpParamTypes::VarRef(_) => {
+            TextForgeParamTypes::String(s) => VarValues::String(s),
+            TextForgeParamTypes::Usize(n) => VarValues::Usize(n),
+            TextForgeParamTypes::Token(t) => VarValues::Token(t),
+            TextForgeParamTypes::VarRef(_) => {
                 return Err(
-                    AtpError::new(
-                        AtpErrorCode::TryIntoFailError(
+                    TextForgeError::new(
+                        TextForgeErrorCode::TryIntoFailError(
                             "VarRef must be resolved through context before becoming a VarValues".into()
                         ),
-                        "TryFrom<AtpParamTypes> for VarValues",
+                        "TryFrom<TextForgeParamTypes> for VarValues",
                         ""
                     )
                 );
@@ -91,26 +91,26 @@ impl TryFrom<AtpParamTypes> for VarValues {
     }
 }
 
-// Nota: esse dummy_context só existe pra manter o From<AtpParamTypes> for String compilável
-// se você realmente precisar converter TokenWrapper -> String sem contexto, troque por get_default_token().to_atp_line()
+// Nota: esse dummy_context só existe pra manter o From<TextForgeParamTypes> for String compilável
+// se você realmente precisar converter TokenWrapper -> String sem contexto, troque por get_default_token().to_textforge_line()
 // ou remova completamente esse From.
 fn dummy_context() -> GlobalExecutionContext {
     // Se seu GlobalExecutionContext não tiver Default, remova o dummy_context e ajuste o From.
     GlobalExecutionContext::new()
 }
 
-impl TryFrom<AtpParamTypes> for usize {
-    type Error = AtpError;
-    fn try_from(value: AtpParamTypes) -> Result<Self, AtpError> {
+impl TryFrom<TextForgeParamTypes> for usize {
+    type Error = TextForgeError;
+    fn try_from(value: TextForgeParamTypes) -> Result<Self, TextForgeError> {
         match value {
-            AtpParamTypes::Usize(v) => Ok(v),
+            TextForgeParamTypes::Usize(v) => Ok(v),
             _ =>
                 Err(
-                    AtpError::new(
-                        AtpErrorCode::TryIntoFailError(
-                            "Failed conversion from AtpParamTypes to usize".into()
+                    TextForgeError::new(
+                        TextForgeErrorCode::TryIntoFailError(
+                            "Failed conversion from TextForgeParamTypes to usize".into()
                         ),
-                        "TryFrom<AtpParamTypes> for usize",
+                        "TryFrom<TextForgeParamTypes> for usize",
                         ""
                     )
                 ),
@@ -118,18 +118,18 @@ impl TryFrom<AtpParamTypes> for usize {
     }
 }
 
-impl TryFrom<AtpParamTypes> for TokenWrapper {
-    type Error = AtpError;
-    fn try_from(value: AtpParamTypes) -> Result<Self, AtpError> {
+impl TryFrom<TextForgeParamTypes> for TokenWrapper {
+    type Error = TextForgeError;
+    fn try_from(value: TextForgeParamTypes) -> Result<Self, TextForgeError> {
         match value {
-            AtpParamTypes::Token(v) => Ok(v),
+            TextForgeParamTypes::Token(v) => Ok(v),
             _ =>
                 Err(
-                    AtpError::new(
-                        AtpErrorCode::TryIntoFailError(
-                            "Failed conversion from AtpParamTypes to TokenWrapper".into()
+                    TextForgeError::new(
+                        TextForgeErrorCode::TryIntoFailError(
+                            "Failed conversion from TextForgeParamTypes to TokenWrapper".into()
                         ),
-                        "TryFrom<AtpParamTypes> for TokenWrapper",
+                        "TryFrom<TextForgeParamTypes> for TokenWrapper",
                         ""
                     )
                 ),
@@ -138,22 +138,22 @@ impl TryFrom<AtpParamTypes> for TokenWrapper {
 }
 
 /// Debug customizado para evitar exigir Debug em dyn InstructionMethods
-impl std::fmt::Debug for AtpParamTypes {
+impl std::fmt::Debug for TextForgeParamTypes {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            AtpParamTypes::String(s) => f.debug_tuple("String").field(s).finish(),
-            AtpParamTypes::Usize(n) => f.debug_tuple("Usize").field(n).finish(),
-            AtpParamTypes::Token(t) => f.debug_tuple("Token").field(&t.get_string_repr()).finish(),
-            AtpParamTypes::VarRef(s) => f.debug_tuple("VarRef").field(s).finish(),
+            TextForgeParamTypes::String(s) => f.debug_tuple("String").field(s).finish(),
+            TextForgeParamTypes::Usize(n) => f.debug_tuple("Usize").field(n).finish(),
+            TextForgeParamTypes::Token(t) => f.debug_tuple("Token").field(&t.get_string_repr()).finish(),
+            TextForgeParamTypes::VarRef(s) => f.debug_tuple("VarRef").field(s).finish(),
         }
     }
 }
 
-pub trait AtpParamTypesJoin {
+pub trait TextForgeParamTypesJoin {
     fn join(&self, sep: &str) -> String;
 }
 
-impl AtpParamTypesJoin for Vec<AtpParamTypes> {
+impl TextForgeParamTypesJoin for Vec<TextForgeParamTypes> {
     fn join(&self, sep: &str) -> String {
         let mut out = String::new();
         for (idx, item) in self.iter().enumerate() {
@@ -185,13 +185,13 @@ const PARAM_USIZE: u32 = 0x02;
 const PARAM_TOKEN: u32 = 0x03;
 const PARAM_VARREF: u32 = 0x04;
 
-impl AtpParamTypes {
+impl TextForgeParamTypes {
     pub fn to_string(&self) -> String {
         match self {
-            AtpParamTypes::String(payload) => payload.to_string(),
-            AtpParamTypes::VarRef(payload) => payload.to_string(),
-            AtpParamTypes::Usize(payload) => payload.to_string(),
-            AtpParamTypes::Token(payload) => payload.to_atp_line().into(),
+            TextForgeParamTypes::String(payload) => payload.to_string(),
+            TextForgeParamTypes::VarRef(payload) => payload.to_string(),
+            TextForgeParamTypes::Usize(payload) => payload.to_string(),
+            TextForgeParamTypes::Token(payload) => payload.to_textforge_line().into(),
         }
     }
 
@@ -202,7 +202,7 @@ impl AtpParamTypes {
     pub fn from_expected(
         expected: Arc<[SyntaxDef]>,
         chunks: &[String]
-    ) -> Result<Vec<ValType>, AtpError> {
+    ) -> Result<Vec<ValType>, TextForgeError> {
         let (parsed, consumed) = Self::parse_with_cursor(
             expected,
             chunks,
@@ -212,9 +212,9 @@ impl AtpParamTypes {
         )?;
         if consumed != chunks.len() {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::TextParsingError("Extra parameters after parsing".into()),
-                    "AtpParamTypes::from_expected",
+                TextForgeError::new(
+                    TextForgeErrorCode::TextParsingError("Extra parameters after parsing".into()),
+                    "TextForgeParamTypes::from_expected",
                     format!("consumed={}, total={}", consumed, chunks.len())
                 )
             );
@@ -228,12 +228,12 @@ impl AtpParamTypes {
         mut i: usize,
         token_depth: u8,
         assoc_mode: AssocMode
-    ) -> Result<(Vec<ValType>, usize), AtpError> {
+    ) -> Result<(Vec<ValType>, usize), TextForgeError> {
         // Regex compilada uma vez por chamada (ok por enquanto; se quiser otimizar, use OnceLock)
         let var_re = Regex::new(r"^\{\{([a-zA-Z][a-zA-Z0-9]+)\}\}$").map_err(|e| {
-            AtpError::new(
-                AtpErrorCode::TextParsingError("Error creating regex".into()),
-                "AtpParamTypes::parse_with_cursor(regex)",
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Error creating regex".into()),
+                "TextForgeParamTypes::parse_with_cursor(regex)",
                 e.to_string()
             )
         })?;
@@ -247,17 +247,17 @@ impl AtpParamTypes {
                     let literal = chunks
                         .get(i)
                         .ok_or_else(|| {
-                            AtpError::new(
-                                AtpErrorCode::TextParsingError("Missing literal".into()),
-                                "AtpParamTypes::parse_with_cursor",
+                            TextForgeError::new(
+                                TextForgeErrorCode::TextParsingError("Missing literal".into()),
+                                "TextForgeParamTypes::parse_with_cursor",
                                 format!("index={}", i)
                             )
                         })?;
                     if expected_literal != literal {
                         return Err(
-                            AtpError::new(
-                                AtpErrorCode::InvalidParameters("Invalid literal".into()),
-                                "AtpParamTypes::parse_with_cursor",
+                            TextForgeError::new(
+                                TextForgeErrorCode::InvalidParameters("Invalid literal".into()),
+                                "TextForgeParamTypes::parse_with_cursor",
                                 format!(
                                     "expected={}, got={}, index={}",
                                     expected_literal,
@@ -274,9 +274,9 @@ impl AtpParamTypes {
                     let s = chunks
                         .get(i)
                         .ok_or_else(|| {
-                            AtpError::new(
-                                AtpErrorCode::TextParsingError("Missing String parameter".into()),
-                                "AtpParamTypes::parse_with_cursor",
+                            TextForgeError::new(
+                                TextForgeErrorCode::TextParsingError("Missing String parameter".into()),
+                                "TextForgeParamTypes::parse_with_cursor",
                                 format!("index={}", i)
                             )
                         })?;
@@ -289,9 +289,9 @@ impl AtpParamTypes {
 
                         if name.is_empty() {
                             return Err(
-                                AtpError::new(
-                                    AtpErrorCode::TextParsingError("Empty var name".into()),
-                                    "AtpParamTypes::parse_with_cursor",
+                                TextForgeError::new(
+                                    TextForgeErrorCode::TextParsingError("Empty var name".into()),
+                                    "TextForgeParamTypes::parse_with_cursor",
                                     format!("index={}", i)
                                 )
                             );
@@ -299,7 +299,7 @@ impl AtpParamTypes {
 
                         out.push(ValType::VarRef(name));
                     } else {
-                        out.push(ValType::Literal(AtpParamTypes::String(s.clone())));
+                        out.push(ValType::Literal(TextForgeParamTypes::String(s.clone())));
                     }
 
                     i += 1;
@@ -309,13 +309,13 @@ impl AtpParamTypes {
                     let s = chunks
                         .get(i)
                         .ok_or_else(|| {
-                            AtpError::new(
-                                AtpErrorCode::TextParsingError("Missing Usize parameter".into()),
-                                "AtpParamTypes::parse_with_cursor",
+                            TextForgeError::new(
+                                TextForgeErrorCode::TextParsingError("Missing Usize parameter".into()),
+                                "TextForgeParamTypes::parse_with_cursor",
                                 format!("index={}", i)
                             )
                         })?;
-                    out.push(ValType::Literal(AtpParamTypes::Usize(string_to_usize(s)?)));
+                    out.push(ValType::Literal(TextForgeParamTypes::Usize(string_to_usize(s)?)));
                     i += 1;
                 }
 
@@ -336,11 +336,11 @@ impl AtpParamTypes {
 
                     if next_depth > max_depth {
                         return Err(
-                            AtpError::new(
-                                AtpErrorCode::TextParsingError(
+                            TextForgeError::new(
+                                TextForgeErrorCode::TextParsingError(
                                     "Nested token depth exceeded".into()
                                 ),
-                                "AtpParamTypes::parse_with_cursor",
+                                "TextForgeParamTypes::parse_with_cursor",
                                 format!(
                                     "depth={}, max={}, index={}, assoc={:?}",
                                     next_depth,
@@ -356,11 +356,11 @@ impl AtpParamTypes {
                     let nested_id = chunks
                         .get(i)
                         .ok_or_else(|| {
-                            AtpError::new(
-                                AtpErrorCode::TextParsingError(
+                            TextForgeError::new(
+                                TextForgeErrorCode::TextParsingError(
                                     "Missing nested token identifier".into()
                                 ),
-                                "AtpParamTypes::parse_with_cursor",
+                                "TextForgeParamTypes::parse_with_cursor",
                                 format!("index={}", i)
                             )
                         })?
@@ -385,11 +385,11 @@ impl AtpParamTypes {
                         Self::is_block_like_signature(&nested_expected)
                     {
                         return Err(
-                            AtpError::new(
-                                AtpErrorCode::TextParsingError(
+                            TextForgeError::new(
+                                TextForgeErrorCode::TextParsingError(
                                     "A block cannot contain another block".into()
                                 ),
-                                "AtpParamTypes::parse_with_cursor",
+                                "TextForgeParamTypes::parse_with_cursor",
                                 format!("nested_id={}, index={}", nested_id, i - 1)
                             )
                         );
@@ -414,7 +414,7 @@ impl AtpParamTypes {
                     let nested_token = nested_token_ref.into_box();
                     out.push(
                         ValType::Literal(
-                            AtpParamTypes::Token(
+                            TextForgeParamTypes::Token(
                                 TokenWrapper::new(nested_token, Some(nested_params))
                             )
                         )
@@ -445,10 +445,10 @@ impl AtpParamTypes {
     }
 
     // --------------------------
-    // Parsing de Bytecode -> AtpParamTypes (raiz) / ValType (params internos)
+    // Parsing de Bytecode -> TextForgeParamTypes (raiz) / ValType (params internos)
     // --------------------------
 
-    pub fn from_bytecode(bytecode: Vec<u8>) -> Result<AtpParamTypes, AtpError> {
+    pub fn from_bytecode(bytecode: Vec<u8>) -> Result<TextForgeParamTypes, TextForgeError> {
         Self::from_bytecode_with_policy(&bytecode, 0, AssocMode::Normal)
     }
 
@@ -456,7 +456,7 @@ impl AtpParamTypes {
         bytes: &[u8],
         token_depth: u8,
         assoc_mode: AssocMode
-    ) -> Result<AtpParamTypes, AtpError> {
+    ) -> Result<TextForgeParamTypes, TextForgeError> {
         // Layout novo: [u64 total][u32 type][u32 payload_size][payload]
         if bytes.len() >= 16 {
             if let Ok(total) = Self::peek_u64_be(&bytes[0..8]) {
@@ -473,35 +473,35 @@ impl AtpParamTypes {
         bytes: &[u8],
         token_depth: u8,
         assoc_mode: AssocMode
-    ) -> Result<AtpParamTypes, AtpError> {
+    ) -> Result<TextForgeParamTypes, TextForgeError> {
         let mut reader = Cursor::new(bytes);
 
         let total_size = Self::read_u64_be(
             &mut reader,
-            "AtpParamTypes::from_bytecode(total)"
+            "TextForgeParamTypes::from_bytecode(total)"
         )? as usize;
         if total_size != bytes.len() {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Param total size mismatch".into()),
-                    "AtpParamTypes::from_bytecode(new_layout)",
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Param total size mismatch".into()),
+                    "TextForgeParamTypes::from_bytecode(new_layout)",
                     format!("declared={}, actual={}", total_size, bytes.len())
                 )
             );
         }
 
-        let param_type = Self::read_u32_be(&mut reader, "AtpParamTypes::from_bytecode(type)")?;
+        let param_type = Self::read_u32_be(&mut reader, "TextForgeParamTypes::from_bytecode(type)")?;
         let payload_size = Self::read_u32_be(
             &mut reader,
-            "AtpParamTypes::from_bytecode(payload_size)"
+            "TextForgeParamTypes::from_bytecode(payload_size)"
         )? as usize;
 
         let remaining = bytes.len().saturating_sub(reader.position() as usize);
         if payload_size > remaining {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Payload exceeds remaining".into()),
-                    "AtpParamTypes::from_bytecode(new_layout)",
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Payload exceeds remaining".into()),
+                    "TextForgeParamTypes::from_bytecode(new_layout)",
                     format!("payload_size={}, remaining={}", payload_size, remaining)
                 )
             );
@@ -510,7 +510,7 @@ impl AtpParamTypes {
         let payload = Self::read_exact_vec(
             &mut reader,
             payload_size,
-            "AtpParamTypes::from_bytecode(payload)"
+            "TextForgeParamTypes::from_bytecode(payload)"
         )?;
         Self::decode_param_payload(param_type, payload, token_depth, assoc_mode)
     }
@@ -519,30 +519,30 @@ impl AtpParamTypes {
         bytes: &[u8],
         token_depth: u8,
         assoc_mode: AssocMode
-    ) -> Result<AtpParamTypes, AtpError> {
+    ) -> Result<TextForgeParamTypes, TextForgeError> {
         if bytes.len() < 8 {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Param too small".into()),
-                    "AtpParamTypes::from_bytecode(old_layout)",
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Param too small".into()),
+                    "TextForgeParamTypes::from_bytecode(old_layout)",
                     format!("len={}", bytes.len())
                 )
             );
         }
 
         let mut reader = Cursor::new(bytes);
-        let param_type = Self::read_u32_be(&mut reader, "AtpParamTypes::from_bytecode(type)")?;
+        let param_type = Self::read_u32_be(&mut reader, "TextForgeParamTypes::from_bytecode(type)")?;
         let payload_size = Self::read_u32_be(
             &mut reader,
-            "AtpParamTypes::from_bytecode(payload_size)"
+            "TextForgeParamTypes::from_bytecode(payload_size)"
         )? as usize;
 
         let remaining = bytes.len().saturating_sub(reader.position() as usize);
         if payload_size > remaining {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Payload exceeds remaining".into()),
-                    "AtpParamTypes::from_bytecode(old_layout)",
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Payload exceeds remaining".into()),
+                    "TextForgeParamTypes::from_bytecode(old_layout)",
                     format!("payload_size={}, remaining={}", payload_size, remaining)
                 )
             );
@@ -551,7 +551,7 @@ impl AtpParamTypes {
         let payload = Self::read_exact_vec(
             &mut reader,
             payload_size,
-            "AtpParamTypes::from_bytecode(payload)"
+            "TextForgeParamTypes::from_bytecode(payload)"
         )?;
         Self::decode_param_payload(param_type, payload, token_depth, assoc_mode)
     }
@@ -562,21 +562,21 @@ impl AtpParamTypes {
         payload: Vec<u8>,
         token_depth: u8,
         assoc_mode: AssocMode
-    ) -> Result<AtpParamTypes, AtpError> {
+    ) -> Result<TextForgeParamTypes, TextForgeError> {
         match param_type {
             PARAM_STRING => {
                 let text = str
                     ::from_utf8(&payload)
                     .map_err(|e| {
-                        AtpError::new(
-                            AtpErrorCode::BytecodeParamParsingError(
+                        TextForgeError::new(
+                            TextForgeErrorCode::BytecodeParamParsingError(
                                 "Failed parsing bytes to UTF8 string".into()
                             ),
-                            "AtpParamTypes::from_bytecode(String)",
+                            "TextForgeParamTypes::from_bytecode(String)",
                             e.to_string()
                         )
                     })?;
-                Ok(AtpParamTypes::String(text.to_string()))
+                Ok(TextForgeParamTypes::String(text.to_string()))
             }
 
             PARAM_USIZE => {
@@ -584,26 +584,26 @@ impl AtpParamTypes {
                     .as_slice()
                     .try_into()
                     .map_err(|e: TryFromSliceError| {
-                        AtpError::new(
-                            AtpErrorCode::BytecodeParamParsingError(
+                        TextForgeError::new(
+                            TextForgeErrorCode::BytecodeParamParsingError(
                                 "Failed parsing bytes to usize".into()
                             ),
-                            "AtpParamTypes::from_bytecode(Usize)",
+                            "TextForgeParamTypes::from_bytecode(Usize)",
                             e.to_string()
                         )
                     })?;
-                Ok(AtpParamTypes::Usize(usize::from_be_bytes(b)))
+                Ok(TextForgeParamTypes::Usize(usize::from_be_bytes(b)))
             }
 
             PARAM_VARREF => {
                 // VarRef só deveria existir dentro de Token params (ValType),
                 // mas se aparecer aqui como raiz, retorna erro claro.
                 Err(
-                    AtpError::new(
-                        AtpErrorCode::BytecodeParamParsingError(
-                            "VarRef cannot be a root AtpParamTypes".into()
+                    TextForgeError::new(
+                        TextForgeErrorCode::BytecodeParamParsingError(
+                            "VarRef cannot be a root TextForgeParamTypes".into()
                         ),
-                        "AtpParamTypes::from_bytecode(VarRef)",
+                        "TextForgeParamTypes::from_bytecode(VarRef)",
                         "Use decode_val_payload inside PARAM_TOKEN"
                     )
                 )
@@ -614,11 +614,11 @@ impl AtpParamTypes {
 
                 let opcode = Self::read_u32_be(
                     &mut reader,
-                    "AtpParamTypes::from_bytecode(Token.opcode)"
+                    "TextForgeParamTypes::from_bytecode(Token.opcode)"
                 )?;
                 let param_count = Self::read_u8(
                     &mut reader,
-                    "AtpParamTypes::from_bytecode(Token.param_count)"
+                    "TextForgeParamTypes::from_bytecode(Token.param_count)"
                 )? as usize;
 
                 // Sintaxe esperada (com literais)
@@ -632,9 +632,9 @@ impl AtpParamTypes {
                 let expected_effective = Self::effective_syntax_tokens(&expected);
                 if param_count != expected_effective.len() {
                     return Err(
-                        AtpError::new(
-                            AtpErrorCode::BytecodeParsingError("Param count mismatch".into()),
-                            "AtpParamTypes::from_bytecode(Token.param_count)",
+                        TextForgeError::new(
+                            TextForgeErrorCode::BytecodeParsingError("Param count mismatch".into()),
+                            "TextForgeParamTypes::from_bytecode(Token.param_count)",
                             format!(
                                 "opcode=0x{:X}, expected_effective={}, got={}",
                                 opcode,
@@ -652,15 +652,15 @@ impl AtpParamTypes {
                     // Cada parâmetro do token está no layout novo (começa com u64 total)
                     let size_u64 = Self::read_u64_be(
                         &mut reader,
-                        "AtpParamTypes::from_bytecode(Token.param_total_size)"
+                        "TextForgeParamTypes::from_bytecode(Token.param_total_size)"
                     )?;
 
                     let size_usize = usize
                         ::try_from(size_u64)
                         .map_err(|_| {
-                            AtpError::new(
-                                AtpErrorCode::BytecodeParsingError("Param size overflow".into()),
-                                "AtpParamTypes::from_bytecode(Token.param_total_size)",
+                            TextForgeError::new(
+                                TextForgeErrorCode::BytecodeParsingError("Param size overflow".into()),
+                                "TextForgeParamTypes::from_bytecode(Token.param_total_size)",
                                 format!("size_u64={}", size_u64)
                             )
                         })?;
@@ -668,11 +668,11 @@ impl AtpParamTypes {
                     if size_usize < 16 {
                         // no layout novo, mínimo: 8+4+4
                         return Err(
-                            AtpError::new(
-                                AtpErrorCode::BytecodeParsingError(
+                            TextForgeError::new(
+                                TextForgeErrorCode::BytecodeParsingError(
                                     "Invalid param total size".into()
                                 ),
-                                "AtpParamTypes::from_bytecode(Token.param_total_size)",
+                                "TextForgeParamTypes::from_bytecode(Token.param_total_size)",
                                 format!("size={}", size_usize)
                             )
                         );
@@ -682,7 +682,7 @@ impl AtpParamTypes {
                     let rest = Self::read_exact_vec(
                         &mut reader,
                         rest_len,
-                        "AtpParamTypes::from_bytecode(Token.param_bytes)"
+                        "TextForgeParamTypes::from_bytecode(Token.param_bytes)"
                     )?;
 
                     let mut full_param: Vec<u8> = Vec::with_capacity(size_usize);
@@ -718,11 +718,11 @@ impl AtpParamTypes {
                             };
                             if next_depth > max_depth {
                                 return Err(
-                                    AtpError::new(
-                                        AtpErrorCode::BytecodeParsingError(
+                                    TextForgeError::new(
+                                        TextForgeErrorCode::BytecodeParsingError(
                                             "Nested token depth exceeded".into()
                                         ),
-                                        "AtpParamTypes::from_bytecode(Token)",
+                                        "TextForgeParamTypes::from_bytecode(Token)",
                                         format!(
                                             "depth={}, max_assoc_mode={:?}",
                                             next_depth,
@@ -743,7 +743,7 @@ impl AtpParamTypes {
 
                     // Regra: em AssocPayload não pode existir block-like (só se child for Token literal)
                     if child_assoc_mode == AssocMode::AssocPayload {
-                        if let ValType::Literal(AtpParamTypes::Token(ref tok)) = parsed_val {
+                        if let ValType::Literal(TextForgeParamTypes::Token(ref tok)) = parsed_val {
                             let nested_expected = match
                                 TOKEN_TABLE.find((
                                     QuerySource::Identifier(
@@ -758,11 +758,11 @@ impl AtpParamTypes {
 
                             if Self::is_block_like_signature(&nested_expected) {
                                 return Err(
-                                    AtpError::new(
-                                        AtpErrorCode::BytecodeParsingError(
+                                    TextForgeError::new(
+                                        TextForgeErrorCode::BytecodeParsingError(
                                             "A block cannot contain another block".into()
                                         ),
-                                        "AtpParamTypes::from_bytecode(Token)",
+                                        "TextForgeParamTypes::from_bytecode(Token)",
                                         format!("nested_id={}", tok.get_string_repr())
                                     )
                                 );
@@ -781,7 +781,7 @@ impl AtpParamTypes {
                 match query_result {
                     TargetValue::Token(token_ref) => {
                         let token = token_ref.into_box();
-                        Ok(AtpParamTypes::Token(TokenWrapper::new(token, Some(params))))
+                        Ok(TextForgeParamTypes::Token(TokenWrapper::new(token, Some(params))))
                     }
                     _ => unreachable!(),
                 }
@@ -789,11 +789,11 @@ impl AtpParamTypes {
 
             _ =>
                 Err(
-                    AtpError::new(
-                        AtpErrorCode::BytecodeParamNotRecognized(
+                    TextForgeError::new(
+                        TextForgeErrorCode::BytecodeParamNotRecognized(
                             format!("Param Bytecode Not Recognized 0x{:X}", param_type).into()
                         ),
-                        "AtpParamTypes::from_bytecode",
+                        "TextForgeParamTypes::from_bytecode",
                         ""
                     )
                 ),
@@ -802,17 +802,17 @@ impl AtpParamTypes {
 
     /// Decodifica um full_param (layout novo) para ValType:
     /// - 0x04 => VarRef(String)
-    /// - outros => Literal(AtpParamTypes)
+    /// - outros => Literal(TextForgeParamTypes)
     fn decode_full_param_as_valtype(
         full_param: &[u8],
         token_depth: u8,
         assoc_mode: AssocMode
-    ) -> Result<ValType, AtpError> {
+    ) -> Result<ValType, TextForgeError> {
         if full_param.len() < 16 {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Param too small".into()),
-                    "AtpParamTypes::decode_full_param_as_valtype",
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Param too small".into()),
+                    "TextForgeParamTypes::decode_full_param_as_valtype",
                     format!("len={}", full_param.len())
                 )
             );
@@ -822,9 +822,9 @@ impl AtpParamTypes {
         let total = Self::read_u64_be(&mut cursor, "ValType.param.total")? as usize;
         if total != full_param.len() {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Param total size mismatch".into()),
-                    "AtpParamTypes::decode_full_param_as_valtype",
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Param total size mismatch".into()),
+                    "TextForgeParamTypes::decode_full_param_as_valtype",
                     format!("declared={}, actual={}", total, full_param.len())
                 )
             );
@@ -836,9 +836,9 @@ impl AtpParamTypes {
         let remaining = full_param.len().saturating_sub(cursor.position() as usize);
         if payload_size > remaining {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Payload exceeds remaining".into()),
-                    "AtpParamTypes::decode_full_param_as_valtype",
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Payload exceeds remaining".into()),
+                    "TextForgeParamTypes::decode_full_param_as_valtype",
                     format!("payload_size={}, remaining={}", payload_size, remaining)
                 )
             );
@@ -851,11 +851,11 @@ impl AtpParamTypes {
                 let text = str
                     ::from_utf8(&payload)
                     .map_err(|e| {
-                        AtpError::new(
-                            AtpErrorCode::BytecodeParamParsingError(
+                        TextForgeError::new(
+                            TextForgeErrorCode::BytecodeParamParsingError(
                                 "Failed parsing bytes to UTF8 string".into()
                             ),
-                            "AtpParamTypes::from_bytecode(VarRef)",
+                            "TextForgeParamTypes::from_bytecode(VarRef)",
                             e.to_string()
                         )
                     })?;
@@ -863,9 +863,9 @@ impl AtpParamTypes {
                 let name = text.trim();
                 if name.is_empty() {
                     return Err(
-                        AtpError::new(
-                            AtpErrorCode::BytecodeParamParsingError("Empty VarRef name".into()),
-                            "AtpParamTypes::from_bytecode(VarRef)",
+                        TextForgeError::new(
+                            TextForgeErrorCode::BytecodeParamParsingError("Empty VarRef name".into()),
+                            "TextForgeParamTypes::from_bytecode(VarRef)",
                             ""
                         )
                     );
@@ -873,7 +873,7 @@ impl AtpParamTypes {
                 Ok(ValType::VarRef(name.to_string()))
             }
 
-            // Qualquer outro tipo é Literal(AtpParamTypes)
+            // Qualquer outro tipo é Literal(TextForgeParamTypes)
             _ =>
                 Ok(
                     ValType::Literal(
@@ -891,13 +891,13 @@ impl AtpParamTypes {
         reader: &mut Cursor<&[u8]>,
         len: usize,
         instruction: &'static str
-    ) -> Result<Vec<u8>, AtpError> {
+    ) -> Result<Vec<u8>, TextForgeError> {
         let mut buf = vec![0u8; len];
         reader
             .read_exact(&mut buf)
             .map_err(|e| {
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Failed reading bytecode".into()),
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Failed reading bytecode".into()),
                     instruction,
                     e.to_string()
                 )
@@ -905,13 +905,13 @@ impl AtpParamTypes {
         Ok(buf.to_vec())
     }
 
-    fn read_u8(reader: &mut Cursor<&[u8]>, instruction: &'static str) -> Result<u8, AtpError> {
+    fn read_u8(reader: &mut Cursor<&[u8]>, instruction: &'static str) -> Result<u8, TextForgeError> {
         let mut b = [0u8; 1];
         reader
             .read_exact(&mut b)
             .map_err(|e| {
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Failed reading bytecode".into()),
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Failed reading bytecode".into()),
                     instruction,
                     e.to_string()
                 )
@@ -919,13 +919,13 @@ impl AtpParamTypes {
         Ok(u8::from_be_bytes(b))
     }
 
-    fn read_u32_be(reader: &mut Cursor<&[u8]>, instruction: &'static str) -> Result<u32, AtpError> {
+    fn read_u32_be(reader: &mut Cursor<&[u8]>, instruction: &'static str) -> Result<u32, TextForgeError> {
         let mut b = [0u8; 4];
         reader
             .read_exact(&mut b)
             .map_err(|e| {
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Failed reading bytecode".into()),
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Failed reading bytecode".into()),
                     instruction,
                     e.to_string()
                 )
@@ -933,13 +933,13 @@ impl AtpParamTypes {
         Ok(u32::from_be_bytes(b))
     }
 
-    fn read_u64_be(reader: &mut Cursor<&[u8]>, instruction: &'static str) -> Result<u64, AtpError> {
+    fn read_u64_be(reader: &mut Cursor<&[u8]>, instruction: &'static str) -> Result<u64, TextForgeError> {
         let mut b = [0u8; 8];
         reader
             .read_exact(&mut b)
             .map_err(|e| {
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Failed reading bytecode".into()),
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Failed reading bytecode".into()),
                     instruction,
                     e.to_string()
                 )
@@ -947,13 +947,13 @@ impl AtpParamTypes {
         Ok(u64::from_be_bytes(b))
     }
 
-    fn peek_u64_be(bytes: &[u8]) -> Result<u64, AtpError> {
+    fn peek_u64_be(bytes: &[u8]) -> Result<u64, TextForgeError> {
         let b: [u8; 8] = bytes
             .try_into()
             .map_err(|_| {
-                AtpError::new(
-                    AtpErrorCode::BytecodeParamParsingError("Failed reading u64 header".into()),
-                    "AtpParamTypes::peek_u64_be",
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParamParsingError("Failed reading u64 header".into()),
+                    "TextForgeParamTypes::peek_u64_be",
                     format!("len={}", bytes.len())
                 )
             })?;
@@ -966,10 +966,10 @@ impl AtpParamTypes {
 
     pub fn get_param_type_code(&self) -> u32 {
         match self {
-            AtpParamTypes::String(_) => PARAM_STRING,
-            AtpParamTypes::Usize(_) => PARAM_USIZE,
-            AtpParamTypes::Token(_) => PARAM_TOKEN,
-            AtpParamTypes::VarRef(_) => PARAM_VARREF,
+            TextForgeParamTypes::String(_) => PARAM_STRING,
+            TextForgeParamTypes::Usize(_) => PARAM_USIZE,
+            TextForgeParamTypes::Token(_) => PARAM_TOKEN,
+            TextForgeParamTypes::VarRef(_) => PARAM_VARREF,
         }
     }
 
@@ -978,14 +978,14 @@ impl AtpParamTypes {
         &self,
         out: &mut Vec<u8>,
         context: &mut GlobalExecutionContext
-    ) -> Result<(), AtpError> {
+    ) -> Result<(), TextForgeError> {
         let param_type = self.get_param_type_code();
 
         let payload: Vec<u8> = match self {
-            AtpParamTypes::String(s) => s.as_bytes().to_vec(),
-            AtpParamTypes::Usize(n) => n.to_be_bytes().to_vec(),
-            AtpParamTypes::Token(t) => t.to_bytecode_resolved(context)?,
-            AtpParamTypes::VarRef(s) => s.as_bytes().to_vec(),
+            TextForgeParamTypes::String(s) => s.as_bytes().to_vec(),
+            TextForgeParamTypes::Usize(n) => n.to_be_bytes().to_vec(),
+            TextForgeParamTypes::Token(t) => t.to_bytecode_resolved(context)?,
+            TextForgeParamTypes::VarRef(s) => s.as_bytes().to_vec(),
         };
 
         let payload_size_u32: u32 = payload.len() as u32;
@@ -1003,7 +1003,7 @@ impl AtpParamTypes {
     pub fn param_to_bytecode(
         &self,
         context: &mut GlobalExecutionContext
-    ) -> Result<(u64, Vec<u8>), AtpError> {
+    ) -> Result<(u64, Vec<u8>), TextForgeError> {
         let mut result: Vec<u8> = Vec::new();
         self.write_as_instruction_param(&mut result, context)?;
         let total = u64::from_be_bytes(result[0..8].try_into().unwrap());

@@ -7,11 +7,11 @@ use crate::api::block_builder::BlockBuilder;
 use crate::api::conditional_builder::ConditionalBuilderEach;
 use crate::globals::var::{ TokenWrapper, ValType };
 use crate::tokens::{ transforms::*, instructions::*, InstructionMethods };
-use crate::utils::errors::{ AtpError };
-use crate::utils::params::AtpParamTypes;
+use crate::utils::errors::{ TextForgeError };
+use crate::utils::params::TextForgeParamTypes;
 
-pub trait AtpBuilderMethods: Sized {
-    fn push_token(&mut self, t: impl Into<TokenWrapper>) -> Result<(), AtpError>;
+pub trait TextForgeBuilderMethods: Sized {
+    fn push_token(&mut self, t: impl Into<TokenWrapper>) -> Result<(), TextForgeError>;
 
     /// TBS - Trim Both Sides
     ///
@@ -25,18 +25,18 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
     ///
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).trim_both_sides().unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).trim_both_sides().unwrap().build();
     /// let input = "   banana   ";
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("banana".to_string()));
     /// ```
-    fn trim_both_sides(&mut self) -> Result<&mut Self, AtpError> {
+    fn trim_both_sides(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(tbs::Tbs::default());
         self.push_token(tok)?;
         Ok(self)
@@ -54,17 +54,17 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).trim_left_side().unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).trim_left_side().unwrap().build();
     /// let input = "   banana  ";
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("banana  ".to_string()));
     /// ```
-    fn trim_left_side(&mut self) -> Result<&mut Self, AtpError> {
+    fn trim_left_side(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(tls::Tls::default());
         self.push_token(tok)?;
         Ok(self)
@@ -81,18 +81,18 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).trim_right_side().unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).trim_right_side().unwrap().build();
     /// let input = "  banana   ";
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("  banana".to_string()));
     /// ```
-    fn trim_right_side(&mut self) -> Result<&mut Self, AtpError> {
+    fn trim_right_side(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(trs::Trs::default());
         self.push_token(tok)?;
         Ok(self)
@@ -108,18 +108,18 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).add_to_end("!").unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).add_to_end("!").unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("banana!".to_string()));
     /// ```
-    fn add_to_end(&mut self, text: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn add_to_end(&mut self, text: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(ate::Ate::default()), Some(vec![text.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -135,18 +135,18 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).add_to_beginning("x").unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).add_to_beginning("x").unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("xbanana".to_string()));
     /// ```
 
-    fn add_to_beginning(&mut self, text: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn add_to_beginning(&mut self, text: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(atb::Atb::default()), Some(vec![text.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -162,19 +162,19 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).delete_first().unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).delete_first().unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("anana".to_string()));
     /// ```
 
-    fn delete_first(&mut self) -> Result<&mut Self, AtpError> {
+    fn delete_first(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(dlf::Dlf::default());
         self.push_token(tok)?;
         Ok(self)
@@ -190,19 +190,19 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).delete_last().unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).delete_last().unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("banan".to_string()));
     /// ```
 
-    fn delete_last(&mut self) -> Result<&mut Self, AtpError> {
+    fn delete_last(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(dll::Dll::default());
         self.push_token(tok)?;
         Ok(self)
@@ -219,19 +219,19 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).delete_after(2).unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).delete_after(2).unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("ban".to_string()));
     /// ```
 
-    fn delete_after(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn delete_after(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(dla::Dla::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -248,19 +248,19 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).delete_before(3).unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).delete_before(3).unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("ana".to_string()));
     /// ```
 
-    fn delete_before(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn delete_before(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(dlb::Dlb::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -278,13 +278,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).delete_chunk(1, 3).unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).delete_chunk(1, 3).unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id, input), Ok("bna".to_string()));
@@ -294,7 +294,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         start_index: impl Into<ValType>,
         end_index: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(dlc::Dlc::default()),
             Some(vec![start_index.into(), end_index.into()])
@@ -315,14 +315,14 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
     /// let id =
-    ///     AtpBuilder::new(&mut processor).replace_all_with("a", "x").unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).replace_all_with("a", "x").unwrap().build();
     ///
     /// let input = "banana";
     ///
@@ -336,7 +336,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         pattern: impl Into<ValType>,
         text_to_replace: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(raw::Raw::default()),
             Some(vec![pattern.into(), text_to_replace.into()])
@@ -357,13 +357,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
     /// let id =
-    ///     AtpBuilder::new(&mut processor).replace_first_with("a", "x").unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).replace_first_with("a", "x").unwrap().build();
     ///
     /// let input = "banana";
     ///
@@ -377,7 +377,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         pattern: impl Into<ValType>,
         text_to_replace: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(rfw::Rfw::default()),
             Some(vec![pattern.into(), text_to_replace.into()])
@@ -397,14 +397,14 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
     /// let id =
-    ///     AtpBuilder::new(&mut processor).replace_last_with("a", "x").unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).replace_last_with("a", "x").unwrap().build();
     ///
     /// let input = "banana";
     ///
@@ -418,7 +418,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         pattern: impl Into<ValType>,
         text_to_replace: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(rlw::Rlw::default()),
             Some(vec![pattern.into(), text_to_replace.into()])
@@ -440,14 +440,14 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
     /// let id =
-    ///     AtpBuilder::new(&mut processor).replace_nth_with("a", "x", 1).unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).replace_nth_with("a", "x", 1).unwrap().build();
     ///
     /// let input = "banana";
     ///
@@ -462,7 +462,7 @@ pub trait AtpBuilderMethods: Sized {
         pattern: impl Into<ValType>,
         text_to_replace: impl Into<ValType>,
         index: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(rnw::Rnw::default()),
             Some(vec![pattern.into(), text_to_replace.into(), index.into()])
@@ -483,14 +483,14 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
     /// let id =
-    ///     AtpBuilder::new(&mut processor).replace_count_with("a", "x", 2).unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).replace_count_with("a", "x", 2).unwrap().build();
     ///
     /// let input = "banana";
     ///
@@ -505,7 +505,7 @@ pub trait AtpBuilderMethods: Sized {
         pattern: impl Into<ValType>,
         text_to_replace: impl Into<ValType>,
         count: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(rcw::Rcw::default()),
             Some(vec![pattern.into(), text_to_replace.into(), count.into()])
@@ -526,13 +526,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).rotate_left(2).unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).rotate_left(2).unwrap().build();
     ///
     /// let input = "abcd";
     ///
@@ -542,7 +542,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn rotate_left(&mut self, times: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn rotate_left(&mut self, times: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(rtl::Rtl::default()), Some(vec![times.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -560,13 +560,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).rotate_right(1).unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).rotate_right(1).unwrap().build();
     ///
     /// let input = "abcd";
     ///
@@ -576,7 +576,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn rotate_right(&mut self, times: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn rotate_right(&mut self, times: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(rtr::Rtr::default()), Some(vec![times.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -593,13 +593,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).repeat(3).unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).repeat(3).unwrap().build();
     ///
     /// let input = "hi";
     ///
@@ -609,7 +609,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn repeat(&mut self, times: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn repeat(&mut self, times: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(rpt::Rpt::default()), Some(vec![times.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -626,14 +626,14 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
     /// let id =
-    ///     AtpBuilder::new(&mut processor).select(1, 3).unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).select(1, 3).unwrap().build();
     ///
     /// let input = "abcdef";
     ///
@@ -647,7 +647,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         start_index: impl Into<ValType>,
         end_index: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(slt::Slt::default()),
             Some(vec![start_index.into(), end_index.into()])
@@ -668,13 +668,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).to_uppercase_all().unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).to_uppercase_all().unwrap().build();
     ///
     /// let input = "banana";
     ///
@@ -684,7 +684,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_uppercase_all(&mut self) -> Result<&mut Self, AtpError> {
+    fn to_uppercase_all(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(tua::Tua::default());
         self.push_token(tok)?;
         Ok(self)
@@ -701,13 +701,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor).to_lowercase_all().unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).to_lowercase_all().unwrap().build();
     ///
     /// let input = "BaNaNa";
     ///
@@ -717,7 +717,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_lowercase_all(&mut self) -> Result<&mut Self, AtpError> {
+    fn to_lowercase_all(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(tla::Tla::default());
         self.push_token(tok)?;
         Ok(self)
@@ -735,14 +735,14 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
     /// let id =
-    ///     AtpBuilder::new(&mut processor).to_uppercase_single(1).unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).to_uppercase_single(1).unwrap().build();
     ///
     /// let input = "banana";
     ///
@@ -752,7 +752,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_uppercase_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn to_uppercase_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tucs::Tucs::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -770,14 +770,14 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
     /// let id =
-    ///     AtpBuilder::new(&mut processor).to_lowercase_single(0).unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).to_lowercase_single(0).unwrap().build();
     ///
     /// let input = "Banana";
     ///
@@ -787,7 +787,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_lowercase_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn to_lowercase_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tlcs::Tlcs::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -806,13 +806,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .to_uppercase_chunk(1, 3)
     ///     .unwrap().build();
     ///
@@ -829,7 +829,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         start_index: impl Into<ValType>,
         end_index: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(tucc::Tucc::default()),
             Some(vec![start_index.into(), end_index.into()])
@@ -851,13 +851,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .to_lowercase_chunk(2, 5)
     ///     .unwrap().build();
     ///
@@ -874,7 +874,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         start_index: impl Into<ValType>,
         end_index: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(tlcc::Tlcc::default()),
             Some(vec![start_index.into(), end_index.into()])
@@ -896,13 +896,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
     /// let id =
-    ///     AtpBuilder::new(&mut processor).capitalize_first_word().unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).capitalize_first_word().unwrap().build();
     ///
     /// let input = "hello world";
     ///
@@ -912,7 +912,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn capitalize_first_word(&mut self) -> Result<&mut Self, AtpError> {
+    fn capitalize_first_word(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(cfw::Cfw::default());
         self.push_token(tok)?;
         Ok(self)
@@ -929,14 +929,14 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
 
     /// let id =
-    ///     AtpBuilder::new(&mut processor).capitalize_last_word().unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).capitalize_last_word().unwrap().build();
     ///
     /// let input = "hello world";
     ///
@@ -946,7 +946,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn capitalize_last_word(&mut self) -> Result<&mut Self, AtpError> {
+    fn capitalize_last_word(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(clw::Clw::default());
         self.push_token(tok)?;
         Ok(self)
@@ -965,13 +965,13 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
     /// let id =
-    ///     AtpBuilder::new(&mut processor).split_select("-", 1).unwrap().build();
+    ///     TextForgeBuilder::new(&mut processor).split_select("-", 1).unwrap().build();
     ///
     /// let input = "aa-bb-cc";
     ///
@@ -985,7 +985,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         pattern: impl Into<ValType>,
         index: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(sslt::Sslt::default()),
             Some(vec![pattern.into(), index.into()])
@@ -1006,12 +1006,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .capitalize_chunk(6, 16)
     ///     .unwrap().build();
     ///
@@ -1027,7 +1027,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         start_index: impl Into<ValType>,
         end_index: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(ctc::Ctc::default()),
             Some(vec![start_index.into(), end_index.into()])
@@ -1039,7 +1039,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// Capitalizes all characters in `input` from `start_index` (inclusive) to `end_index`
     /// (exclusive).
-    /// If the indices are invalid, an `AtpError` is returned at build-time.
+    /// If the indices are invalid, an `TextForgeError` is returned at build-time.
     ///
     /// See Also:
     ///
@@ -1049,12 +1049,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .capitalize_range(1, 4)
     ///     .unwrap().build(); // required because this method returns Result
     ///
@@ -1069,7 +1069,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         start_index: impl Into<ValType>,
         end_index: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(ctr::Ctr::default()),
             Some(vec![start_index.into(), end_index.into()])
@@ -1090,12 +1090,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .capitalize_single_word(2)
     ///     .unwrap().build();
     ///
@@ -1105,7 +1105,7 @@ pub trait AtpBuilderMethods: Sized {
     ///     Ok("hello brave World".to_string())
     /// );
     /// ```
-    fn capitalize_single_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn capitalize_single_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(cts::Cts::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -1122,12 +1122,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .to_url_encoded()
     ///     .unwrap().build();
     ///
@@ -1138,7 +1138,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_url_encoded(&mut self) -> Result<&mut Self, AtpError> {
+    fn to_url_encoded(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(urle::Urle::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1155,12 +1155,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .to_url_decoded()
     ///     .unwrap().build();
     ///
@@ -1171,7 +1171,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_url_decoded(&mut self) -> Result<&mut Self, AtpError> {
+    fn to_url_decoded(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(urld::Urld::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1186,12 +1186,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .to_reverse()
     ///     .unwrap().build();
     ///
@@ -1201,7 +1201,7 @@ pub trait AtpBuilderMethods: Sized {
     ///     Ok("cba".to_string())
     /// );
     /// ```
-    fn to_reverse(&mut self) -> Result<&mut Self, AtpError> {
+    fn to_reverse(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(rev::Rev::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1216,12 +1216,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .split_characters()
     ///     .unwrap().build();
     ///
@@ -1232,7 +1232,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn split_characters(&mut self) -> Result<&mut Self, AtpError> {
+    fn split_characters(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(splc::Splc::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1250,12 +1250,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .to_html_escaped()
     ///     .unwrap().build();
     ///
@@ -1266,7 +1266,7 @@ pub trait AtpBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_html_escaped(&mut self) -> Result<&mut Self, AtpError> {
+    fn to_html_escaped(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(htmle::Htmle::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1283,12 +1283,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor)
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor)
     ///     .to_html_unescaped()
     ///     .unwrap().build();
     ///
@@ -1298,7 +1298,7 @@ pub trait AtpBuilderMethods: Sized {
     ///     Ok("<b>Hi</b>".to_string())
     /// );
     /// ```
-    fn to_html_unescaped(&mut self) -> Result<&mut Self, AtpError> {
+    fn to_html_unescaped(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(htmlu::Htmlu::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1316,18 +1316,18 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).to_json_escaped().unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).to_json_escaped().unwrap().build();
     /// let input = "{banana: '10'}";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("\"{banana: '10'}\"".to_string()));
     /// ```
 
-    fn to_json_escaped(&mut self) -> Result<&mut Self, AtpError> {
+    fn to_json_escaped(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(jsone::Jsone::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1344,17 +1344,17 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).to_json_unescaped().unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).to_json_unescaped().unwrap().build();
     /// let input = "\"{banana: '10'}\"";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("{banana: '10'}".to_string()));
     /// ```
-    fn to_json_unescaped(&mut self) -> Result<&mut Self, AtpError> {
+    fn to_json_unescaped(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(jsonu::Jsonu::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1373,12 +1373,12 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).insert(1, " laranja").unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).insert(1, " laranja").unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("ba laranjanana".to_string()));
@@ -1387,7 +1387,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         index: impl Into<ValType>,
         text_to_insert: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(ins::Ins::default()),
             Some(vec![index.into(), text_to_insert.into()])
@@ -1408,17 +1408,17 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).to_lowercase_word(1).unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).to_lowercase_word(1).unwrap().build();
     /// let input = "BANANA LARANJA CHEIA DE CANJA";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("BANANA laranja CHEIA DE CANJA".to_string()));
     /// ```
-    fn to_lowercase_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn to_lowercase_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tlcw::Tlcw::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -1435,17 +1435,17 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).to_uppercase_word(1).unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).to_uppercase_word(1).unwrap().build();
     /// let input = "banana laranja cheia de canja";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("banana LARANJA cheia de canja".to_string()));
     /// ```
-    fn to_uppercase_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn to_uppercase_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tucw::Tucw::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -1464,18 +1464,18 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).join_to_kebab_case().unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).join_to_kebab_case().unwrap().build();
     /// let input = "banana laranja cheia de canja";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("banana-laranja-cheia-de-canja".to_string()));
     ///
 
-    fn join_to_kebab_case(&mut self) -> Result<&mut Self, AtpError> {
+    fn join_to_kebab_case(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(jkbc::Jkbc::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1493,17 +1493,17 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).join_to_snake_case().unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).join_to_snake_case().unwrap().build();
     /// let input = "banana laranja cheia de canja";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("banana_laranja_cheia_de_canja".to_string()));
     ///
-    fn join_to_snake_case(&mut self) -> Result<&mut Self, AtpError> {
+    fn join_to_snake_case(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(jsnc::Jsnc::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1521,17 +1521,17 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).join_to_camel_case().unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).join_to_camel_case().unwrap().build();
     /// let input = "banana laranja cheia de canja";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("bananaLaranjaCheiaDeCanja".to_string()));
     /// ```
-    fn join_to_camel_case(&mut self) -> Result<&mut Self, AtpError> {
+    fn join_to_camel_case(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(jcmc::Jcmc::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1549,17 +1549,17 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).join_to_pascal_case().unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).join_to_pascal_case().unwrap().build();
     /// let input = "banana laranja cheia de canja";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("BananaLaranjaCheiaDeCanja".to_string()));
     /// ```
-    fn join_to_pascal_case(&mut self) -> Result<&mut Self, AtpError> {
+    fn join_to_pascal_case(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(jpsc::Jpsc::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1575,12 +1575,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).pad_left("x", 7).unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).pad_left("x", 7).unwrap().build();
     /// let input = "banana";
     ///
     ///
@@ -1590,7 +1590,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         text: impl Into<ValType>,
         times: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(padl::Padl::default()),
             Some(vec![text.into(), times.into()])
@@ -1609,12 +1609,12 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).pad_right("x", 7).unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).pad_right("x", 7).unwrap().build();
     /// let input = "banana";
     ///
     ///
@@ -1624,7 +1624,7 @@ pub trait AtpBuilderMethods: Sized {
         &mut self,
         text: impl Into<ValType>,
         times: impl Into<ValType>
-    ) -> Result<&mut Self, AtpError> {
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(padr::Padr::default()),
             Some(vec![text.into(), times.into()])
@@ -1640,17 +1640,17 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).remove_whitespace().unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).remove_whitespace().unwrap().build();
     /// let input = "banana laranja cheia de canja";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("bananalaranjacheiadecanja".to_string()));
     /// ```
-    fn remove_whitespace(&mut self) -> Result<&mut Self, AtpError> {
+    fn remove_whitespace(&mut self) -> Result<&mut Self, TextForgeError> {
         let tok: Box<dyn InstructionMethods> = Box::new(rmws::Rmws::default());
         self.push_token(tok)?;
         Ok(self)
@@ -1660,34 +1660,34 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// Delete's a single character specified by `index` in `input`
     ///
-    /// It will throw an `AtpError` if index does not exists in `input`
+    /// It will throw an `TextForgeError` if index does not exists in `input`
     ///
     /// # Example:
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     atp_builder::AtpBuilder,
-    ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
-    ///     AtpBuilderMethods,
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
     /// };
-    /// let mut processor = AtpProcessor::new();
-    /// let id = AtpBuilder::new(&mut processor).delete_single(3).unwrap().build();
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).delete_single(3).unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("banna".to_string()));
     /// ```
-    fn delete_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, AtpError> {
+    fn delete_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(dls::Dls::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
     }
 }
 
-pub trait AtpConditionalMethods: AtpBuilderMethods {
-    fn if_do_contains_each<F>(&mut self, value: &str, f: F) -> Result<&mut Self, AtpError>
-        where F: FnOnce(&mut ConditionalBuilderEach) -> Result<(), AtpError>
+pub trait TextForgeConditionalMethods: TextForgeBuilderMethods {
+    fn if_do_contains_each<F>(&mut self, value: &str, f: F) -> Result<&mut Self, TextForgeError>
+        where F: FnOnce(&mut ConditionalBuilderEach) -> Result<(), TextForgeError>
     {
-        let params = vec![AtpParamTypes::String(value.to_string())];
+        let params = vec![TextForgeParamTypes::String(value.to_string())];
         let token: Box<dyn InstructionMethods> = Box::new(ifdc::Ifdc::default());
         let mut conditional_builder = ConditionalBuilderEach::new(token, params);
 
@@ -1703,9 +1703,9 @@ pub trait AtpConditionalMethods: AtpBuilderMethods {
     }
 }
 
-pub trait AtpBlockMethods: AtpBuilderMethods {
-    fn block_assoc<F>(&mut self, block_name: &'static str, f: F) -> Result<&mut Self, AtpError>
-        where F: FnOnce(&mut BlockBuilder) -> Result<(), AtpError>
+pub trait TextForgeBlockMethods: TextForgeBuilderMethods {
+    fn block_assoc<F>(&mut self, block_name: &'static str, f: F) -> Result<&mut Self, TextForgeError>
+        where F: FnOnce(&mut BlockBuilder) -> Result<(), TextForgeError>
     {
         let mut block_builder = BlockBuilder::new(block_name);
 
@@ -1719,10 +1719,10 @@ pub trait AtpBlockMethods: AtpBuilderMethods {
         Ok(self)
     }
 
-    fn call_block(&mut self, block_name: &'static str) -> Result<&mut Self, AtpError> {
+    fn call_block(&mut self, block_name: &'static str) -> Result<&mut Self, TextForgeError> {
         let mut t: Box<dyn InstructionMethods> = Box::new(cblk::Cblk::default());
 
-        t.from_params(&vec![AtpParamTypes::String(block_name.to_string())])?;
+        t.from_params(&vec![TextForgeParamTypes::String(block_name.to_string())])?;
 
         self.push_token(t)?;
         Ok(self)

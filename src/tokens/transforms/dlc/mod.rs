@@ -7,9 +7,9 @@ use crate::context::execution_context::GlobalExecutionContext;
 use crate::utils::validations::check_vec_len;
 use crate::{ tokens::InstructionMethods, utils::validations::check_chunk_bound_indexes };
 
-use crate::utils::errors::{ AtpError, AtpErrorCode };
+use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 /// Dlc - Delete Chunk
 ///
 /// Deletes an specific subslice of `input` delimited by `start_index` and `end_index`(inclusive)
@@ -28,11 +28,11 @@ use crate::utils::params::AtpParamTypes;
 pub struct Dlc {
     pub start_index: usize,
     pub end_index: usize,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Dlc {
-    pub fn new(start_index: usize, end_index: usize) -> Result<Self, AtpError> {
+    pub fn new(start_index: usize, end_index: usize) -> Result<Self, TextForgeError> {
         check_chunk_bound_indexes(start_index, end_index, None)?;
         Ok(Dlc {
             start_index,
@@ -43,10 +43,10 @@ impl Dlc {
 }
 
 impl InstructionMethods for Dlc {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("dlc {} {};\n", self.start_index, self.end_index).into()
     }
 
@@ -54,7 +54,7 @@ impl InstructionMethods for Dlc {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let len = input.chars().count();
 
         // opcional: se string vazia, deletar "tudo" vira vazio
@@ -76,15 +76,15 @@ impl InstructionMethods for Dlc {
             .nth(self.start_index)
             .map(|(i, _)| i)
             .ok_or_else(|| {
-                AtpError::new(
-                    AtpErrorCode::IndexOutOfRange(
+                TextForgeError::new(
+                    TextForgeErrorCode::IndexOutOfRange(
                         format!(
                             "Invalid Index for this specific input, supported indexes 0-{}, entered index {}",
                             input.chars().count().saturating_sub(1),
                             self.start_index
                         ).into()
                     ),
-                    self.to_atp_line(),
+                    self.to_textforge_line(),
                     input.to_string()
                 )
             })?;
@@ -105,7 +105,7 @@ impl InstructionMethods for Dlc {
     fn get_string_repr(&self) -> &'static str {
         "dlc"
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 2, "dlc", "")?;
@@ -121,11 +121,11 @@ impl InstructionMethods for Dlc {
         0x08
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::Usize(self.start_index),
-            AtpParamTypes::Usize(self.end_index),
+            TextForgeParamTypes::Usize(self.start_index),
+            TextForgeParamTypes::Usize(self.end_index),
         ]);
         Ok(result)
     }

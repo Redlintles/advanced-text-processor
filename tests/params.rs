@@ -4,8 +4,8 @@ mod tests {
     use textforge::context::execution_context::GlobalExecutionContext;
     use textforge::globals::table::{ QuerySource, QueryTarget, SyntaxDef, TargetValue, TOKEN_TABLE };
     use textforge::globals::var::{ ValType };
-    use textforge::utils::errors::AtpErrorCode;
-    use textforge::utils::params::AtpParamTypes;
+    use textforge::utils::errors::TextForgeErrorCode;
+    use textforge::utils::params::TextForgeParamTypes;
 
     use std::sync::Arc;
 
@@ -36,16 +36,16 @@ mod tests {
             .collect()
     }
 
-    fn is_text_err(code: &AtpErrorCode) -> bool {
-        return matches!(code, AtpErrorCode::TextParsingError(_));
+    fn is_text_err(code: &TextForgeErrorCode) -> bool {
+        return matches!(code, TextForgeErrorCode::TextParsingError(_));
     }
 
-    fn is_bc_err(code: &AtpErrorCode) -> bool {
+    fn is_bc_err(code: &TextForgeErrorCode) -> bool {
         return matches!(
             code,
-            AtpErrorCode::BytecodeParsingError(_) |
-                AtpErrorCode::BytecodeParamParsingError(_) |
-                AtpErrorCode::BytecodeParamNotRecognized(_)
+            TextForgeErrorCode::BytecodeParsingError(_) |
+                TextForgeErrorCode::BytecodeParamParsingError(_) |
+                TextForgeErrorCode::BytecodeParamNotRecognized(_)
         );
     }
 
@@ -98,7 +98,7 @@ mod tests {
     #[test]
     fn text_basic_ifdc_valid() {
         let expected = expected_for("ifdc");
-        let parsed = AtpParamTypes::from_expected(
+        let parsed = TextForgeParamTypes::from_expected(
             expected,
             &chunks(&["banana", "do", "atb", "pizza"])
         ).unwrap();
@@ -106,12 +106,12 @@ mod tests {
         assert_eq!(parsed.len(), 2);
 
         match &parsed[0] {
-            ValType::Literal(AtpParamTypes::String(s)) => assert_eq!(s, "banana"),
+            ValType::Literal(TextForgeParamTypes::String(s)) => assert_eq!(s, "banana"),
             _ => panic!("Expected ValType::Literal(String)"),
         }
 
         match &parsed[1] {
-            ValType::Literal(AtpParamTypes::Token(t)) => assert_eq!(t.get_string_repr(), "atb"),
+            ValType::Literal(TextForgeParamTypes::Token(t)) => assert_eq!(t.get_string_repr(), "atb"),
             _ => panic!("Expected ValType::Literal(Token(atb))"),
         }
     }
@@ -119,7 +119,7 @@ mod tests {
     #[test]
     fn text_blk_assoc_valid() {
         let expected = expected_for("blk");
-        let parsed = AtpParamTypes::from_expected(
+        let parsed = TextForgeParamTypes::from_expected(
             expected,
             &chunks(&["x", "assoc", "ifdc", "banana", "do", "tbs"])
         ).unwrap();
@@ -127,12 +127,12 @@ mod tests {
         assert_eq!(parsed.len(), 2);
 
         match &parsed[0] {
-            ValType::Literal(AtpParamTypes::String(s)) => assert_eq!(s, "x"),
+            ValType::Literal(TextForgeParamTypes::String(s)) => assert_eq!(s, "x"),
             _ => panic!("Expected ValType::Literal(String)"),
         }
 
         match &parsed[1] {
-            ValType::Literal(AtpParamTypes::Token(t)) => assert_eq!(t.get_string_repr(), "ifdc"),
+            ValType::Literal(TextForgeParamTypes::Token(t)) => assert_eq!(t.get_string_repr(), "ifdc"),
             _ => panic!("Expected ValType::Literal(Token(ifdc))"),
         }
     }
@@ -140,13 +140,13 @@ mod tests {
     #[test]
     fn text_ifdc_nest_blk_assoc_raw() {
         let expected = expected_for("ifdc");
-        let parsed = AtpParamTypes::from_expected(
+        let parsed = TextForgeParamTypes::from_expected(
             expected,
             &chunks(&["laranja", "do", "blk", "x", "assoc", "raw", "laranja", "abacaxi"])
         ).unwrap();
 
         match &parsed[1] {
-            ValType::Literal(AtpParamTypes::Token(t)) => assert_eq!(t.get_string_repr(), "blk"),
+            ValType::Literal(TextForgeParamTypes::Token(t)) => assert_eq!(t.get_string_repr(), "blk"),
             _ => panic!("Expected ValType::Literal(Token(blk))"),
         }
     }
@@ -154,7 +154,7 @@ mod tests {
     #[test]
     fn text_ifdc_nest_blk_assoc_ifdc_raw_ok() {
         let expected = expected_for("ifdc");
-        let parsed = AtpParamTypes::from_expected(
+        let parsed = TextForgeParamTypes::from_expected(
             expected,
             &chunks(
                 &[
@@ -174,7 +174,7 @@ mod tests {
         ).unwrap();
 
         match &parsed[1] {
-            ValType::Literal(AtpParamTypes::Token(t)) => assert_eq!(t.get_string_repr(), "blk"),
+            ValType::Literal(TextForgeParamTypes::Token(t)) => assert_eq!(t.get_string_repr(), "blk"),
             _ => panic!("Expected ValType::Literal(Token(blk))"),
         }
     }
@@ -182,7 +182,7 @@ mod tests {
     #[test]
     fn text_rejects_ifdc_inside_ifdc() {
         let expected = expected_for("ifdc");
-        let err = AtpParamTypes::from_expected(
+        let err = TextForgeParamTypes::from_expected(
             expected,
             &chunks(&["banana", "do", "ifdc", "coxinha", "do", "atb", "pizza"])
         ).unwrap_err();
@@ -193,7 +193,7 @@ mod tests {
     #[test]
     fn text_rejects_blk_inside_blk_assoc() {
         let expected = expected_for("blk");
-        let err = AtpParamTypes::from_expected(
+        let err = TextForgeParamTypes::from_expected(
             expected,
             &chunks(&["x", "assoc", "blk", "y", "assoc", "atb", "banana"])
         ).unwrap_err();
@@ -204,7 +204,7 @@ mod tests {
     #[test]
     fn text_rejects_excessive_assoc_depth() {
         let expected = expected_for("blk");
-        let err = AtpParamTypes::from_expected(
+        let err = TextForgeParamTypes::from_expected(
             expected,
             &chunks(
                 &[
@@ -236,7 +236,7 @@ mod tests {
     #[test]
     fn bytecode_string_roundtrip() {
         // agora param_to_bytecode exige context
-        let p = AtpParamTypes::String("abc".to_string());
+        let p = TextForgeParamTypes::String("abc".to_string());
 
         let mut ctx = GlobalExecutionContext::default();
         let (_total, b) = p.param_to_bytecode(&mut ctx).unwrap();
@@ -250,23 +250,23 @@ mod tests {
         let size = u32::from_be_bytes(b[12..16].try_into().unwrap());
         assert_eq!(size, 3);
 
-        let parsed = AtpParamTypes::from_bytecode(b).unwrap();
+        let parsed = TextForgeParamTypes::from_bytecode(b).unwrap();
         match parsed {
-            AtpParamTypes::String(s) => assert_eq!(s, "abc"),
+            TextForgeParamTypes::String(s) => assert_eq!(s, "abc"),
             _ => panic!("Expected String"),
         }
     }
 
     #[test]
     fn bytecode_usize_roundtrip() {
-        let p = AtpParamTypes::Usize(42);
+        let p = TextForgeParamTypes::Usize(42);
 
         let mut ctx = GlobalExecutionContext::default();
         let (_total, b) = p.param_to_bytecode(&mut ctx).unwrap();
 
-        let parsed = AtpParamTypes::from_bytecode(b).unwrap();
+        let parsed = TextForgeParamTypes::from_bytecode(b).unwrap();
         match parsed {
-            AtpParamTypes::Usize(n) => assert_eq!(n, 42),
+            TextForgeParamTypes::Usize(n) => assert_eq!(n, 42),
             _ => panic!("Expected Usize"),
         }
     }
@@ -279,15 +279,15 @@ mod tests {
         let atb_param = bc_token_param(atb_op, vec![bc_string("pizza")]);
         let ifdc_param = bc_token_param(ifdc_op, vec![bc_string("banana"), atb_param]);
 
-        let parsed = AtpParamTypes::from_bytecode(ifdc_param).unwrap();
+        let parsed = TextForgeParamTypes::from_bytecode(ifdc_param).unwrap();
         match parsed {
-            AtpParamTypes::Token(tw) => {
+            TextForgeParamTypes::Token(tw) => {
                 assert_eq!(tw.get_string_repr(), "ifdc");
 
                 // importante: agora token params são ValType dentro do wrapper
                 let token = tw.get_default_token();
                 let expected = expected_for(token.get_string_repr());
-                let effective = AtpParamTypes::effective_syntax_tokens(&expected);
+                let effective = TextForgeParamTypes::effective_syntax_tokens(&expected);
                 assert_eq!(effective.len(), 2);
 
                 // e o wrapper deve ter 2 params
@@ -307,7 +307,7 @@ mod tests {
         let ifdc_inner = bc_token_param(ifdc_op, vec![bc_string("coxinha"), atb_inner]);
         let ifdc_outer = bc_token_param(ifdc_op, vec![bc_string("banana"), ifdc_inner]);
 
-        let err = AtpParamTypes::from_bytecode(ifdc_outer).unwrap_err();
+        let err = TextForgeParamTypes::from_bytecode(ifdc_outer).unwrap_err();
         assert!(is_bc_err(&err.error_code));
     }
 
@@ -323,9 +323,9 @@ mod tests {
 
         let ifdc_tok = bc_token_param(ifdc_op, vec![bc_string("laranja"), blk_tok]);
 
-        let parsed = AtpParamTypes::from_bytecode(ifdc_tok).unwrap();
+        let parsed = TextForgeParamTypes::from_bytecode(ifdc_tok).unwrap();
         match parsed {
-            AtpParamTypes::Token(t) => assert_eq!(t.get_string_repr(), "ifdc"),
+            TextForgeParamTypes::Token(t) => assert_eq!(t.get_string_repr(), "ifdc"),
             _ => panic!("Expected Token(ifdc)"),
         }
     }
@@ -341,7 +341,7 @@ mod tests {
         // blk_outer = blk(x, blk_inner) => deve falhar (block dentro de assoc payload)
         let blk_outer = bc_token_param(blk_op, vec![bc_string("x"), blk_inner]);
 
-        let err = AtpParamTypes::from_bytecode(blk_outer).unwrap_err();
+        let err = TextForgeParamTypes::from_bytecode(blk_outer).unwrap_err();
         assert!(is_bc_err(&err.error_code));
     }
 
@@ -358,7 +358,7 @@ mod tests {
 
         let blk_outer = bc_token_param(blk_op, vec![bc_string("x"), ifdc1]);
 
-        let err = AtpParamTypes::from_bytecode(blk_outer).unwrap_err();
+        let err = TextForgeParamTypes::from_bytecode(blk_outer).unwrap_err();
         assert!(is_bc_err(&err.error_code));
     }
 

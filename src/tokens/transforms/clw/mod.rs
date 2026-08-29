@@ -6,10 +6,10 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::AtpError, transforms::capitalize, validations::check_vec_len },
+    utils::{ errors::TextForgeError, transforms::capitalize, validations::check_vec_len },
 };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 /// Token `Clw` — Capitalize Last Word
 ///
 /// Capitalizes the last word of `input`
@@ -27,17 +27,17 @@ use crate::utils::params::AtpParamTypes;
 /// ```
 #[derive(Clone, Default)]
 pub struct Clw {
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl InstructionMethods for Clw {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
         "clw"
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, AtpError> {
+    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, TextForgeError> {
         let mut v: Vec<String> = input
             .split(' ')
             .rev()
@@ -49,11 +49,11 @@ impl InstructionMethods for Clw {
         Ok(v.join(" "))
     }
 
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         "clw;\n".into()
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
-        use crate::utils::params::AtpParamTypesJoin;
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
+        use crate::utils::params::TextForgeParamTypesJoin;
 
         check_vec_len(&params, 0, "clw", params.join(""))?;
         Ok(())
@@ -63,7 +63,7 @@ impl InstructionMethods for Clw {
         0x19
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), []);
         Ok(result)

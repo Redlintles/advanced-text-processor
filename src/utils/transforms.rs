@@ -1,7 +1,7 @@
-use crate::utils::errors::AtpError;
+use crate::utils::errors::TextForgeError;
 use std::borrow::Cow;
 
-pub fn string_to_usize(chunk: &str) -> Result<usize, AtpError> {
+pub fn string_to_usize(chunk: &str) -> Result<usize, TextForgeError> {
     let mut parsed_chunk = String::from(chunk);
     if chunk.ends_with(";") {
         parsed_chunk.pop();
@@ -12,8 +12,8 @@ pub fn string_to_usize(chunk: &str) -> Result<usize, AtpError> {
         Err(_) => {
             let str_chunk = chunk.to_string();
             Err(
-                AtpError::new(
-                    super::errors::AtpErrorCode::TextParsingError(
+                TextForgeError::new(
+                    super::errors::TextForgeErrorCode::TextParsingError(
                         "String to usize Parsing failed".into()
                     ),
                     Cow::Owned(str_chunk),
@@ -48,15 +48,15 @@ pub fn extend_string(input: &str, max_len: usize) -> String {
     repeated_string
 }
 
-pub fn get_safe_utf8_char_index(index: usize, input: &str) -> Result<usize, AtpError> {
+pub fn get_safe_utf8_char_index(index: usize, input: &str) -> Result<usize, TextForgeError> {
     Ok(
         input
             .char_indices()
             .nth(index)
             .map(|(i, _)| i)
             .ok_or_else(|| {
-                AtpError::new(
-                    super::errors::AtpErrorCode::IndexOutOfRange("".into()),
+                TextForgeError::new(
+                    super::errors::TextForgeErrorCode::IndexOutOfRange("".into()),
                     Cow::Borrowed("Get safe utf-8 char index"),
                     input.to_string()
                 )
@@ -69,8 +69,8 @@ pub fn get_safe_utf8_char_index(index: usize, input: &str) -> Result<usize, AtpE
 // Observação: estes testes assumem que:
 // - o feature flag "test_access" existe no seu Cargo.toml
 // - as funções estão acessíveis via `crate::utils::...` (ajuste o `use` se o caminho real for outro)
-// - AtpError expõe `code` (ou getter equivalente) para checar o tipo do erro.
-//   Se o seu AtpError NÃO expõe o código publicamente, mantive os asserts de erro de forma que
+// - TextForgeError expõe `code` (ou getter equivalente) para checar o tipo do erro.
+//   Se o seu TextForgeError NÃO expõe o código publicamente, mantive os asserts de erro de forma que
 //   você consiga facilmente trocar para `format!("{err:?}")` / `.to_string()` / etc.
 
 #[cfg(feature = "test_access")]
@@ -80,18 +80,18 @@ mod test_access {
 
     #[cfg(test)]
     mod string_to_usize_tests {
-        use crate::utils::errors::{ AtpError, AtpErrorCode };
+        use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
         use crate::utils::transforms::string_to_usize;
 
         #[test]
-        fn parses_plain_integer() -> Result<(), AtpError> {
+        fn parses_plain_integer() -> Result<(), TextForgeError> {
             assert_eq!(string_to_usize("0")?, 0);
             assert_eq!(string_to_usize("42")?, 42);
             Ok(())
         }
 
         #[test]
-        fn parses_integer_with_trailing_semicolon() -> Result<(), AtpError> {
+        fn parses_integer_with_trailing_semicolon() -> Result<(), TextForgeError> {
             assert_eq!(string_to_usize("7;")?, 7);
             assert_eq!(string_to_usize("12345;")?, 12345);
             Ok(())
@@ -101,9 +101,9 @@ mod test_access {
         fn rejects_non_numeric() {
             let err = string_to_usize("abc").unwrap_err();
 
-            // Se AtpError tiver `code` público:
+            // Se TextForgeError tiver `code` público:
             assert!(
-                matches!(err.error_code, AtpErrorCode::TextParsingError(_)),
+                matches!(err.error_code, TextForgeErrorCode::TextParsingError(_)),
                 "expected TextParsingError, got: {err:?}"
             );
         }
@@ -113,7 +113,7 @@ mod test_access {
             let err = string_to_usize(";").unwrap_err();
 
             assert!(
-                matches!(err.error_code, AtpErrorCode::TextParsingError(_)),
+                matches!(err.error_code, TextForgeErrorCode::TextParsingError(_)),
                 "expected TextParsingError, got: {err:?}"
             );
         }
@@ -123,7 +123,7 @@ mod test_access {
             let err = string_to_usize("-1").unwrap_err();
 
             assert!(
-                matches!(err.error_code, AtpErrorCode::TextParsingError(_)),
+                matches!(err.error_code, TextForgeErrorCode::TextParsingError(_)),
                 "expected TextParsingError, got: {err:?}"
             );
         }
@@ -134,7 +134,7 @@ mod test_access {
             let err = string_to_usize(" 10").unwrap_err();
 
             assert!(
-                matches!(err.error_code, AtpErrorCode::TextParsingError(_)),
+                matches!(err.error_code, TextForgeErrorCode::TextParsingError(_)),
                 "expected TextParsingError, got: {err:?}"
             );
         }
@@ -146,7 +146,7 @@ mod test_access {
             let err = string_to_usize("999999999999999999999999999999999999999").unwrap_err();
 
             assert!(
-                matches!(err.error_code, AtpErrorCode::TextParsingError(_)),
+                matches!(err.error_code, TextForgeErrorCode::TextParsingError(_)),
                 "expected TextParsingError, got: {err:?}"
             );
         }
@@ -242,11 +242,11 @@ mod test_access {
 
     #[cfg(test)]
     mod get_safe_utf8_char_index_tests {
-        use crate::utils::errors::{ AtpError, AtpErrorCode };
+        use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
         use crate::utils::transforms::get_safe_utf8_char_index;
 
         #[test]
-        fn returns_correct_byte_index_ascii() -> Result<(), AtpError> {
+        fn returns_correct_byte_index_ascii() -> Result<(), TextForgeError> {
             let input = "banana";
             assert_eq!(get_safe_utf8_char_index(0, input)?, 0); // 'b'
             assert_eq!(get_safe_utf8_char_index(1, input)?, 1); // 'a'
@@ -255,7 +255,7 @@ mod test_access {
         }
 
         #[test]
-        fn returns_correct_byte_index_utf8() -> Result<(), AtpError> {
+        fn returns_correct_byte_index_utf8() -> Result<(), TextForgeError> {
             // "á" ocupa 2 bytes em UTF-8.
             let input = "ábc";
             // indices de chars: 0:'á'(byte 0), 1:'b'(byte 2), 2:'c'(byte 3)
@@ -266,7 +266,7 @@ mod test_access {
         }
 
         #[test]
-        fn returns_correct_byte_index_with_emoji() -> Result<(), AtpError> {
+        fn returns_correct_byte_index_with_emoji() -> Result<(), TextForgeError> {
             // "🔥" é 4 bytes.
             let input = "a🔥b";
             // 0:'a'(0), 1:'🔥'(1), 2:'b'(5)
@@ -282,7 +282,7 @@ mod test_access {
             let err = get_safe_utf8_char_index(3, input).unwrap_err(); // len == 3, último índice válido == 2
 
             assert!(
-                matches!(err.error_code, AtpErrorCode::IndexOutOfRange(_)),
+                matches!(err.error_code, TextForgeErrorCode::IndexOutOfRange(_)),
                 "expected IndexOutOfRange, got: {err:?}"
             );
         }
@@ -293,7 +293,7 @@ mod test_access {
             let err = get_safe_utf8_char_index(0, input).unwrap_err();
 
             assert!(
-                matches!(err.error_code, AtpErrorCode::IndexOutOfRange(_)),
+                matches!(err.error_code, TextForgeErrorCode::IndexOutOfRange(_)),
                 "expected IndexOutOfRange, got: {err:?}"
             );
         }

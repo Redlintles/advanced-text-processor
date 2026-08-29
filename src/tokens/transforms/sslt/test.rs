@@ -4,8 +4,8 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::{ InstructionMethods, transforms::sslt::Sslt };
-    use crate::utils::errors::{ AtpError, AtpErrorCode };
-    use crate::utils::params::AtpParamTypes;
+    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::utils::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_sslt() {
@@ -14,10 +14,10 @@ mod tests {
     }
 
     #[test]
-    fn to_atp_line_is_correctish() {
+    fn to_textforge_line_is_correctish() {
         let t = Sslt::new("_", 1).unwrap();
         // Regex Display imprime o pattern, então isso deve bater.
-        assert_eq!(t.to_atp_line().as_ref(), "sslt _ 1;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "sslt _ 1;\n");
     }
 
     #[test]
@@ -48,9 +48,9 @@ mod tests {
         let got = t.transform("a_b", Some(&mut ctx));
 
         let expected = Err(
-            AtpError::new(
-                AtpErrorCode::IndexOutOfRange("Index does not exist in the splitted vec".into()),
-                t.to_atp_line(),
+            TextForgeError::new(
+                TextForgeErrorCode::IndexOutOfRange("Index does not exist in the splitted vec".into()),
+                t.to_textforge_line(),
                 "a_b".to_string()
             )
         );
@@ -60,7 +60,7 @@ mod tests {
     #[test]
     fn from_params_accepts_two_params() {
         let mut t = Sslt::default();
-        let params = vec![AtpParamTypes::String("_".to_string()), AtpParamTypes::Usize(1)];
+        let params = vec![TextForgeParamTypes::String("_".to_string()), TextForgeParamTypes::Usize(1)];
 
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.index, 1);
@@ -70,11 +70,11 @@ mod tests {
     #[test]
     fn from_params_rejects_wrong_len() {
         let mut t = Sslt::default();
-        let params = vec![AtpParamTypes::Usize(1)];
+        let params = vec![TextForgeParamTypes::Usize(1)];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

@@ -4,8 +4,8 @@ use crate::{
     to_bytecode,
     tokens::InstructionMethods,
     utils::{
-        errors::{ AtpError, AtpErrorCode::RequiredContextError },
-        params::AtpParamTypes,
+        errors::{ TextForgeError, TextForgeErrorCode::RequiredContextError },
+        params::TextForgeParamTypes,
         validations::check_vec_len,
     },
 };
@@ -15,7 +15,7 @@ pub mod test;
 #[derive(Clone)]
 pub struct Cblk {
     block_name: String,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Default for Cblk {
@@ -28,7 +28,7 @@ impl Default for Cblk {
 }
 
 impl InstructionMethods for Cblk {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         return &self.params;
     }
     #[cfg(feature = "bytecode")]
@@ -39,7 +39,7 @@ impl InstructionMethods for Cblk {
         "cblk".into()
     }
 
-    fn to_atp_line(&self) -> std::borrow::Cow<'static, str> {
+    fn to_textforge_line(&self) -> std::borrow::Cow<'static, str> {
         format!("cblk {};\n", self.block_name).into()
     }
 
@@ -47,9 +47,9 @@ impl InstructionMethods for Cblk {
         &self,
         input: &str,
         context: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, crate::utils::errors::AtpError> {
+    ) -> Result<String, crate::utils::errors::TextForgeError> {
         let mut context = context.ok_or_else(||
-            AtpError::new(
+            TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("val"),
                 std::borrow::Cow::Borrowed("")
@@ -68,8 +68,8 @@ impl InstructionMethods for Cblk {
 
     fn from_params(
         &mut self,
-        params: &Vec<crate::utils::params::AtpParamTypes>
-    ) -> Result<(), crate::utils::errors::AtpError> {
+        params: &Vec<crate::utils::params::TextForgeParamTypes>
+    ) -> Result<(), crate::utils::errors::TextForgeError> {
         check_vec_len(&params, 1, "call block", "param parsing error, invalid vec len")?;
 
         self.block_name = parse_args!(params, 0, String, "Block name should be of string type");
@@ -77,9 +77,9 @@ impl InstructionMethods for Cblk {
         Ok(())
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         let result = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.block_name.to_string()),
+            TextForgeParamTypes::String(self.block_name.to_string()),
         ]);
 
         Ok(result)

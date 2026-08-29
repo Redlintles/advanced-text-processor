@@ -6,21 +6,21 @@ use crate::{
         var::{ TokenWrapper },
     },
     utils::{
-        errors::{ AtpError, AtpErrorCode },
-        params::AtpParamTypes,
+        errors::{ TextForgeError, TextForgeErrorCode },
+        params::TextForgeParamTypes,
         validations::check_file_path,
     },
 };
 
-pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, AtpError> {
+pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, TextForgeError> {
     let chunks = match
         shell_words::split(
             &token_string
                 .trim_end()
                 .strip_suffix(";")
                 .ok_or_else(|| {
-                    AtpError::new(
-                        AtpErrorCode::TextParsingError(
+                    TextForgeError::new(
+                        TextForgeErrorCode::TextParsingError(
                             "An ATP Parsing error ocurred: Error splitting file line".into()
                         ),
                         "shell words split",
@@ -32,8 +32,8 @@ pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, AtpError> {
         Ok(x) => x,
         Err(_) => {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::TextParsingError(
+                TextForgeError::new(
+                    TextForgeErrorCode::TextParsingError(
                         "An ATP Parsing error ocurred: Error splitting file line".into()
                     ),
                     "shell words split",
@@ -59,7 +59,7 @@ pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, AtpError> {
         TargetValue::Token(token_ref) => {
             let token = token_ref.into_box();
 
-            let parsed_params = AtpParamTypes::from_expected(token_param_types, &chunks[1..])?;
+            let parsed_params = TextForgeParamTypes::from_expected(token_param_types, &chunks[1..])?;
 
             let wrapper = TokenWrapper::new(token, Some(parsed_params));
 
@@ -69,16 +69,16 @@ pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, AtpError> {
     }
 }
 
-pub fn read_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpError> {
-    check_file_path(path, Some("atp"))?;
+pub fn read_from_file(path: &Path) -> Result<Vec<TokenWrapper>, TextForgeError> {
+    check_file_path(path, Some("textforge"))?;
     let mut result = Vec::new();
 
     let file = match OpenOptions::new().read(true).open(path) {
         Ok(x) => x,
         Err(_) => {
             return Err(
-                AtpError::new(
-                    crate::utils::errors::AtpErrorCode::FileOpeningError(
+                TextForgeError::new(
+                    crate::utils::errors::TextForgeErrorCode::FileOpeningError(
                         "Failed opening File".into()
                     ),
                     "",
@@ -95,8 +95,8 @@ pub fn read_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpError> {
             Ok(x) => x,
             Err(_) => {
                 return Err(
-                    AtpError::new(
-                        crate::utils::errors::AtpErrorCode::FileReadingError(
+                    TextForgeError::new(
+                        crate::utils::errors::TextForgeErrorCode::FileReadingError(
                             "Failed reading file line".into()
                         ),
                         "",

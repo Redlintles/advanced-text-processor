@@ -6,8 +6,8 @@ use crate::{
         var::{ TokenWrapper, ValType },
     },
     utils::{
-        errors::{ AtpError, AtpErrorCode },
-        params::AtpParamTypes,
+        errors::{ TextForgeError, TextForgeErrorCode },
+        params::TextForgeParamTypes,
         validations::check_file_path,
     },
 };
@@ -51,13 +51,13 @@ fn bytecode_compatible(expected: &SyntaxToken, actual: &SyntaxToken, type_code: 
 fn read_exact<const N: usize>(
     reader: &mut BufReader<std::fs::File>,
     ctx: &'static str
-) -> Result<[u8; N], AtpError> {
+) -> Result<[u8; N], TextForgeError> {
     let mut buf = [0u8; N];
     reader
         .read_exact(&mut buf)
         .map_err(|e| {
-            AtpError::new(
-                AtpErrorCode::BytecodeParsingError("Failed Reading Bytecode".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::BytecodeParsingError("Failed Reading Bytecode".into()),
                 ctx,
                 e.to_string()
             )
@@ -69,13 +69,13 @@ fn read_vec(
     reader: &mut BufReader<std::fs::File>,
     len: usize,
     ctx: &'static str
-) -> Result<Vec<u8>, AtpError> {
+) -> Result<Vec<u8>, TextForgeError> {
     let mut buf = vec![0u8; len];
     reader
         .read_exact(&mut buf)
         .map_err(|e| {
-            AtpError::new(
-                AtpErrorCode::BytecodeParsingError("Failed Reading Bytecode".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::BytecodeParsingError("Failed Reading Bytecode".into()),
                 ctx,
                 e.to_string()
             )
@@ -84,13 +84,13 @@ fn read_vec(
 }
 
 /// Converte bytes UTF-8 em String com erro padronizado.
-fn utf8_string(bytes: &[u8], ctx: &'static str) -> Result<String, AtpError> {
+fn utf8_string(bytes: &[u8], ctx: &'static str) -> Result<String, TextForgeError> {
     std::str
         ::from_utf8(bytes)
         .map(|s| s.to_string())
         .map_err(|e| {
-            AtpError::new(
-                AtpErrorCode::BytecodeParamParsingError(
+            TextForgeError::new(
+                TextForgeErrorCode::BytecodeParamParsingError(
                     "Failed parsing bytes to UTF8 string".into()
                 ),
                 ctx,
@@ -101,11 +101,11 @@ fn utf8_string(bytes: &[u8], ctx: &'static str) -> Result<String, AtpError> {
 
 /// Decodifica um "param record" (já sem o u64 total_size externo),
 /// retornando um ValType (Literal ou VarRef).
-fn decode_param_record_to_valtype(param_record: &[u8]) -> Result<ValType, AtpError> {
+fn decode_param_record_to_valtype(param_record: &[u8]) -> Result<ValType, TextForgeError> {
     if param_record.len() < 8 {
         return Err(
-            AtpError::new(
-                AtpErrorCode::BytecodeParsingError("Param record too small".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::BytecodeParsingError("Param record too small".into()),
                 "decode_param_record_to_valtype",
                 format!("len={}", param_record.len())
             )
@@ -128,8 +128,8 @@ fn decode_param_record_to_valtype(param_record: &[u8]) -> Result<ValType, AtpErr
     let remaining = param_record.len().saturating_sub(8);
     if payload_size > remaining {
         return Err(
-            AtpError::new(
-                AtpErrorCode::BytecodeParsingError("Payload exceeds remaining".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::BytecodeParsingError("Payload exceeds remaining".into()),
                 "decode_param_record_to_valtype",
                 format!("payload_size={}, remaining={}", payload_size, remaining)
             )
@@ -141,13 +141,13 @@ fn decode_param_record_to_valtype(param_record: &[u8]) -> Result<ValType, AtpErr
     match type_code {
         PARAM_STRING => {
             let s = utf8_string(payload, "decode_param_record_to_valtype(PARAM_STRING)")?;
-            Ok(ValType::Literal(AtpParamTypes::String(s)))
+            Ok(ValType::Literal(TextForgeParamTypes::String(s)))
         }
         PARAM_USIZE => {
             if payload.len() != 8 {
                 return Err(
-                    AtpError::new(
-                        AtpErrorCode::BytecodeParamParsingError(
+                    TextForgeError::new(
+                        TextForgeErrorCode::BytecodeParamParsingError(
                             "Invalid usize payload size".into()
                         ),
                         "decode_param_record_to_valtype(PARAM_USIZE)",
@@ -157,7 +157,7 @@ fn decode_param_record_to_valtype(param_record: &[u8]) -> Result<ValType, AtpErr
             }
             let mut b = [0u8; 8];
             b.copy_from_slice(payload);
-            Ok(ValType::Literal(AtpParamTypes::Usize(usize::from_be_bytes(b))))
+            Ok(ValType::Literal(TextForgeParamTypes::Usize(usize::from_be_bytes(b))))
         }
         PARAM_VARREF => {
             let name = utf8_string(payload, "decode_param_record_to_valtype(PARAM_VARREF)")?;
@@ -166,7 +166,7 @@ fn decode_param_record_to_valtype(param_record: &[u8]) -> Result<ValType, AtpErr
         PARAM_TOKEN => {
             // Aqui payload é o "token payload":
             // opcode(u32) + param_count(u8) + params...
-            // Seu AtpParamTypes::from_bytecode já sabe ler o layout do PARAM_TOKEN
+            // Seu TextForgeParamTypes::from_bytecode já sabe ler o layout do PARAM_TOKEN
             // (ele espera receber o param completo no formato param record ou no formato total_size+...,
             // então vamos reconstruir no formato "param completo": total(u64)+type+payload_size+payload.
             let total = 8u64 + 4 + 4 + (payload.len() as u64);
@@ -176,13 +176,13 @@ fn decode_param_record_to_valtype(param_record: &[u8]) -> Result<ValType, AtpErr
             full_param.extend_from_slice(&(payload.len() as u32).to_be_bytes());
             full_param.extend_from_slice(payload);
 
-            let parsed = AtpParamTypes::from_bytecode(full_param)?;
+            let parsed = TextForgeParamTypes::from_bytecode(full_param)?;
             match parsed {
-                AtpParamTypes::Token(tw) => Ok(ValType::Literal(AtpParamTypes::Token(tw))),
+                TextForgeParamTypes::Token(tw) => Ok(ValType::Literal(TextForgeParamTypes::Token(tw))),
                 _ =>
                     Err(
-                        AtpError::new(
-                            AtpErrorCode::BytecodeParsingError(
+                        TextForgeError::new(
+                            TextForgeErrorCode::BytecodeParsingError(
                                 "Expected Token wrapper from PARAM_TOKEN".into()
                             ),
                             "decode_param_record_to_valtype(PARAM_TOKEN)",
@@ -193,8 +193,8 @@ fn decode_param_record_to_valtype(param_record: &[u8]) -> Result<ValType, AtpErr
         }
         _ =>
             Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParamNotRecognized(
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParamNotRecognized(
                         format!("Param Bytecode Not Recognized 0x{:X}", type_code).into()
                     ),
                     "decode_param_record_to_valtype",
@@ -204,15 +204,15 @@ fn decode_param_record_to_valtype(param_record: &[u8]) -> Result<ValType, AtpErr
     }
 }
 
-pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpError> {
-    check_file_path(path, Some("atpbc"))?;
+pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, TextForgeError> {
+    check_file_path(path, Some("textforgebc"))?;
 
     let file = OpenOptions::new()
         .read(true)
         .open(path)
         .map_err(|_| {
-            AtpError::new(
-                AtpErrorCode::FileOpeningError("Failed opening File".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::FileOpeningError("Failed opening File".into()),
                 "bytecode reader",
                 format!("{:?}", path)
             )
@@ -225,8 +225,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
     let magic_number = read_exact::<8>(&mut reader, "read_bytecode_from_file(magic)")?;
     if magic_number != expected_magic_number {
         return Err(
-            AtpError::new(
-                AtpErrorCode::FileReadingError("Incompatible Magic Number with ATP".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::FileReadingError("Incompatible Magic Number with ATP".into()),
                 "bytecode reader",
                 ""
             )
@@ -237,8 +237,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
     let protocol_version = u64::from_be_bytes(protocol_version_bytes);
     if protocol_version != 1 {
         return Err(
-            AtpError::new(
-                AtpErrorCode::BytecodeParsingError("Unsupported protocol version".into()),
+            TextForgeError::new(
+                TextForgeErrorCode::BytecodeParsingError("Unsupported protocol version".into()),
                 "read_bytecode_from_file",
                 protocol_version.to_string()
             )
@@ -265,8 +265,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
         // mínimo interno = opcode(4) + param_count(1) = 5
         if instruction_total_size < 5 {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Invalid instruction_total_size".into()),
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Invalid instruction_total_size".into()),
                     "read_bytecode_from_file",
                     format!("instruction_total_size={}", instruction_total_size)
                 )
@@ -283,8 +283,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
 
         if opcode == 0 {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError("Invalid instruction opcode (0)".into()),
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError("Invalid instruction opcode (0)".into()),
                     "read_bytecode_from_file",
                     "opcode=0".to_string()
                 )
@@ -319,8 +319,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
 
         if param_count < min_required || param_count > max_allowed {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::BytecodeParsingError(
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParsingError(
                         "Invalid param count for instruction".into()
                     ),
                     "read_bytecode_from_file",
@@ -350,8 +350,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
 
             if param_total_size < 8 {
                 return Err(
-                    AtpError::new(
-                        AtpErrorCode::BytecodeParsingError("Invalid param_total_size".into()),
+                    TextForgeError::new(
+                        TextForgeErrorCode::BytecodeParsingError("Invalid param_total_size".into()),
                         "read_bytecode_from_file",
                         format!("param_total_size={}", param_total_size)
                     )
@@ -369,8 +369,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
 
             if param_record.len() < 4 {
                 return Err(
-                    AtpError::new(
-                        AtpErrorCode::BytecodeParsingError("Param record too short".into()),
+                    TextForgeError::new(
+                        TextForgeErrorCode::BytecodeParsingError("Param record too short".into()),
                         "read_bytecode_from_file",
                         format!("opcode=0x{:x} param_index={}", opcode, param_i)
                     )
@@ -384,8 +384,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
                 param_record[3],
             ]);
             let actual_pt = param_type_from_code(type_code).ok_or_else(|| {
-                AtpError::new(
-                    AtpErrorCode::BytecodeParamNotRecognized(
+                TextForgeError::new(
+                    TextForgeErrorCode::BytecodeParamNotRecognized(
                         "Param Bytecode Not Recognized".into()
                     ),
                     "read_bytecode_from_file",
@@ -412,8 +412,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
                 }
 
                 return Err(
-                    AtpError::new(
-                        AtpErrorCode::BytecodeParsingError("Param type mismatch".into()),
+                    TextForgeError::new(
+                        TextForgeErrorCode::BytecodeParsingError("Param type mismatch".into()),
                         "read_bytecode_from_file",
                         format!(
                             "opcode=0x{:x} param={} got={:?}(0x{:x}) expected={:?}",
@@ -429,8 +429,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
 
             if expected_i >= expected.len() {
                 return Err(
-                    AtpError::new(
-                        AtpErrorCode::BytecodeParsingError(
+                    TextForgeError::new(
+                        TextForgeErrorCode::BytecodeParsingError(
                             "Too many params (schema overflow)".into()
                         ),
                         "read_bytecode_from_file",
@@ -451,8 +451,8 @@ pub fn read_bytecode_from_file(path: &Path) -> Result<Vec<TokenWrapper>, AtpErro
                 let _ = read_vec(&mut reader, to_skip, "read_bytecode_from_file(skip)")?;
             } else {
                 return Err(
-                    AtpError::new(
-                        AtpErrorCode::BytecodeParsingError(
+                    TextForgeError::new(
+                        TextForgeErrorCode::BytecodeParsingError(
                             "Instruction size mismatch (over-read)".into()
                         ),
                         "read_bytecode_from_file",

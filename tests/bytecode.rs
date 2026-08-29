@@ -14,7 +14,7 @@ pub mod bytecode {
         use textforge::globals::var::TokenWrapper;
         use textforge::tokens::InstructionMethods;
         use textforge::tokens::transforms::{ atb::Atb, ate::Ate, ctc::Ctc, dlf::Dlf, rpt::Rpt };
-        use textforge::utils::params::AtpParamTypes;
+        use textforge::utils::params::TextForgeParamTypes;
         use tempfile::tempdir;
 
         fn parse_header(bytes: &[u8]) -> (Vec<u8>, u64, u32, &[u8]) {
@@ -34,7 +34,7 @@ pub mod bytecode {
         /// Um exemplar de cada "forma" de instrução: 1 String, 1 Usize, 2 Usize e zero params.
         fn sample_tokens() -> Vec<TokenWrapper> {
             let mut ctc = Ctc::default();
-            ctc.from_params(&vec![AtpParamTypes::Usize(0), AtpParamTypes::Usize(3)]).unwrap();
+            ctc.from_params(&vec![TextForgeParamTypes::Usize(0), TextForgeParamTypes::Usize(3)]).unwrap();
 
             return vec![
                 TokenWrapper::new(Box::new(Atb::new("Banana")), None), // String
@@ -50,7 +50,7 @@ pub mod bytecode {
         /// sem depender de literais de bytes escritos à mão.
         fn sample_instructions() -> Vec<Box<dyn InstructionMethods>> {
             let mut ctc = Ctc::default();
-            ctc.from_params(&vec![AtpParamTypes::Usize(0), AtpParamTypes::Usize(3)]).unwrap();
+            ctc.from_params(&vec![TextForgeParamTypes::Usize(0), TextForgeParamTypes::Usize(3)]).unwrap();
 
             return vec![
                 Box::new(Atb::new("Banana")),
@@ -64,7 +64,7 @@ pub mod bytecode {
         #[test]
         fn writes_header_and_all_token_bytecodes_in_order() {
             let dir = tempdir().unwrap();
-            let path: PathBuf = dir.path().join("out.atpbc");
+            let path: PathBuf = dir.path().join("out.textforgebc");
 
             touch(&path);
 
@@ -91,7 +91,7 @@ pub mod bytecode {
         #[test]
         fn instruction_count_is_zero_when_no_tokens() {
             let dir = tempdir().unwrap();
-            let path: PathBuf = dir.path().join("empty.atpbc");
+            let path: PathBuf = dir.path().join("empty.textforgebc");
 
             touch(&path);
 
@@ -120,7 +120,7 @@ pub mod bytecode {
             assert!(
                 msg.contains("ValidationError") ||
                     msg.contains("check_file_path") ||
-                    msg.contains("atpbc"),
+                    msg.contains("textforgebc"),
                 "expected an extension/path validation error, got: {msg}"
             );
         }
@@ -128,7 +128,7 @@ pub mod bytecode {
         #[test]
         fn directory_path_is_rejected_by_check_file_path() {
             let dir = tempdir().unwrap();
-            let path_is_dir: PathBuf = dir.path().join("some_dir.atpbc");
+            let path_is_dir: PathBuf = dir.path().join("some_dir.textforgebc");
 
             fs::create_dir_all(&path_is_dir).unwrap();
 
@@ -149,7 +149,7 @@ pub mod bytecode {
         use textforge::bytecode::writer::write_bytecode_to_file;
         use textforge::tokens::transforms::{ atb::Atb, ate::Ate, rpt::Rpt };
         use tempfile::Builder;
-        let file = Builder::new().suffix(".atpbc").prefix("output_").tempfile().unwrap();
+        let file = Builder::new().suffix(".textforgebc").prefix("output_").tempfile().unwrap();
 
         let path = file.path();
 
@@ -195,7 +195,7 @@ pub mod bytecode {
         use tempfile::Builder;
 
         use textforge::{
-            api::processor::{ AtpProcessor, AtpProcessorMethods },
+            api::processor::{ TextForgeProcessor, TextForgeProcessorMethods },
             bytecode::{ reader::read_bytecode_from_file, writer::write_bytecode_to_file },
             tokens::transforms::{ atb::Atb, ate::Ate, rpt::Rpt },
         };
@@ -208,7 +208,7 @@ pub mod bytecode {
             TokenWrapper::new(Box::new(Rpt::new(5_usize)), None)
         ];
 
-        let tmp = Builder::new().prefix("banana_").suffix(".atpbc").tempfile().unwrap();
+        let tmp = Builder::new().prefix("banana_").suffix(".textforgebc").tempfile().unwrap();
         let file_path = tmp.path().to_path_buf();
         write_bytecode_to_file(Path::new(&file_path), tokens).unwrap();
 
@@ -227,7 +227,7 @@ pub mod bytecode {
         // ate "Pizza" e rpt 5 aplicados nessa ordem.
         let expected_output = "BananaCoxinhaPizza".repeat(5);
 
-        let mut processor: Box<dyn AtpProcessorMethods> = Box::new(AtpProcessor::new());
+        let mut processor: Box<dyn TextForgeProcessorMethods> = Box::new(TextForgeProcessor::new());
         println!("read_tokens len {}", read_tokens.len());
         let identifier = processor.add_transform(read_tokens);
 

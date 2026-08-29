@@ -2,13 +2,13 @@
 macro_rules! parse_args {
     ($params:expr, $idx:expr, String, $msg:expr) => {
         {
-        use crate::utils::params::AtpParamTypes;
-        use crate::utils::errors::{AtpError, AtpErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
+        use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
         match &$params[$idx] {
-            AtpParamTypes::String(payload) => payload.clone(),
+            TextForgeParamTypes::String(payload) => payload.clone(),
             _ => {
-                return Err(AtpError::new(
-                    AtpErrorCode::InvalidParameters($msg.into()),
+                return Err(TextForgeError::new(
+                    TextForgeErrorCode::InvalidParameters($msg.into()),
                     "",
                     "",
                 ));
@@ -18,13 +18,13 @@ macro_rules! parse_args {
     };
     ($params:expr, $idx:expr, Usize, $msg:expr) => {
         {
-        use crate::utils::params::AtpParamTypes;
-        use crate::utils::errors::{AtpError, AtpErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
+        use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
         match &$params[$idx] {
-            AtpParamTypes::Usize(payload) => payload.clone(),
+            TextForgeParamTypes::Usize(payload) => payload.clone(),
             _ => {
-                return Err(AtpError::new(
-                    AtpErrorCode::InvalidParameters($msg.into()),
+                return Err(TextForgeError::new(
+                    TextForgeErrorCode::InvalidParameters($msg.into()),
                     "",
                     "",
                 ));
@@ -34,13 +34,13 @@ macro_rules! parse_args {
     };
     ($params:expr, $idx:expr, Token, $msg:expr) => {
         {
-        use crate::utils::params::AtpParamTypes;
-        use crate::utils::errors::{AtpError, AtpErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
+        use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
         match &$params[$idx] {
-            AtpParamTypes::Token(payload) => payload.clone(),
+            TextForgeParamTypes::Token(payload) => payload.clone(),
             _ => {
-                return Err(AtpError::new(
-                    AtpErrorCode::InvalidParameters($msg.into()),
+                return Err(TextForgeError::new(
+                    TextForgeErrorCode::InvalidParameters($msg.into()),
                     "",
                     "",
                 ));
@@ -50,13 +50,13 @@ macro_rules! parse_args {
     };
     ($param:expr, String) => {
         {
-        use crate::utils::params::AtpParamTypes;
-        use crate::utils::errors::{AtpError, AtpErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
+        use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
         match &$param {
-            AtpParamTypes::String(payload) => payload.clone(),
+            TextForgeParamTypes::String(payload) => payload.clone(),
             _ => {
-                return Err(AtpError::new(
-                    AtpErrorCode::InvalidParameters("Param must be of type Sring".into()),
+                return Err(TextForgeError::new(
+                    TextForgeErrorCode::InvalidParameters("Param must be of type Sring".into()),
                     "",
                     "",
                 ));
@@ -66,13 +66,13 @@ macro_rules! parse_args {
     };
     ($param:expr, Usize) => {
         {
-        use crate::utils::params::AtpParamTypes;
-        use crate::utils::errors::{AtpError, AtpErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
+        use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
         match $param {
-            AtpParamTypes::Usize(payload) => payload.clone(),
+            TextForgeParamTypes::Usize(payload) => payload.clone(),
             _ => {
-                return Err(AtpError::new(
-                    AtpErrorCode::InvalidParameters("Param must be of type Usize".into()),
+                return Err(TextForgeError::new(
+                    TextForgeErrorCode::InvalidParameters("Param must be of type Usize".into()),
                     "",
                     "",
                 ));
@@ -82,13 +82,13 @@ macro_rules! parse_args {
     };
     ($param:expr, Token) => {
         {
-        use crate::utils::params::AtpParamTypes;
-        use crate::utils::errors::{AtpError, AtpErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
+        use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
         match $param {
-            AtpParamTypes::Token(payload) => payload.clone(),
+            TextForgeParamTypes::Token(payload) => payload.clone(),
             _ => {
-                return Err(AtpError::new(
-                    AtpErrorCode::InvalidParameters("Param must be of type Token".into()),
+                return Err(TextForgeError::new(
+                    TextForgeErrorCode::InvalidParameters("Param must be of type Token".into()),
                     "",
                     "",
                 ));

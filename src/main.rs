@@ -1,8 +1,8 @@
 use textforge::{
-    api::processor::{ AtpProcessor, AtpProcessorMethods },
+    api::processor::{ TextForgeProcessor, TextForgeProcessorMethods },
     utils::{
         cli::{ process_input_by_chunks, process_input_line_by_line, process_input_single_chunk },
-        errors::AtpError,
+        errors::TextForgeError,
     },
 };
 use clap::{ Arg, ArgAction, Command, value_parser };
@@ -16,7 +16,7 @@ enum ReadMode {
 }
 
 fn build_cli() -> Command {
-    Command::new("atp")
+    Command::new("textforge")
         .version("0.1")
         .about("CLI for ATP(Advanced Text Processor)")
         .arg(
@@ -26,7 +26,7 @@ fn build_cli() -> Command {
                 .required(true)
                 .value_name("FILE")
                 .value_parser(value_parser!(PathBuf))
-                .help("Arquivo .atp ou .atpbc")
+                .help("Arquivo .textforge ou .textforgebc")
         )
         .arg(
             Arg::new("input")
@@ -106,8 +106,8 @@ fn process_by_mode(
     id: &str,
     data: &str,
     debug: bool,
-    processor: &mut AtpProcessor
-) -> Result<String, AtpError> {
+    processor: &mut TextForgeProcessor
+) -> Result<String, TextForgeError> {
     match read_mode {
         ReadMode::All => process_input_single_chunk(processor, id, data, debug),
         ReadMode::Line => process_input_line_by_line(processor, id, data, debug),
@@ -115,18 +115,18 @@ fn process_by_mode(
     }
 }
 
-fn main() -> Result<(), AtpError> {
+fn main() -> Result<(), TextForgeError> {
     let matches = build_cli().get_matches();
 
     let file = matches.get_one::<PathBuf>("file").unwrap();
     let input = matches.get_one::<PathBuf>("input");
     let output = matches.get_one::<PathBuf>("output");
-    let atp_mode = matches.get_one::<String>("mode").unwrap();
+    let textforge_mode = matches.get_one::<String>("mode").unwrap();
     let read_mode = matches.get_one::<ReadMode>("read_mode").unwrap();
     let debug = matches.get_one::<bool>("debug").unwrap();
 
-    if atp_mode == &"b" && file.extension().expect("Could not get input extension") != "atpbc" {
-        panic!("You're using mode 'b'(bytecode), so the atp file must have the .atpbc extension!");
+    if textforge_mode == &"b" && file.extension().expect("Could not get input extension") != "textforgebc" {
+        panic!("You're using mode 'b'(bytecode), so the textforge file must have the .textforgebc extension!");
     }
 
     if !file.exists() {
@@ -161,13 +161,13 @@ fn main() -> Result<(), AtpError> {
 
     let mut result: String = String::new();
 
-    if atp_mode == &"b" {
-        let mut processor = AtpProcessor::new();
+    if textforge_mode == &"b" {
+        let mut processor = TextForgeProcessor::new();
         let id = processor.read_from_bytecode_file(file)?;
 
         result = process_by_mode(read_mode, &id, &data, *debug, &mut processor)?;
-    } else if atp_mode == &"t" {
-        let mut processor = AtpProcessor::new();
+    } else if textforge_mode == &"t" {
+        let mut processor = TextForgeProcessor::new();
         let id = processor.read_from_text_file(file)?;
 
         result = process_by_mode(read_mode, &id, &data, *debug, &mut processor)?;
@@ -203,7 +203,7 @@ fn main() -> Result<(), AtpError> {
 
 #[cfg(feature = "test_access")]
 #[cfg(test)]
-mod atp_tests {
+mod textforge_tests {
     mod parser_tests {
         use crate::{ ReadMode, build_cli };
         use std::{ path::PathBuf, str::FromStr };
@@ -212,7 +212,7 @@ mod atp_tests {
         fn test_all_with_long_params() {
             let parser = build_cli();
             let c =
-                "atp --file ./instructions.atpbc --input ./example.txt --output output.txt --debug --mode b --read-mode line";
+                "textforge --file ./instructions.textforgebc --input ./example.txt --output output.txt --debug --mode b --read-mode line";
 
             let arg_vec = shell_words::split(c).unwrap();
 
@@ -221,21 +221,21 @@ mod atp_tests {
             let file = m.get_one::<PathBuf>("file").unwrap();
             let input = m.get_one::<PathBuf>("input").unwrap();
             let output = m.get_one::<PathBuf>("output").unwrap();
-            let atp_mode = m.get_one::<String>("mode").unwrap();
+            let textforge_mode = m.get_one::<String>("mode").unwrap();
             let read_mode = m.get_one::<ReadMode>("read_mode").unwrap();
             let debug = m.get_one::<bool>("debug").unwrap();
 
-            assert_eq!(*file, PathBuf::from_str("./instructions.atpbc").unwrap());
+            assert_eq!(*file, PathBuf::from_str("./instructions.textforgebc").unwrap());
             assert_eq!(*input, PathBuf::from_str("./example.txt").unwrap());
             assert_eq!(*output, PathBuf::from_str("output.txt").unwrap());
-            assert_eq!(*atp_mode, "b".to_string());
+            assert_eq!(*textforge_mode, "b".to_string());
             assert_eq!(*read_mode, ReadMode::Line);
             assert_eq!(*debug, true);
         }
         #[test]
         fn test_all_with_short_params() {
             let parser = build_cli();
-            let c = "atp -f ./instructions.atpbc -i ./example.txt -o output.txt -d -m b -r line";
+            let c = "textforge -f ./instructions.textforgebc -i ./example.txt -o output.txt -d -m b -r line";
 
             let arg_vec = shell_words::split(c).unwrap();
 
@@ -244,14 +244,14 @@ mod atp_tests {
             let file = m.get_one::<PathBuf>("file").unwrap();
             let input = m.get_one::<PathBuf>("input").unwrap();
             let output = m.get_one::<PathBuf>("output").unwrap();
-            let atp_mode = m.get_one::<String>("mode").unwrap();
+            let textforge_mode = m.get_one::<String>("mode").unwrap();
             let read_mode = m.get_one::<ReadMode>("read_mode").unwrap();
             let debug = m.get_one::<bool>("debug").unwrap();
 
-            assert_eq!(*file, PathBuf::from_str("./instructions.atpbc").unwrap());
+            assert_eq!(*file, PathBuf::from_str("./instructions.textforgebc").unwrap());
             assert_eq!(*input, PathBuf::from_str("./example.txt").unwrap());
             assert_eq!(*output, PathBuf::from_str("output.txt").unwrap());
-            assert_eq!(*atp_mode, "b".to_string());
+            assert_eq!(*textforge_mode, "b".to_string());
             assert_eq!(*read_mode, ReadMode::Line);
             assert_eq!(*debug, true);
         }

@@ -6,9 +6,9 @@ use std::borrow::Cow;
 use crate::context::execution_context::GlobalExecutionContext;
 use crate::tokens::InstructionMethods;
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 
-use crate::utils::errors::{ AtpError, AtpErrorCode };
+use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 use crate::utils::validations::check_vec_len;
 
 /// Jsonu - Json Unescape
@@ -30,17 +30,17 @@ use crate::utils::validations::check_vec_len;
 
 #[derive(Clone, Default)]
 pub struct Jsonu {
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl InstructionMethods for Jsonu {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
         "jsonu"
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         "jsonu;\n".into()
     }
 
@@ -48,20 +48,20 @@ impl InstructionMethods for Jsonu {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         Ok(
             serde_json
                 ::from_str::<String>(input)
                 .map_err(|_| {
-                    AtpError::new(
-                        AtpErrorCode::TextParsingError("Failed to deserialize to JSON".into()),
+                    TextForgeError::new(
+                        TextForgeErrorCode::TextParsingError("Failed to deserialize to JSON".into()),
                         "serde_json::from_str",
                         input.to_string()
                     )
                 })?
         )
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(&params, 0, "jcmc", "")?;
         Ok(())
     }
@@ -71,7 +71,7 @@ impl InstructionMethods for Jsonu {
     }
 
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), []);
         Ok(result)

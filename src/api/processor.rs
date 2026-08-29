@@ -12,7 +12,7 @@ use crate::bytecode::{ reader::read_bytecode_from_file, writer::write_bytecode_t
 #[cfg(feature = "watchers")]
 use crate::watchers::{ WatcherContext, WatcherList };
 
-use crate::api::builder::AtpBuilder;
+use crate::api::builder::TextForgeBuilder;
 use crate::context::execution_context::{ GlobalContextMethods, GlobalExecutionContext };
 use crate::globals::var::{ TokenWrapper };
 
@@ -20,12 +20,12 @@ use crate::utils::apply::apply_transform;
 use crate::text::reader::read_from_file;
 use crate::text::writer::write_to_file;
 
-use crate::utils::errors::{ AtpError, AtpErrorCode, ErrorManager, token_array_not_found };
+use crate::utils::errors::{ TextForgeError, TextForgeErrorCode, ErrorManager, token_array_not_found };
 use crate::utils::validations::check_file_path;
 
 /// ATP Processor
 ///
-/// `AtpProcessor` is the main **execution engine** of ATP (Advanced Text Processor).
+/// `TextForgeProcessor` is the main **execution engine** of ATP (Advanced Text Processor).
 ///
 /// It stores multiple linear transformation pipelines (called **transforms**) identified
 /// by a `String` ID (generated with UUID). Each transform is a `Vec<TokenWrapper>`,
@@ -44,7 +44,7 @@ use crate::utils::validations::check_file_path;
 /// Any logical grouping/abstraction lives at the builder / authoring layer.
 ///
 /// ## Error accumulation (WIP)
-/// `AtpProcessor` contains an `ErrorManager` meant to accumulate errors found during
+/// `TextForgeProcessor` contains an `ErrorManager` meant to accumulate errors found during
 /// reading/writing/execution. At the moment, `ErrorManager` is still under construction;
 /// therefore, this should be treated as an internal error sink rather than a stable public
 /// diagnostics API.
@@ -54,10 +54,10 @@ use crate::utils::validations::check_file_path;
 /// ## 1) Build a pipeline through the processor, then run it
 ///
 /// ```rust
-/// use textforge::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
-/// use textforge::api::AtpBuilderMethods;
+/// use textforge::api::textforge_processor::{TextForgeProcessor, TextForgeProcessorMethods};
+/// use textforge::api::TextForgeBuilderMethods;
 ///
-/// let mut processor = AtpProcessor::new();
+/// let mut processor = TextForgeProcessor::new();
 ///
 /// // Build + register a transform; `build()` returns its ID.
 /// let id = processor
@@ -68,16 +68,16 @@ use crate::utils::validations::check_file_path;
 ///
 /// let out = processor.process_all(&id, "   banana   ")?;
 /// assert_eq!(out, "banana!");
-/// # Ok::<(), atp::utils::errors::AtpError>(())
+/// # Ok::<(), textforge::utils::errors::TextForgeError>(())
 /// ```
 ///
 /// ## 2) Step-by-step debug execution (SBS)
 ///
 /// ```rust
-/// use textforge::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
-/// use textforge::api::AtpBuilderMethods;
+/// use textforge::api::textforge_processor::{TextForgeProcessor, TextForgeProcessorMethods};
+/// use textforge::api::TextForgeBuilderMethods;
 ///
-/// let mut processor = AtpProcessor::new();
+/// let mut processor = TextForgeProcessor::new();
 ///
 /// let id = processor
 ///     .create_pipeline()
@@ -90,22 +90,22 @@ use crate::utils::validations::check_file_path;
 /// // Prints each step: instruction + before/after.
 /// let out = processor.process_all_with_debug(&id, "Banana Laranja cheia de canja")?;
 /// println!("{out}");
-/// # Ok::<(), atp::utils::errors::AtpError>(())
+/// # Ok::<(), textforge::utils::errors::TextForgeError>(())
 /// ```
 ///
 /// ## 3) Quick single-token execution (no pipeline registration)
 ///
 /// ```rust
-/// use textforge::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
+/// use textforge::api::textforge_processor::{TextForgeProcessor, TextForgeProcessorMethods};
 /// use textforge::globals::var::TokenWrapper;
 /// use textforge::tokens::transforms::tbs;
 ///
-/// let mut processor = AtpProcessor::new();
+/// let mut processor = TextForgeProcessor::new();
 ///
 /// let token = TokenWrapper::new(Box::new(tbs::Tbs::default()), None);
 /// let out = processor.process_single(token, "   banana   ")?;
 /// assert_eq!(out, "banana");
-/// # Ok::<(), atp::utils::errors::AtpError>(())
+/// # Ok::<(), textforge::utils::errors::TextForgeError>(())
 /// ```
 ///
 /// ## 4) Benchmark-style usage (as in your tests)
@@ -114,16 +114,16 @@ use crate::utils::validations::check_file_path;
 ///
 /// ```rust
 /// use textforge::api::{
-///     AtpBuilderMethods,
-///     atp_processor::{ AtpProcessor, AtpProcessorMethods },
+///     TextForgeBuilderMethods,
+///     textforge_processor::{ TextForgeProcessor, TextForgeProcessorMethods },
 /// };
 /// use std::time::Instant;
 ///
-/// # fn main() -> Result<(), atp::utils::errors::AtpError> {
+/// # fn main() -> Result<(), textforge::utils::errors::TextForgeError> {
 /// let runs = 100;
 /// let mut total = 0.0;
 ///
-/// let mut processor = AtpProcessor::new();
+/// let mut processor = TextForgeProcessor::new();
 ///
 /// let id = processor
 ///     .create_pipeline()
@@ -196,12 +196,12 @@ use crate::utils::validations::check_file_path;
 /// - `build()` registers a new transform entry inside the processor and returns its UUID.
 /// - The pipeline is **one giant vector** of tokens; execution is deterministic and ordered.
 /// - Debug methods (`*_with_debug`) only add printing; they do not change execution.
-pub struct AtpProcessor {
+pub struct TextForgeProcessor {
     transforms: HashMap<String, Vec<TokenWrapper>>,
     errors: ErrorManager,
 }
 
-/// Operational API for `AtpProcessor`.
+/// Operational API for `TextForgeProcessor`.
 ///
 /// This trait defines the public “surface” of the processor: how pipelines are registered,
 /// executed, persisted, inspected, and removed.
@@ -213,12 +213,12 @@ pub struct AtpProcessor {
 ///
 /// ## Error reporting
 /// Most methods will:
-/// - return `Err(AtpError)` on failure
+/// - return `Err(TextForgeError)` on failure
 /// - and also push a copy into the internal `ErrorManager` (where you already do that)
 ///
 /// The exact behavior depends on the implementation (and your `ErrorManager` is still WIP).
-pub trait AtpProcessorMethods {
-    /// Writes a registered transform (pipeline) to an `.atp` text file.
+pub trait TextForgeProcessorMethods {
+    /// Writes a registered transform (pipeline) to an `.textforge` text file.
     ///
     /// Internally:
     /// - looks up `id` in `self.transforms`
@@ -233,9 +233,9 @@ pub trait AtpProcessorMethods {
     /// Returns `Err` if:
     /// - the transform does not exist
     /// - writing fails (I/O or serialization problems inside `write_to_file`)
-    fn write_to_text_file(&mut self, id: &str, path: &Path) -> Result<(), AtpError>;
+    fn write_to_text_file(&mut self, id: &str, path: &Path) -> Result<(), TextForgeError>;
 
-    /// Reads an `.atp` text file, parses it into tokens, registers it as a new transform,
+    /// Reads an `.textforge` text file, parses it into tokens, registers it as a new transform,
     /// and returns the newly created transform ID.
     ///
     /// Internally:
@@ -248,7 +248,7 @@ pub trait AtpProcessorMethods {
     ///
     /// # Errors
     /// Returns `Err` if reading/parsing the file fails.
-    fn read_from_text_file(&mut self, path: &Path) -> Result<String, AtpError>;
+    fn read_from_text_file(&mut self, path: &Path) -> Result<String, TextForgeError>;
 
     /// Registers a new transform (pipeline) directly from a token vector.
     ///
@@ -282,7 +282,7 @@ pub trait AtpProcessorMethods {
     /// Returns `Err` if:
     /// - the transform does not exist
     /// - any token execution fails (propagated from `parse_token`)
-    fn process_all(&mut self, id: &str, input: &str) -> Result<String, AtpError>;
+    fn process_all(&mut self, id: &str, input: &str) -> Result<String, TextForgeError>;
 
     /// Executes a single token over `input`, without registering it into the processor.
     ///
@@ -296,7 +296,7 @@ pub trait AtpProcessorMethods {
     ///
     /// # Errors
     /// Returns `Err` if the token’s `transform` fails.
-    fn process_single(&mut self, token: TokenWrapper, input: &str) -> Result<String, AtpError>;
+    fn process_single(&mut self, token: TokenWrapper, input: &str) -> Result<String, TextForgeError>;
 
     /// Executes a registered transform like `process_all`, but prints each step.
     ///
@@ -304,7 +304,7 @@ pub trait AtpProcessorMethods {
     /// - prints an SBS header
     /// - for each token:
     ///   - computes `temp = parse_token(...)`
-    ///   - prints: step index, instruction (`to_atp_line()`), before, after
+    ///   - prints: step index, instruction (`to_textforge_line()`), before, after
     /// - returns the final result
     ///
     /// # Parameters
@@ -313,7 +313,7 @@ pub trait AtpProcessorMethods {
     ///
     /// # Errors
     /// Same error behavior as `process_all`.
-    fn process_all_with_debug(&mut self, id: &str, input: &str) -> Result<String, AtpError>;
+    fn process_all_with_debug(&mut self, id: &str, input: &str) -> Result<String, TextForgeError>;
 
     /// Executes a single token like `process_single`, but prints a single SBS step.
     ///
@@ -321,7 +321,7 @@ pub trait AtpProcessorMethods {
     ///
     /// Prints:
     /// - Step 0 -> 1
-    /// - Instruction (`to_atp_line()`)
+    /// - Instruction (`to_textforge_line()`)
     /// - Before / After
     ///
     /// # Errors
@@ -330,7 +330,7 @@ pub trait AtpProcessorMethods {
         &mut self,
         token: TokenWrapper,
         input: &str
-    ) -> Result<String, AtpError>;
+    ) -> Result<String, TextForgeError>;
 
     /// Removes a transform from the processor.
     ///
@@ -341,7 +341,7 @@ pub trait AtpProcessorMethods {
     ///
     /// # Errors
     /// Returns `Err` if the transform does not exist.
-    fn remove_transform(&mut self, id: &str) -> Result<(), AtpError>;
+    fn remove_transform(&mut self, id: &str) -> Result<(), TextForgeError>;
 
     /// Displays the list of registered transform IDs.
     ///
@@ -372,13 +372,13 @@ pub trait AtpProcessorMethods {
     ///
     /// # Errors
     /// Returns `Err(TokenArrayNotFound)` if the transform does not exist.
-    fn get_transform_vec(&self, id: &str) -> Result<Vec<TokenWrapper>, AtpError>;
+    fn get_transform_vec(&self, id: &str) -> Result<Vec<TokenWrapper>, TextForgeError>;
 
-    /// Returns the textual `.atp` lines for a given transform `id`.
+    /// Returns the textual `.textforge` lines for a given transform `id`.
     ///
     /// Internally:
     /// - clones the transform vector
-    /// - maps each token to `token.to_atp_line().to_string()`
+    /// - maps each token to `token.to_textforge_line().to_string()`
     ///
     /// This is typically what you want for:
     /// - UI display
@@ -387,9 +387,9 @@ pub trait AtpProcessorMethods {
     ///
     /// # Errors
     /// Returns `Err(TokenArrayNotFound)` if the transform does not exist.
-    fn get_text_transform_vec(&self, id: &str) -> Result<Vec<String>, AtpError>;
+    fn get_text_transform_vec(&self, id: &str) -> Result<Vec<String>, TextForgeError>;
 
-    /// Writes a registered transform to an ATP bytecode file (`.atpbc`).
+    /// Writes a registered transform to an ATP bytecode file (`.textforgebc`).
     ///
     /// Available only with the `bytecode` feature.
     ///
@@ -400,9 +400,9 @@ pub trait AtpProcessorMethods {
     /// # Errors
     /// Returns `Err` if the transform does not exist or bytecode writing fails.
     #[cfg(feature = "bytecode")]
-    fn write_to_bytecode_file(&mut self, id: &str, path: &Path) -> Result<(), AtpError>;
+    fn write_to_bytecode_file(&mut self, id: &str, path: &Path) -> Result<(), TextForgeError>;
 
-    /// Reads an ATP bytecode file (`.atpbc`), registers it as a new transform, and returns its ID.
+    /// Reads an ATP bytecode file (`.textforgebc`), registers it as a new transform, and returns its ID.
     ///
     /// Available only with the `bytecode` feature.
     ///
@@ -416,7 +416,7 @@ pub trait AtpProcessorMethods {
     /// # Errors
     /// Returns `Err` if bytecode reading/parsing fails.
     #[cfg(feature = "bytecode")]
-    fn read_from_bytecode_file(&mut self, path: &Path) -> Result<String, AtpError>;
+    fn read_from_bytecode_file(&mut self, path: &Path) -> Result<String, TextForgeError>;
 
     /// Executes a registered transform like `process_all_with_debug`, but intended for
     /// bytecode-loaded transforms (you still execute tokens the same way).
@@ -434,7 +434,7 @@ pub trait AtpProcessorMethods {
         &mut self,
         id: &str,
         input: &str
-    ) -> Result<String, AtpError>;
+    ) -> Result<String, TextForgeError>;
 
     /// Executes a single token like `process_single_with_debug`, but provided under the
     /// `bytecode` feature flag for API symmetry.
@@ -448,11 +448,11 @@ pub trait AtpProcessorMethods {
         &mut self,
         token: TokenWrapper,
         input: &str
-    ) -> Result<String, AtpError>;
+    ) -> Result<String, TextForgeError>;
 
-    fn run_transform(&self, id: &str, input: &str) -> Result<String, AtpError>;
+    fn run_transform(&self, id: &str, input: &str) -> Result<String, TextForgeError>;
 
-    fn process_batch(&self, tasks: Vec<(&Path, &str, &Path)>) -> Vec<Result<(), AtpError>>;
+    fn process_batch(&self, tasks: Vec<(&Path, &str, &Path)>) -> Vec<Result<(), TextForgeError>>;
     #[cfg(feature = "watchers")]
     fn process_all_with_watchers(
         &mut self,
@@ -460,22 +460,22 @@ pub trait AtpProcessorMethods {
         input: &str,
         watcher_list: &mut WatcherList,
         report_path: &Path
-    ) -> Result<String, AtpError>;
+    ) -> Result<String, TextForgeError>;
 }
 
-impl AtpProcessor {
+impl TextForgeProcessor {
     /// Creates a new empty processor.
     ///
     /// - No transforms are registered initially.
     /// - The internal `ErrorManager` is initialized with `Default`.
     pub fn new() -> Self {
-        AtpProcessor {
+        TextForgeProcessor {
             transforms: HashMap::new(),
             errors: ErrorManager::default(),
         }
     }
 
-    /// Creates an `AtpBuilder` bound to this processor.
+    /// Creates an `TextForgeBuilder` bound to this processor.
     ///
     /// The builder accumulates tokens and, when `build()` is called, it registers a new
     /// transform entry inside this processor and returns the corresponding transform ID.
@@ -483,10 +483,10 @@ impl AtpProcessor {
     /// # Example
     ///
     /// ```rust
-    /// use textforge::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
-    /// use textforge::api::AtpBuilderMethods;
+    /// use textforge::api::textforge_processor::{TextForgeProcessor, TextForgeProcessorMethods};
+    /// use textforge::api::TextForgeBuilderMethods;
     ///
-    /// let mut processor = AtpProcessor::new();
+    /// let mut processor = TextForgeProcessor::new();
     ///
     /// let id = processor
     ///     .create_pipeline()
@@ -496,15 +496,15 @@ impl AtpProcessor {
     ///
     /// let out = processor.process_all(&id, "   banana   ")?;
     /// assert_eq!(out, "banana!");
-    /// # Ok::<(), atp::utils::errors::AtpError>(())
+    /// # Ok::<(), textforge::utils::errors::TextForgeError>(())
     /// ```
-    pub fn create_pipeline(&mut self) -> AtpBuilder<'_> {
-        AtpBuilder::new(self)
+    pub fn create_pipeline(&mut self) -> TextForgeBuilder<'_> {
+        TextForgeBuilder::new(self)
     }
 }
 
-impl AtpProcessorMethods for AtpProcessor {
-    fn run_transform(&self, id: &str, input: &str) -> Result<String, AtpError> {
+impl TextForgeProcessorMethods for TextForgeProcessor {
+    fn run_transform(&self, id: &str, input: &str) -> Result<String, TextForgeError> {
         let mut result = String::from(input);
 
         let tokens = self.transforms.get(id).ok_or_else(token_array_not_found(id))?;
@@ -519,7 +519,7 @@ impl AtpProcessorMethods for AtpProcessor {
 
         Ok(result)
     }
-    fn write_to_text_file(&mut self, id: &str, path: &Path) -> Result<(), AtpError> {
+    fn write_to_text_file(&mut self, id: &str, path: &Path) -> Result<(), TextForgeError> {
         let tokens = match self.transforms.get(id).ok_or_else(token_array_not_found(id)) {
             Ok(x) => x,
             Err(e) => {
@@ -531,7 +531,7 @@ impl AtpProcessorMethods for AtpProcessor {
         write_to_file(Path::new(path), tokens)
     }
 
-    fn read_from_text_file(&mut self, path: &Path) -> Result<String, AtpError> {
+    fn read_from_text_file(&mut self, path: &Path) -> Result<String, TextForgeError> {
         let tokens = match read_from_file(Path::new(path)) {
             Ok(x) => x,
             Err(e) => {
@@ -547,7 +547,7 @@ impl AtpProcessorMethods for AtpProcessor {
         Ok(identifier.to_string())
     }
 
-    fn process_all(&mut self, id: &str, input: &str) -> Result<String, AtpError> {
+    fn process_all(&mut self, id: &str, input: &str) -> Result<String, TextForgeError> {
         match self.run_transform(id, input) {
             Ok(result) => Ok(result),
             Err(e) => {
@@ -563,13 +563,13 @@ impl AtpProcessorMethods for AtpProcessor {
         identifier
     }
 
-    fn remove_transform(&mut self, id: &str) -> Result<(), AtpError> {
+    fn remove_transform(&mut self, id: &str) -> Result<(), TextForgeError> {
         match
             self.transforms
                 .remove(id)
                 .ok_or_else(|| {
-                    AtpError::new(
-                        crate::utils::errors::AtpErrorCode::TokenNotFound(
+                    TextForgeError::new(
+                        crate::utils::errors::TextForgeErrorCode::TokenNotFound(
                             "Transformation not found".into()
                         ),
                         "remove_transform",
@@ -596,13 +596,13 @@ impl AtpProcessorMethods for AtpProcessor {
         self.transforms.contains_key(id)
     }
 
-    fn get_transform_vec(&self, id: &str) -> Result<Vec<TokenWrapper>, AtpError> {
+    fn get_transform_vec(&self, id: &str) -> Result<Vec<TokenWrapper>, TextForgeError> {
         Ok(
             self.transforms
                 .get(id)
                 .ok_or_else(|| {
-                    AtpError::new(
-                        crate::utils::errors::AtpErrorCode::TokenArrayNotFound(
+                    TextForgeError::new(
+                        crate::utils::errors::TextForgeErrorCode::TokenArrayNotFound(
                             "Transform not found".into()
                         ),
                         "get_transform_vec".to_string(),
@@ -612,13 +612,13 @@ impl AtpProcessorMethods for AtpProcessor {
                 .clone()
         )
     }
-    fn get_text_transform_vec(&self, id: &str) -> Result<Vec<String>, AtpError> {
+    fn get_text_transform_vec(&self, id: &str) -> Result<Vec<String>, TextForgeError> {
         Ok(
             self.transforms
                 .get(id)
                 .ok_or_else(|| {
-                    AtpError::new(
-                        crate::utils::errors::AtpErrorCode::TokenArrayNotFound(
+                    TextForgeError::new(
+                        crate::utils::errors::TextForgeErrorCode::TokenArrayNotFound(
                             "Transform not found".into()
                         ),
                         "get_transform_vec",
@@ -628,11 +628,11 @@ impl AtpProcessorMethods for AtpProcessor {
                 .clone()
                 .iter()
                 .map(|t| t.to_text_line_unresolved().map(|s| s.to_string()))
-                .collect::<Result<Vec<String>, AtpError>>()?
+                .collect::<Result<Vec<String>, TextForgeError>>()?
         )
     }
 
-    fn process_single(&mut self, token: TokenWrapper, input: &str) -> Result<String, AtpError> {
+    fn process_single(&mut self, token: TokenWrapper, input: &str) -> Result<String, TextForgeError> {
         let mut context = GlobalExecutionContext::new();
         match token.apply_token(input, &mut context) {
             Ok(x) => Ok(x),
@@ -642,7 +642,7 @@ impl AtpProcessorMethods for AtpProcessor {
             }
         }
     }
-    fn process_all_with_debug(&mut self, id: &str, input: &str) -> Result<String, AtpError> {
+    fn process_all_with_debug(&mut self, id: &str, input: &str) -> Result<String, TextForgeError> {
         let mut result = input.to_string();
         let dashes = 10;
 
@@ -666,15 +666,15 @@ impl AtpProcessorMethods for AtpProcessor {
 
             if token.get_string_repr() == "blk" {
                 // Gambiarra feia, futuramente pensar em forma melhor de consultar os parâmetros de um token
-                let line = token.to_atp_line();
+                let line = token.to_textforge_line();
                 let mut it = line.split_whitespace();
 
                 it.next();
                 let v = it
                     .next()
                     .ok_or_else(||
-                        AtpError::new(
-                            AtpErrorCode::IndexOutOfRange("Invalid BLK Block".into()),
+                        TextForgeError::new(
+                            TextForgeErrorCode::IndexOutOfRange("Invalid BLK Block".into()),
                             "process_all_with_debug",
                             ""
                         )
@@ -686,7 +686,7 @@ impl AtpProcessorMethods for AtpProcessor {
                         counter.to_string().blue(),
                         (counter + 1).to_string().blue(),
                         "Block Declaration: ".to_string().green(),
-                        token.to_atp_line().yellow(),
+                        token.to_textforge_line().yellow(),
                         v.to_string().green(),
                         context.get_formatted_block_items(v)?
                     )
@@ -698,7 +698,7 @@ impl AtpProcessorMethods for AtpProcessor {
                         "Step: [{}] => [{}]\nInstruction: {}\nBefore: {}\nAfter: {}\n\n",
                         counter.to_string().blue(),
                         (counter + 1).to_string().blue(),
-                        token.to_atp_line().yellow(),
+                        token.to_textforge_line().yellow(),
                         result.red(),
                         temp.green()
                     )
@@ -721,7 +721,7 @@ impl AtpProcessorMethods for AtpProcessor {
         &mut self,
         token: TokenWrapper,
         input: &str
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let mut ctx = GlobalExecutionContext::new();
         let output = match token.apply_token(input, &mut ctx) {
             Ok(x) => x,
@@ -734,7 +734,7 @@ impl AtpProcessorMethods for AtpProcessor {
             "Step: [{}] => [{}]\nInstruction: {}\nBefore: {}\nAfter: {}\n",
             (0).to_string().blue(),
             (1).to_string().blue(),
-            token.to_atp_line().yellow(),
+            token.to_textforge_line().yellow(),
             input.red(),
             output.green()
         );
@@ -742,7 +742,7 @@ impl AtpProcessorMethods for AtpProcessor {
         Ok(output)
     }
     #[cfg(feature = "bytecode")]
-    fn write_to_bytecode_file(&mut self, id: &str, path: &Path) -> Result<(), AtpError> {
+    fn write_to_bytecode_file(&mut self, id: &str, path: &Path) -> Result<(), TextForgeError> {
         let tokens = match self.transforms.get(id).ok_or_else(token_array_not_found(id)) {
             Ok(x) => x,
             Err(e) => {
@@ -754,7 +754,7 @@ impl AtpProcessorMethods for AtpProcessor {
         write_bytecode_to_file(path, tokens.to_vec())
     }
     #[cfg(feature = "bytecode")]
-    fn read_from_bytecode_file(&mut self, path: &Path) -> Result<String, AtpError> {
+    fn read_from_bytecode_file(&mut self, path: &Path) -> Result<String, TextForgeError> {
         let tokens = match read_bytecode_from_file(path) {
             Ok(x) => x,
             Err(e) => {
@@ -772,7 +772,7 @@ impl AtpProcessorMethods for AtpProcessor {
         &mut self,
         id: &str,
         input: &str
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let mut result = String::from(input);
 
         let dashes = 10;
@@ -789,7 +789,7 @@ impl AtpProcessorMethods for AtpProcessor {
                 "Step: [{}] => [{}]\nInstruction: {}\nBefore: {}\nAfter: {}\n",
                 counter.to_string().blue(),
                 (counter + 1).to_string().blue(),
-                token.to_atp_line().yellow(),
+                token.to_textforge_line().yellow(),
                 result.red(),
                 temp.green()
             );
@@ -808,7 +808,7 @@ impl AtpProcessorMethods for AtpProcessor {
         &mut self,
         token: TokenWrapper,
         input: &str
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let mut ctx = GlobalExecutionContext::new();
         let output = match token.apply_token(input, &mut ctx) {
             Ok(x) => x,
@@ -821,7 +821,7 @@ impl AtpProcessorMethods for AtpProcessor {
             "Step: [{}] => [{}]\nInstruction: {}\nBefore: {}\nAfter: {}\n",
             (0).to_string().blue(),
             (1).to_string().blue(),
-            token.to_atp_line().yellow(),
+            token.to_textforge_line().yellow(),
             input.red(),
             output.green()
         );
@@ -829,19 +829,19 @@ impl AtpProcessorMethods for AtpProcessor {
         Ok(output)
     }
 
-    fn process_batch(&self, tasks: Vec<(&Path, &str, &Path)>) -> Vec<Result<(), AtpError>> {
+    fn process_batch(&self, tasks: Vec<(&Path, &str, &Path)>) -> Vec<Result<(), TextForgeError>> {
         tasks
             .into_par_iter()
             .map(
-                |(origin, pipeline_id, target)| -> Result<(), AtpError> {
+                |(origin, pipeline_id, target)| -> Result<(), TextForgeError> {
                     check_file_path(origin, None)?;
                     check_file_path(target, None)?; // ajustar depois pra check_target_path se necessário
 
                     let input = std::fs
                         ::read_to_string(origin)
                         .map_err(|e| {
-                            AtpError::new(
-                                AtpErrorCode::ValidationError("Failed to read origin file".into()),
+                            TextForgeError::new(
+                                TextForgeErrorCode::ValidationError("Failed to read origin file".into()),
                                 Cow::Borrowed("process_batch"),
                                 format!("{:?} - {}", origin, e)
                             )
@@ -852,8 +852,8 @@ impl AtpProcessorMethods for AtpProcessor {
                     std::fs
                         ::write(target, output)
                         .map_err(|e| {
-                            AtpError::new(
-                                AtpErrorCode::ValidationError("Failed to write target file".into()),
+                            TextForgeError::new(
+                                TextForgeErrorCode::ValidationError("Failed to write target file".into()),
                                 Cow::Borrowed("process_batch"),
                                 format!("{:?} - {}", target, e)
                             )
@@ -872,7 +872,7 @@ impl AtpProcessorMethods for AtpProcessor {
         input: &str,
         watcher_list: &mut WatcherList,
         report_path: &Path
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         let mut result = String::from(input);
 
         let tokens = match self.transforms.get(id).ok_or_else(token_array_not_found(id)) {
@@ -904,7 +904,7 @@ impl AtpProcessorMethods for AtpProcessor {
                 watcher_list.run_watchers(watcher_ctx)?;
             }
 
-            pending = Some((before, after.clone(), token.to_atp_line().to_string()));
+            pending = Some((before, after.clone(), token.to_textforge_line().to_string()));
             result = after;
         }
 

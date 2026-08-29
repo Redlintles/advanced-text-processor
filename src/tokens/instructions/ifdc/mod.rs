@@ -12,9 +12,9 @@ use crate::{
     tokens::{ InstructionMethods },
 };
 
-use crate::utils::errors::{ AtpError };
+use crate::utils::errors::{ TextForgeError };
 
-use crate::utils::params::AtpParamTypes;
+use crate::utils::params::TextForgeParamTypes;
 
 /// Ifdc - If Do Contains
 ///
@@ -25,7 +25,7 @@ use crate::utils::params::AtpParamTypes;
 /// ```rust
 /// use textforge::tokens::{InstructionMethods, instructions::ifdc::Ifdc, transforms::atb::Atb};
 /// use textforge::globals::var::{TokenWrapper, ValType};
-/// use textforge::utils::params::AtpParamTypes;
+/// use textforge::utils::params::TextForgeParamTypes;
 ///
 /// let token = Ifdc::new(
 ///     "xy",
@@ -42,7 +42,7 @@ use crate::utils::params::AtpParamTypes;
 pub struct Ifdc {
     text: String,
     inner: TokenWrapper,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Ifdc {
@@ -50,8 +50,8 @@ impl Ifdc {
         Ifdc {
             text: text.to_string(),
             params: vec![
-                AtpParamTypes::String(text.to_string()),
-                AtpParamTypes::Token(inner.clone())
+                TextForgeParamTypes::String(text.to_string()),
+                TextForgeParamTypes::Token(inner.clone())
             ],
             inner,
         }
@@ -59,11 +59,11 @@ impl Ifdc {
 }
 
 impl InstructionMethods for Ifdc {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         return &self.params;
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
-        format!("ifdc {} do {}", self.text, self.inner.to_atp_line()).into()
+    fn to_textforge_line(&self) -> Cow<'static, str> {
+        format!("ifdc {} do {}", self.text, self.inner.to_textforge_line()).into()
     }
 
     fn get_string_repr(&self) -> &'static str {
@@ -74,7 +74,7 @@ impl InstructionMethods for Ifdc {
         &self,
         input: &str,
         context: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         if input.contains(&self.text) {
             return Ok(self.inner.transform(input, context)?);
         }
@@ -86,10 +86,10 @@ impl InstructionMethods for Ifdc {
     fn get_opcode(&self) -> u32 {
         0x33
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::{ parse_args, utils::validations::check_vec_len };
 
-        use crate::utils::params::AtpParamTypesJoin;
+        use crate::utils::params::TextForgeParamTypesJoin;
 
         check_vec_len(&params, 2, "ifdc", params.join(""))?;
 
@@ -98,17 +98,17 @@ impl InstructionMethods for Ifdc {
         self.inner = parse_args!(params, 1, Token, "");
 
         self.params = vec![
-            AtpParamTypes::String(parse_args!(params, 0, String, "")),
-            AtpParamTypes::Token(parse_args!(params, 1, Token, ""))
+            TextForgeParamTypes::String(parse_args!(params, 0, String, "")),
+            TextForgeParamTypes::Token(parse_args!(params, 1, Token, ""))
         ];
 
         Ok(())
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         let result = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::String(self.text.clone()),
-            AtpParamTypes::Token(self.inner.clone()),
+            TextForgeParamTypes::String(self.text.clone()),
+            TextForgeParamTypes::Token(self.inner.clone()),
         ]);
 
         Ok(result)

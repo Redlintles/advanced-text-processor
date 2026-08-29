@@ -5,13 +5,13 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::ins::Ins;
-    use crate::utils::errors::AtpErrorCode;
-    use crate::utils::params::AtpParamTypes;
+    use crate::utils::errors::TextForgeErrorCode;
+    use crate::utils::params::TextForgeParamTypes;
 
     #[test]
-    fn params_sets_fields_and_to_atp_line_formats() {
+    fn params_sets_fields_and_to_textforge_line_formats() {
         let t = Ins::new(2, "laranja");
-        assert_eq!(t.to_atp_line().as_ref(), "ins 2 laranja;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "ins 2 laranja;\n");
         assert_eq!(t.get_string_repr(), "ins");
     }
 
@@ -72,8 +72,8 @@ mod tests {
 
         // opcional: valida o tipo do erro (não o texto, pq tem detalhe bytes/chars)
         if let Err(e) = got {
-            // AtpError é PartialEq, mas mensagem varia. Checamos só o código.
-            // (Não temos getter do code aqui, então comparamos o AtpError completo é chato.)
+            // TextForgeError é PartialEq, mas mensagem varia. Checamos só o código.
+            // (Não temos getter do code aqui, então comparamos o TextForgeError completo é chato.)
             // Ainda assim, dá pra comparar construindo exatamente se quiser.
             let _ = e;
         }
@@ -82,33 +82,33 @@ mod tests {
     #[test]
     fn from_params_rejects_wrong_param_count() {
         let mut t = Ins::default();
-        let params = vec![AtpParamTypes::Usize(1)];
+        let params = vec![TextForgeParamTypes::Usize(1)];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, AtpErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
     fn from_params_accepts_usize_and_string() {
         let mut t = Ins::default();
-        let params = vec![AtpParamTypes::Usize(3), AtpParamTypes::String("laranja".to_string())];
+        let params = vec![TextForgeParamTypes::Usize(3), TextForgeParamTypes::String("laranja".to_string())];
 
         assert_eq!(t.from_params(&params), Ok(()));
-        assert_eq!(t.to_atp_line().as_ref(), "ins 3 laranja;\n");
+        assert_eq!(t.to_textforge_line().as_ref(), "ins 3 laranja;\n");
     }
 
     #[test]
     fn from_params_rejects_wrong_param_types() {
         let mut t = Ins::default();
-        let params = vec![AtpParamTypes::String("x".to_string()), AtpParamTypes::Usize(3)];
+        let params = vec![TextForgeParamTypes::String("x".to_string()), TextForgeParamTypes::Usize(3)];
 
         let got = t.from_params(&params);
 
         // primeiro parse_args! falha com "Index should be of usize type"
         let expected = Err(
-            crate::utils::errors::AtpError::new(
-                AtpErrorCode::InvalidParameters("Index should be of usize type".into()),
+            crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
                 "",
                 ""
             )
@@ -123,7 +123,7 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::params::AtpParamTypes;
+        use crate::utils::params::TextForgeParamTypes;
 
         #[test]
         fn get_opcode_is_28() {
@@ -160,9 +160,9 @@ mod tests {
             let p1_end = p1_start + (p1_total - 8);
             let p1_payload = bc[p1_start..p1_end].to_vec();
 
-            let decoded1 = AtpParamTypes::from_bytecode(p1_payload).unwrap();
+            let decoded1 = TextForgeParamTypes::from_bytecode(p1_payload).unwrap();
             match decoded1 {
-                AtpParamTypes::Usize(n) => assert_eq!(n, 7),
+                TextForgeParamTypes::Usize(n) => assert_eq!(n, 7),
                 _ => panic!("Expected Usize param #1"),
             }
 
@@ -174,9 +174,9 @@ mod tests {
             let p2_end = p2_start + (p2_total - 8);
             let p2_payload = bc[p2_start..p2_end].to_vec();
 
-            let decoded2 = AtpParamTypes::from_bytecode(p2_payload).unwrap();
+            let decoded2 = TextForgeParamTypes::from_bytecode(p2_payload).unwrap();
             match decoded2 {
-                AtpParamTypes::String(s) => assert_eq!(s, "laranja"),
+                TextForgeParamTypes::String(s) => assert_eq!(s, "laranja"),
                 _ => panic!("Expected String param #2"),
             }
         }

@@ -4,15 +4,15 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::params::{ AtpParamTypes };
+use crate::utils::params::{ TextForgeParamTypes };
 
 use crate::utils::validations::check_vec_len;
-use crate::{ tokens::InstructionMethods, utils::{ errors::{ AtpError, AtpErrorCode } } };
+use crate::{ tokens::InstructionMethods, utils::{ errors::{ TextForgeError, TextForgeErrorCode } } };
 /// Ins - Insert
 ///
 /// Inserts `text` after `index` position in `input`
 ///
-/// If index does not exists in current string, `AtpError` is returned
+/// If index does not exists in current string, `TextForgeError` is returned
 ///
 /// # Example
 ///
@@ -27,7 +27,7 @@ use crate::{ tokens::InstructionMethods, utils::{ errors::{ AtpError, AtpErrorCo
 pub struct Ins {
     index: usize,
     text_to_insert: String,
-    params: Vec<AtpParamTypes>,
+    params: Vec<TextForgeParamTypes>,
 }
 
 impl Ins {
@@ -40,13 +40,13 @@ impl Ins {
     }
 }
 impl InstructionMethods for Ins {
-    fn get_params(&self) -> &Vec<AtpParamTypes> {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     fn get_string_repr(&self) -> &'static str {
         "ins"
     }
-    fn to_atp_line(&self) -> Cow<'static, str> {
+    fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("ins {} {};\n", self.index, self.text_to_insert).into()
     }
 
@@ -54,18 +54,18 @@ impl InstructionMethods for Ins {
         &self,
         input: &str,
         _: Option<&mut GlobalExecutionContext>
-    ) -> Result<String, AtpError> {
+    ) -> Result<String, TextForgeError> {
         if self.index > input.chars().count() {
             return Err(
-                AtpError::new(
-                    AtpErrorCode::IndexOutOfRange(
+                TextForgeError::new(
+                    TextForgeErrorCode::IndexOutOfRange(
                         format!(
                             "Index does not exist in current string, for the input {}, only indexes between 0-{} are allowed",
                             input,
                             input.chars().count() - 1
                         ).into()
                     ),
-                    self.to_atp_line(),
+                    self.to_textforge_line(),
                     input.to_string()
                 )
             );
@@ -82,7 +82,7 @@ impl InstructionMethods for Ins {
 
         Ok(result)
     }
-    fn from_params(&mut self, params: &Vec<AtpParamTypes>) -> Result<(), AtpError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
         check_vec_len(&params, 2, "ins", "")?;
@@ -104,11 +104,11 @@ impl InstructionMethods for Ins {
         0x28
     }
     #[cfg(feature = "bytecode")]
-    fn to_bytecode(&self) -> Result<Vec<u8>, AtpError> {
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
         let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            AtpParamTypes::Usize(self.index),
-            AtpParamTypes::String(self.text_to_insert.clone()),
+            TextForgeParamTypes::Usize(self.index),
+            TextForgeParamTypes::String(self.text_to_insert.clone()),
         ]);
         Ok(result)
     }
