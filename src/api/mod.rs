@@ -752,7 +752,10 @@ pub trait TextForgeBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_uppercase_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
+    fn to_uppercase_single(
+        &mut self,
+        index: impl Into<ValType>
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tucs::Tucs::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -787,7 +790,10 @@ pub trait TextForgeBuilderMethods: Sized {
     /// );
     /// ```
 
-    fn to_lowercase_single(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
+    fn to_lowercase_single(
+        &mut self,
+        index: impl Into<ValType>
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tlcs::Tlcs::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -1105,7 +1111,10 @@ pub trait TextForgeBuilderMethods: Sized {
     ///     Ok("hello brave World".to_string())
     /// );
     /// ```
-    fn capitalize_single_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
+    fn capitalize_single_word(
+        &mut self,
+        index: impl Into<ValType>
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(cts::Cts::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -1418,7 +1427,10 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("BANANA laranja CHEIA DE CANJA".to_string()));
     /// ```
-    fn to_lowercase_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
+    fn to_lowercase_word(
+        &mut self,
+        index: impl Into<ValType>
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tlcw::Tlcw::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -1445,7 +1457,10 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("banana LARANJA cheia de canja".to_string()));
     /// ```
-    fn to_uppercase_word(&mut self, index: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
+    fn to_uppercase_word(
+        &mut self,
+        index: impl Into<ValType>
+    ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tucw::Tucw::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
         Ok(self)
@@ -1681,6 +1696,75 @@ pub trait TextForgeBuilderMethods: Sized {
         self.push_token(tok)?;
         Ok(self)
     }
+
+    /// EMJ - Extract_matches_joined
+    ///
+    /// Extract all non-overlapping matches in input and join them with a separator, discarding the rest of the `input`
+    ///
+    /// It will return an empty string if no matches are found
+    ///
+    /// # Example:
+    ///
+    /// ``` rust
+    /// use textforge::api::{
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
+    /// };
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).extract_matches_joined("a", ",").unwrap().build();
+    /// let input = "banana";
+    ///
+    /// assert_eq!(processor.process_all(&id,&input), Ok("a,a,a".to_string()));
+    ///
+    /// ```
+    fn extract_matches_joined(
+        &mut self,
+        pattern: impl Into<ValType>,
+        separator: impl Into<ValType>
+    ) -> Result<&mut Self, TextForgeError> {
+        let tok = TokenWrapper::new(
+            Box::new(emj::Emj::default()),
+            Some(vec![pattern.into(), separator.into()])
+        );
+
+        self.push_token(tok)?;
+
+        Ok(self)
+    }
+
+    /// VAL - Immutable Variable Declaration
+    ///
+    /// Store's an Immutable Variable in GlobalExecutionContext
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    /// use textforge::api::{
+    ///     textforge_builder::TextForgeBuilder,
+    ///     textforge_processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
+    /// };
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).val("x", 3)delete_single("{{x}}").unwrap().build();
+    /// let input = "banana";
+    ///
+    /// assert_eq!(processor.process_all(&id,&input), Ok("banna".to_string()));
+    /// ```
+
+    fn val(
+        &mut self,
+        val_name: impl Into<ValType>,
+        val_value: impl Into<ValType>
+    ) -> Result<&mut Self, TextForgeError> {
+        let tok = TokenWrapper::new(
+            Box::new(val::Val::default()),
+            Some(vec![val_name.into(), val_value.into()])
+        );
+
+        self.push_token(tok)?;
+        Ok(self)
+    }
 }
 
 pub trait TextForgeConditionalMethods: TextForgeBuilderMethods {
@@ -1704,7 +1788,11 @@ pub trait TextForgeConditionalMethods: TextForgeBuilderMethods {
 }
 
 pub trait TextForgeBlockMethods: TextForgeBuilderMethods {
-    fn block_assoc<F>(&mut self, block_name: &'static str, f: F) -> Result<&mut Self, TextForgeError>
+    fn block_assoc<F>(
+        &mut self,
+        block_name: &'static str,
+        f: F
+    ) -> Result<&mut Self, TextForgeError>
         where F: FnOnce(&mut BlockBuilder) -> Result<(), TextForgeError>
     {
         let mut block_builder = BlockBuilder::new(block_name);
