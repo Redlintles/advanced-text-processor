@@ -37,7 +37,7 @@ impl Display for TextForgeError {
             self.instruction.as_ref().cyan(),
             input_label,
             self.input.as_ref().dimmed()
-        );
+        )?;
         Ok(())
     }
 }
@@ -175,7 +175,7 @@ impl Display for TextForgeErrorCode {
         let code_val = self.get_error_code().to_string().color(severity).bold();
         let msg_val = self.message().as_ref().color(severity);
 
-        write!(f, "{} {}\n{} {}", code_label, code_val, msg_label, msg_val);
+        write!(f, "{} {}\n{} {}", code_label, code_val, msg_label, msg_val)?;
         Ok(())
     }
 }
@@ -483,7 +483,9 @@ mod tests {
         let mut mgr = ErrorManager::default();
         assert!(!mgr.has_errors());
 
-        mgr.add_error(TextForgeError::new(TextForgeErrorCode::TokenNotFound(Cow::Borrowed("x")), "inst", "in"));
+        mgr.add_error(
+            TextForgeError::new(TextForgeErrorCode::TokenNotFound(Cow::Borrowed("x")), "inst", "in")
+        );
 
         assert!(mgr.has_errors());
         assert_eq!(mgr.error_vec.len(), 1);
@@ -528,10 +530,18 @@ mod tests {
 
         let mut mgr = ErrorManager::default();
         mgr.add_error(
-            TextForgeError::new(TextForgeErrorCode::TokenNotFound(Cow::Borrowed("first")), "inst1", "in1")
+            TextForgeError::new(
+                TextForgeErrorCode::TokenNotFound(Cow::Borrowed("first")),
+                "inst1",
+                "in1"
+            )
         );
         mgr.add_error(
-            TextForgeError::new(TextForgeErrorCode::InvalidIndex(Cow::Borrowed("second")), "inst2", "in2")
+            TextForgeError::new(
+                TextForgeErrorCode::InvalidIndex(Cow::Borrowed("second")),
+                "inst2",
+                "in2"
+            )
         );
 
         let mut buf: Vec<u8> = vec![];
@@ -567,7 +577,11 @@ mod tests {
         mgr.will_panic(false);
 
         mgr.handle_error(
-            TextForgeError::new(TextForgeErrorCode::ValidationError(Cow::Borrowed("oops")), "inst", "input")
+            TextForgeError::new(
+                TextForgeErrorCode::ValidationError(Cow::Borrowed("oops")),
+                "inst",
+                "input"
+            )
         );
 
         assert!(mgr.has_errors());

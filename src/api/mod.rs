@@ -965,7 +965,6 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// See Also:
     ///
-    /// - [`Split Remove`](crate::tokens::transforms::srmv)
     /// - [`Select`](crate::tokens::transforms::slt)
     ///
     /// # Example:
