@@ -450,5 +450,6 @@ define_token_table! {
             || TokenRef::Shared(Arc::new(emj::Emj::default())),
             [SyntaxDef::req(SyntaxToken::String), SyntaxDef::req(SyntaxToken::String)],
         ),
+        ("null", 0x38, || TokenRef::Shared(Arc::new(null::Null::default())), []),
     ];
 }
