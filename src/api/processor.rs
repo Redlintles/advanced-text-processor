@@ -841,17 +841,79 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
 
         Ok(output)
     }
-
+    /// Runs a pipeline over many `(input file, output file)` pairs in parallel.
+    ///
+    /// Each task is `(origin, pipeline_id, target)`:
+    /// - `origin`: path to the input file to read. Must already exist.
+    /// - `pipeline_id`: ID of a transform previously registered via `add_transform` /
+    ///   `build()` / `read_from_text_file` / `read_from_bytecode_file`.
+    /// - `target`: path to write the transformed output to. Its parent directory is
+    ///   created automatically if it doesn't exist yet.
+    ///
+    /// Tasks are distributed across a `rayon` thread pool (`into_par_iter`), so origin
+    /// files are read, transformed, and written concurrently. Tasks are fully
+    /// independent: one task failing does not stop or affect the others, and the
+    /// returned `Vec` preserves the same order as the input `tasks` vector, so
+    /// `results[i]` always corresponds to `tasks[i]`.
+    ///
+    /// Internally, for each task:
+    /// - checks that `origin` exists and is a file (not a directory)
+    /// - reads `origin` with `std::fs::read_to_string`
+    /// - runs the registered pipeline via `run_transform(pipeline_id, &input)`
+    /// - creates `target`'s parent directory if it doesn't exist yet (`create_dir_all`)
+    /// - writes the result to `target` with `std::fs::write`
+    ///
+    /// Neither `origin` nor `target` are required to have any particular file
+    /// extension.
+    ///
+    /// # Parameters
+    /// - `tasks`: the `(origin, pipeline_id, target)` triples to process.
+    ///
+    /// # Returns
+    /// One `Result<(), TextForgeError>` per task, in the same order as `tasks`.
+    ///
+    /// # Errors
+    /// A task's `Err` can come from:
+    /// - `origin` not existing (`FileNotFound`) or not being a file (`ValidationError`)
+    /// - `origin` failing to read (permissions, invalid UTF-8, ...) (`FileReadingError`)
+    /// - `pipeline_id` not matching any registered transform (`TokenArrayNotFound`)
+    /// - any token in the pipeline failing during execution
+    /// - `target`'s parent directory failing to be created (`FileWritingError`)
+    /// - `target` failing to write (`FileWritingError`)
     fn process_batch(&self, tasks: Vec<(&Path, &str, &Path)>) -> Vec<Result<(), TextForgeError>> {
         tasks
             .into_par_iter()
             .map(
                 |(origin, pipeline_id, target)| -> Result<(), TextForgeError> {
+                    if !origin.exists() {
+                        return Err(
+                            TextForgeError::new(
+                                TextForgeErrorCode::FileNotFound(
+                                    "Origin file does not exist".into()
+                                ),
+                                Cow::Borrowed("process_batch"),
+                                format!("{:?}", origin)
+                            )
+                        );
+                    }
+
+                    if !origin.is_file() {
+                        return Err(
+                            TextForgeError::new(
+                                TextForgeErrorCode::ValidationError(
+                                    "Origin path is not a file".into()
+                                ),
+                                Cow::Borrowed("process_batch"),
+                                format!("{:?}", origin)
+                            )
+                        );
+                    }
+
                     let input = std::fs
                         ::read_to_string(origin)
                         .map_err(|e| {
                             TextForgeError::new(
-                                TextForgeErrorCode::ValidationError(
+                                TextForgeErrorCode::FileReadingError(
                                     "Failed to read origin file".into()
                                 ),
                                 Cow::Borrowed("process_batch"),
@@ -861,11 +923,27 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
 
                     let output = self.run_transform(pipeline_id, &input)?;
 
+                    if let Some(parent) = target.parent() {
+                        if !parent.as_os_str().is_empty() && !parent.exists() {
+                            std::fs
+                                ::create_dir_all(parent)
+                                .map_err(|e| {
+                                    TextForgeError::new(
+                                        TextForgeErrorCode::FileWritingError(
+                                            "Failed to create target directory".into()
+                                        ),
+                                        Cow::Borrowed("process_batch"),
+                                        format!("{:?} - {}", parent, e)
+                                    )
+                                })?;
+                        }
+                    }
+
                     std::fs
                         ::write(target, output)
                         .map_err(|e| {
                             TextForgeError::new(
-                                TextForgeErrorCode::ValidationError(
+                                TextForgeErrorCode::FileWritingError(
                                     "Failed to write target file".into()
                                 ),
                                 Cow::Borrowed("process_batch"),
@@ -878,7 +956,6 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
             )
             .collect()
     }
-
     #[cfg(feature = "watchers")]
     fn process_all_with_watchers(
         &mut self,
