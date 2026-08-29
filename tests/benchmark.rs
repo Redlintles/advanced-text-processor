@@ -1,13 +1,13 @@
 #[cfg(feature = "test_access")]
 #[cfg(test)]
 pub mod benchmark {
-    use atp::{
-        api::{ atp_processor::{ AtpProcessor, AtpProcessorMethods } },
+    use textforge::{
+        api::{ processor::{ AtpProcessor, AtpProcessorMethods } },
         utils::test_helpers::build_all_tokens_pipeline_safe,
     };
     use std::time::Instant;
 
-    use atp::utils::errors::AtpError;
+    use textforge::utils::errors::AtpError;
 
     #[test]
     fn debug_overhead_too_high() -> Result<(), AtpError> {

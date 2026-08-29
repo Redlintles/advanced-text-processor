@@ -12,7 +12,7 @@ use crate::bytecode::{ reader::read_bytecode_from_file, writer::write_bytecode_t
 #[cfg(feature = "watchers")]
 use crate::watchers::{ WatcherContext, WatcherList };
 
-use crate::api::atp_builder::AtpBuilder;
+use crate::api::builder::AtpBuilder;
 use crate::context::execution_context::{ GlobalContextMethods, GlobalExecutionContext };
 use crate::globals::var::{ TokenWrapper };
 
@@ -54,8 +54,8 @@ use crate::utils::validations::check_file_path;
 /// ## 1) Build a pipeline through the processor, then run it
 ///
 /// ```rust
-/// use atp::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
-/// use atp::api::AtpBuilderMethods;
+/// use textforge::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
+/// use textforge::api::AtpBuilderMethods;
 ///
 /// let mut processor = AtpProcessor::new();
 ///
@@ -74,8 +74,8 @@ use crate::utils::validations::check_file_path;
 /// ## 2) Step-by-step debug execution (SBS)
 ///
 /// ```rust
-/// use atp::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
-/// use atp::api::AtpBuilderMethods;
+/// use textforge::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
+/// use textforge::api::AtpBuilderMethods;
 ///
 /// let mut processor = AtpProcessor::new();
 ///
@@ -96,9 +96,9 @@ use crate::utils::validations::check_file_path;
 /// ## 3) Quick single-token execution (no pipeline registration)
 ///
 /// ```rust
-/// use atp::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
-/// use atp::globals::var::TokenWrapper;
-/// use atp::tokens::transforms::tbs;
+/// use textforge::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
+/// use textforge::globals::var::TokenWrapper;
+/// use textforge::tokens::transforms::tbs;
 ///
 /// let mut processor = AtpProcessor::new();
 ///
@@ -113,7 +113,7 @@ use crate::utils::validations::check_file_path;
 /// This mirrors the exact usage pattern shown in your suite:
 ///
 /// ```rust
-/// use atp::api::{
+/// use textforge::api::{
 ///     AtpBuilderMethods,
 ///     atp_processor::{ AtpProcessor, AtpProcessorMethods },
 /// };
@@ -483,8 +483,8 @@ impl AtpProcessor {
     /// # Example
     ///
     /// ```rust
-    /// use atp::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
-    /// use atp::api::AtpBuilderMethods;
+    /// use textforge::api::atp_processor::{AtpProcessor, AtpProcessorMethods};
+    /// use textforge::api::AtpBuilderMethods;
     ///
     /// let mut processor = AtpProcessor::new();
     ///

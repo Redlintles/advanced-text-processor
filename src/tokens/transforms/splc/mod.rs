@@ -17,7 +17,7 @@ use crate::utils::validations::check_vec_len;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::splc::Splc};
+/// use textforge::tokens::{InstructionMethods, transforms::splc::Splc};
 ///
 /// let token = Splc::default();
 ///

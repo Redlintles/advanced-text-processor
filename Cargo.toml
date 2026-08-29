@@ -1,5 +1,5 @@
 [package]
-name = "atp"
+name = "textforge"
 version = "0.1.0"
 edition = "2024"
 
@@ -19,7 +19,7 @@ clap = "4.5.41"
 rayon = "1.12.0"
 
 [lib]
-name = "atp"
+name = "textforge"
 crate-type = ["rlib"]
 
 [features]

@@ -24,7 +24,7 @@ use crate::utils::params::AtpParamTypes;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::jsnc::Jsnc};
+/// use textforge::tokens::{InstructionMethods, transforms::jsnc::Jsnc};
 ///
 /// let token = Jsnc::default();
 ///

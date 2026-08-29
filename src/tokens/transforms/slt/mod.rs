@@ -18,7 +18,7 @@ use crate::utils::errors::{ AtpError };
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods,transforms::slt::Slt};
+/// use textforge::tokens::{InstructionMethods,transforms::slt::Slt};
 ///
 /// let token = Slt::new(1,9999).unwrap();
 ///

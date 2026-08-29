@@ -62,25 +62,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "atp"
-version = "0.1.0"
-dependencies = [
- "clap",
- "colored",
- "html-escape",
- "rand",
- "random-string",
- "rayon",
- "regex",
- "serde",
- "serde_json",
- "shell-words",
- "tempfile",
- "urlencoding",
- "uuid",
-]
-
-[[package]]
 name = "bitflags"
 version = "2.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -495,6 +476,25 @@ dependencies = [
  "once_cell",
  "rustix",
  "windows-sys",
+]
+
+[[package]]
+name = "textforge"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "colored",
+ "html-escape",
+ "rand",
+ "random-string",
+ "rayon",
+ "regex",
+ "serde",
+ "serde_json",
+ "shell-words",
+ "tempfile",
+ "urlencoding",
+ "uuid",
 ]
 
 [[package]]

@@ -16,7 +16,7 @@ use crate::{ tokens::InstructionMethods, utils::errors::{ AtpError } };
 /// # Example:
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::rev::Rev};
+/// use textforge::tokens::{InstructionMethods, transforms::rev::Rev};
 ///
 /// let token = Rev::default();
 /// assert_eq!(token.transform("foobar", None), Ok("raboof".to_string()));

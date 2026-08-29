@@ -26,7 +26,7 @@ use crate::{ tokens::InstructionMethods };
 /// # Example:
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::rcw::Rcw};
+/// use textforge::tokens::{InstructionMethods, transforms::rcw::Rcw};
 ///
 /// let token = Rcw::new(&"a", "b", 3).unwrap();
 ///

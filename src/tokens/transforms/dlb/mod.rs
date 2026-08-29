@@ -18,7 +18,7 @@ use crate::{ tokens::InstructionMethods };
 /// # Example:
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::dlb::Dlb};
+/// use textforge::tokens::{InstructionMethods, transforms::dlb::Dlb};
 ///
 /// let token = Dlb::new(3);
 ///

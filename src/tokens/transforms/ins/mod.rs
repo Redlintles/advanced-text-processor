@@ -17,7 +17,7 @@ use crate::{ tokens::InstructionMethods, utils::{ errors::{ AtpError, AtpErrorCo
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::ins::Ins};
+/// use textforge::tokens::{InstructionMethods, transforms::ins::Ins};
 ///
 /// let token = Ins::new(2,"laranja");
 ///

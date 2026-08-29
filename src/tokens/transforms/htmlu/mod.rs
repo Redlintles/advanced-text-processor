@@ -21,7 +21,7 @@ use crate::utils::params::AtpParamTypes;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::htmlu::Htmlu};
+/// use textforge::tokens::{InstructionMethods, transforms::htmlu::Htmlu};
 ///
 /// let token = Htmlu::default();
 ///

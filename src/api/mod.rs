@@ -1,5 +1,5 @@
-pub mod atp_builder;
-pub mod atp_processor;
+pub mod builder;
+pub mod processor;
 pub mod conditional_builder;
 pub mod block_builder;
 
@@ -24,7 +24,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -53,7 +53,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -80,7 +80,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -107,7 +107,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -134,7 +134,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -161,7 +161,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -189,7 +189,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -218,7 +218,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -247,7 +247,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -277,7 +277,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -314,7 +314,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -356,7 +356,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -396,7 +396,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -439,7 +439,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -482,7 +482,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -525,7 +525,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -559,7 +559,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -592,7 +592,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -625,7 +625,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -667,7 +667,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -700,7 +700,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -734,7 +734,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -769,7 +769,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -805,7 +805,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -850,7 +850,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -895,7 +895,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -928,7 +928,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -964,7 +964,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1005,7 +1005,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1048,7 +1048,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1089,7 +1089,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1121,7 +1121,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1154,7 +1154,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1185,7 +1185,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1215,7 +1215,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1249,7 +1249,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1282,7 +1282,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1315,7 +1315,7 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1343,7 +1343,7 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1372,7 +1372,7 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1407,7 +1407,7 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1434,7 +1434,7 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1463,7 +1463,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1492,7 +1492,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1520,7 +1520,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1548,7 +1548,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1574,7 +1574,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1608,7 +1608,7 @@ pub trait AtpBuilderMethods: Sized {
     ///
     /// # Example:
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1639,7 +1639,7 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,
@@ -1665,7 +1665,7 @@ pub trait AtpBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
-    /// use atp::api::{
+    /// use textforge::api::{
     ///     atp_builder::AtpBuilder,
     ///     atp_processor::{AtpProcessor,AtpProcessorMethods},
     ///     AtpBuilderMethods,

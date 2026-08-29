@@ -18,7 +18,7 @@ use crate::utils::params::AtpParamTypes;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::jpsc::Jpsc};
+/// use textforge::tokens::{InstructionMethods, transforms::jpsc::Jpsc};
 ///
 /// let token = Jpsc::default();
 ///

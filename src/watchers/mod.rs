@@ -36,7 +36,7 @@ impl WatcherContext {
     /// # Examples
     ///
     /// ```rust
-    /// use atp::watchers::WatcherContext;
+    /// use textforge::watchers::WatcherContext;
     ///
     /// let ctx = WatcherContext::new(
     ///     "banana!".to_string(),
@@ -91,7 +91,7 @@ pub enum ExecutionWindows {
 /// # Examples
 ///
 /// ```rust
-/// use atp::watchers::{WatcherList, ExecutionWindows, WatcherContext};
+/// use textforge::watchers::{WatcherList, ExecutionWindows, WatcherContext};
 ///
 /// let mut watchers = WatcherList::default();
 ///
@@ -132,7 +132,7 @@ impl WatcherList {
     /// # Examples
     ///
     /// ```rust
-    /// use atp::watchers::{WatcherList, ExecutionWindows, WatcherContext};
+    /// use textforge::watchers::{WatcherList, ExecutionWindows, WatcherContext};
     ///
     /// let mut watchers = WatcherList::default();
     /// watchers.set_watcher("len", |ctx: WatcherContext| ctx.current.len().to_string());
@@ -174,7 +174,7 @@ impl WatcherList {
     /// # Examples
     ///
     /// ```rust
-    /// use atp::watchers::{WatcherList, WatcherContext};
+    /// use textforge::watchers::{WatcherList, WatcherContext};
     ///
     /// let mut watchers = WatcherList::default();
     /// watchers.set_watcher("is_empty", |ctx: WatcherContext| ctx.current.is_empty().to_string());
@@ -195,7 +195,7 @@ impl WatcherList {
     /// # Examples
     ///
     /// ```rust
-    /// use atp::watchers::{WatcherList, ExecutionWindows, WatcherContext};
+    /// use textforge::watchers::{WatcherList, ExecutionWindows, WatcherContext};
     ///
     /// let mut watchers = WatcherList::default();
     /// watchers.set_watcher("len", |ctx: WatcherContext| ctx.current.len().to_string());
@@ -242,7 +242,7 @@ impl WatcherList {
     /// # Examples
     ///
     /// ```rust
-    /// use atp::watchers::{WatcherList, ExecutionWindows, WatcherContext};
+    /// use textforge::watchers::{WatcherList, ExecutionWindows, WatcherContext};
     ///
     /// let mut watchers = WatcherList::default();
     /// watchers.set_watcher("len", |ctx: WatcherContext| ctx.current.len().to_string());
@@ -298,7 +298,7 @@ impl WatcherList {
     /// # Examples
     ///
     /// ```rust
-    /// use atp::watchers::{WatcherList, ExecutionWindows, WatcherContext};
+    /// use textforge::watchers::{WatcherList, ExecutionWindows, WatcherContext};
     /// use std::env::temp_dir;
     ///
     /// let mut watchers = WatcherList::default();

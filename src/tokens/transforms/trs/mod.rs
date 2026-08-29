@@ -18,7 +18,7 @@ use crate::utils::params::AtpParamTypes;
 /// # Example:
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::trs::Trs};
+/// use textforge::tokens::{InstructionMethods, transforms::trs::Trs};
 ///
 /// let token = Trs::default();
 ///

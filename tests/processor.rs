@@ -3,8 +3,8 @@
 pub mod processor {
     use std::{ path::Path };
 
-    use atp::{
-        api::{ AtpBuilderMethods, atp_processor::{ AtpProcessor, AtpProcessorMethods } },
+    use textforge::{
+        api::{ AtpBuilderMethods, processor::{ AtpProcessor, AtpProcessorMethods } },
         globals::var::TokenWrapper,
         tokens::{ transforms::{ atb::Atb, ate::Ate, rpt::Rpt } },
         utils::errors::AtpError,

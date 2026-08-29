@@ -17,7 +17,7 @@ use crate::utils::params::AtpParamTypes;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::ate::Ate};
+/// use textforge::tokens::{InstructionMethods, transforms::ate::Ate};
 ///
 /// let token = Ate::new(" bar");
 /// assert_eq!(token.transform("foo", None), Ok("foo bar".to_string()));

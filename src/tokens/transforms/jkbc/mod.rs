@@ -24,7 +24,7 @@ use crate::utils::params::AtpParamTypes;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::jkbc::Jkbc};
+/// use textforge::tokens::{InstructionMethods, transforms::jkbc::Jkbc};
 ///
 /// let token = Jkbc::default();
 ///

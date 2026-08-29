@@ -1,5 +1,5 @@
-use atp::{
-    api::atp_processor::{ AtpProcessor, AtpProcessorMethods },
+use textforge::{
+    api::processor::{ AtpProcessor, AtpProcessorMethods },
     utils::{
         cli::{ process_input_by_chunks, process_input_line_by_line, process_input_single_chunk },
         errors::AtpError,

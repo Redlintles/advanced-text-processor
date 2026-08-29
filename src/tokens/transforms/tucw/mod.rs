@@ -16,7 +16,7 @@ use crate::{
 /// # Example:
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::tucw::Tucw};
+/// use textforge::tokens::{InstructionMethods, transforms::tucw::Tucw};
 ///
 /// let token = Tucw::new(1);
 ///

@@ -23,9 +23,9 @@ use crate::utils::params::AtpParamTypes;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, instructions::ifdc::Ifdc, transforms::atb::Atb};
-/// use atp::globals::var::{TokenWrapper, ValType};
-/// use atp::utils::params::AtpParamTypes;
+/// use textforge::tokens::{InstructionMethods, instructions::ifdc::Ifdc, transforms::atb::Atb};
+/// use textforge::globals::var::{TokenWrapper, ValType};
+/// use textforge::utils::params::AtpParamTypes;
 ///
 /// let token = Ifdc::new(
 ///     "xy",

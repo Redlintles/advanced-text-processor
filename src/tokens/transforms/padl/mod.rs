@@ -24,7 +24,7 @@ use crate::utils::params::AtpParamTypes;
 /// # Example:
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::padl::Padl};
+/// use textforge::tokens::{InstructionMethods, transforms::padl::Padl};
 ///
 /// let token = Padl::new("xy", 7);
 ///

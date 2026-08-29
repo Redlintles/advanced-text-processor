@@ -4,7 +4,7 @@ use crate::{
     utils::errors::AtpError,
 };
 
-use super::atp_processor::{ AtpProcessor, AtpProcessorMethods };
+use super::processor::{ AtpProcessor, AtpProcessorMethods };
 
 pub struct AtpBuilder<'ap> {
     tokens: Vec<TokenWrapper>,

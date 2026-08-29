@@ -1,11 +1,11 @@
 #[cfg(feature = "test_access")]
 #[cfg(test)]
 mod tests {
-    use atp::context::execution_context::GlobalExecutionContext;
-    use atp::globals::table::{ QuerySource, QueryTarget, SyntaxDef, TargetValue, TOKEN_TABLE };
-    use atp::globals::var::{ ValType };
-    use atp::utils::errors::AtpErrorCode;
-    use atp::utils::params::AtpParamTypes;
+    use textforge::context::execution_context::GlobalExecutionContext;
+    use textforge::globals::table::{ QuerySource, QueryTarget, SyntaxDef, TargetValue, TOKEN_TABLE };
+    use textforge::globals::var::{ ValType };
+    use textforge::utils::errors::AtpErrorCode;
+    use textforge::utils::params::AtpParamTypes;
 
     use std::sync::Arc;
 

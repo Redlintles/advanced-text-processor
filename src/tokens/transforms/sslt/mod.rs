@@ -20,7 +20,7 @@ use crate::utils::errors::{ AtpError, AtpErrorCode };
 /// # Example:
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::sslt::Sslt};
+/// use textforge::tokens::{InstructionMethods, transforms::sslt::Sslt};
 ///
 /// let token = Sslt::new("_", 1).unwrap();
 ///

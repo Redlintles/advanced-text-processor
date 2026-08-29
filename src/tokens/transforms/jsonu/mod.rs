@@ -18,7 +18,7 @@ use crate::utils::validations::check_vec_len;
 /// # Example:
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::jsonu::Jsonu};
+/// use textforge::tokens::{InstructionMethods, transforms::jsonu::Jsonu};
 ///
 ///
 /// let token = Jsonu::default();

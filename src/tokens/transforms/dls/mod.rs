@@ -20,7 +20,7 @@ use crate::utils::params::AtpParamTypes;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::dls::Dls};
+/// use textforge::tokens::{InstructionMethods, transforms::dls::Dls};
 ///
 /// let token = Dls::new(3);
 ///

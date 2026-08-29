@@ -20,7 +20,7 @@ use crate::utils::params::AtpParamTypes;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::clw::Clw};
+/// use textforge::tokens::{InstructionMethods, transforms::clw::Clw};
 ///
 /// let token = Clw::default();
 /// assert_eq!(token.transform("foo bar", None), Ok("foo Bar".to_string()));

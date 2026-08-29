@@ -3,18 +3,18 @@
 pub mod bytecode {
     use std::{ fs::File, io::Read };
 
-    use atp::globals::var::TokenWrapper;
+    use textforge::globals::var::TokenWrapper;
 
     #[cfg(test)]
     mod write_bytecode_to_file_tests {
         use std::fs;
         use std::path::PathBuf;
 
-        use atp::bytecode::writer::write_bytecode_to_file;
-        use atp::globals::var::TokenWrapper;
-        use atp::tokens::InstructionMethods;
-        use atp::tokens::transforms::{ atb::Atb, ate::Ate, ctc::Ctc, dlf::Dlf, rpt::Rpt };
-        use atp::utils::params::AtpParamTypes;
+        use textforge::bytecode::writer::write_bytecode_to_file;
+        use textforge::globals::var::TokenWrapper;
+        use textforge::tokens::InstructionMethods;
+        use textforge::tokens::transforms::{ atb::Atb, ate::Ate, ctc::Ctc, dlf::Dlf, rpt::Rpt };
+        use textforge::utils::params::AtpParamTypes;
         use tempfile::tempdir;
 
         fn parse_header(bytes: &[u8]) -> (Vec<u8>, u64, u32, &[u8]) {
@@ -146,8 +146,8 @@ pub mod bytecode {
 
     #[test]
     fn test_write_bytecode_to_file() {
-        use atp::bytecode::writer::write_bytecode_to_file;
-        use atp::tokens::transforms::{ atb::Atb, ate::Ate, rpt::Rpt };
+        use textforge::bytecode::writer::write_bytecode_to_file;
+        use textforge::tokens::transforms::{ atb::Atb, ate::Ate, rpt::Rpt };
         use tempfile::Builder;
         let file = Builder::new().suffix(".atpbc").prefix("output_").tempfile().unwrap();
 
@@ -194,8 +194,8 @@ pub mod bytecode {
         use std::path::Path;
         use tempfile::Builder;
 
-        use atp::{
-            api::atp_processor::{ AtpProcessor, AtpProcessorMethods },
+        use textforge::{
+            api::processor::{ AtpProcessor, AtpProcessorMethods },
             bytecode::{ reader::read_bytecode_from_file, writer::write_bytecode_to_file },
             tokens::transforms::{ atb::Atb, ate::Ate, rpt::Rpt },
         };

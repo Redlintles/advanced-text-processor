@@ -18,7 +18,7 @@ use crate::utils::params::AtpParamTypes;
 /// # Example
 ///
 /// ```rust
-/// use atp::tokens::{InstructionMethods, transforms::jcmc::Jcmc};
+/// use textforge::tokens::{InstructionMethods, transforms::jcmc::Jcmc};
 ///
 /// let token = Jcmc::default();
 ///
