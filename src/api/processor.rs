@@ -20,7 +20,12 @@ use crate::utils::apply::apply_transform;
 use crate::text::reader::read_from_file;
 use crate::text::writer::write_to_file;
 
-use crate::utils::errors::{ TextForgeError, TextForgeErrorCode, ErrorManager, token_array_not_found };
+use crate::utils::errors::{
+    TextForgeError,
+    TextForgeErrorCode,
+    ErrorManager,
+    token_array_not_found,
+};
 use crate::utils::validations::check_file_path;
 
 /// ATP Processor
@@ -296,7 +301,11 @@ pub trait TextForgeProcessorMethods {
     ///
     /// # Errors
     /// Returns `Err` if the token’s `transform` fails.
-    fn process_single(&mut self, token: TokenWrapper, input: &str) -> Result<String, TextForgeError>;
+    fn process_single(
+        &mut self,
+        token: TokenWrapper,
+        input: &str
+    ) -> Result<String, TextForgeError>;
 
     /// Executes a registered transform like `process_all`, but prints each step.
     ///
@@ -632,7 +641,11 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
         )
     }
 
-    fn process_single(&mut self, token: TokenWrapper, input: &str) -> Result<String, TextForgeError> {
+    fn process_single(
+        &mut self,
+        token: TokenWrapper,
+        input: &str
+    ) -> Result<String, TextForgeError> {
         let mut context = GlobalExecutionContext::new();
         match token.apply_token(input, &mut context) {
             Ok(x) => Ok(x),
@@ -834,14 +847,13 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
             .into_par_iter()
             .map(
                 |(origin, pipeline_id, target)| -> Result<(), TextForgeError> {
-                    check_file_path(origin, None)?;
-                    check_file_path(target, None)?; // ajustar depois pra check_target_path se necessário
-
                     let input = std::fs
                         ::read_to_string(origin)
                         .map_err(|e| {
                             TextForgeError::new(
-                                TextForgeErrorCode::ValidationError("Failed to read origin file".into()),
+                                TextForgeErrorCode::ValidationError(
+                                    "Failed to read origin file".into()
+                                ),
                                 Cow::Borrowed("process_batch"),
                                 format!("{:?} - {}", origin, e)
                             )
@@ -853,7 +865,9 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
                         ::write(target, output)
                         .map_err(|e| {
                             TextForgeError::new(
-                                TextForgeErrorCode::ValidationError("Failed to write target file".into()),
+                                TextForgeErrorCode::ValidationError(
+                                    "Failed to write target file".into()
+                                ),
                                 Cow::Borrowed("process_batch"),
                                 format!("{:?} - {}", target, e)
                             )
