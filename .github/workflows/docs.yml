@@ -24,8 +24,26 @@ jobs:
       - name: Build documentation
         run: cargo doc --no-deps
 
+      - name: Create index page
+        run: |
+          CRATE_NAME=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].name' | tr '-' '_')
+
+          cat > target/doc/index.html <<EOF
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta http-equiv="refresh" content="0; url=$CRATE_NAME/">
+              <title>Advanced Text Processor Documentation</title>
+            </head>
+            <body>
+              <a href="$CRATE_NAME/">Advanced Text Processor Documentation</a>
+            </body>
+          </html>
+          EOF
+
       - name: Upload documentation
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: target/doc
 
