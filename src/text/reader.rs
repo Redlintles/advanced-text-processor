@@ -15,7 +15,7 @@ use crate::{
 pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, TextForgeError> {
     let line = token_string.trim();
 
-    if token_string.is_empty() || token_string.starts_with("//") {
+    if line.is_empty() || line.starts_with("//") {
         return Ok(TokenWrapper::default());
     }
     let chunks = match
