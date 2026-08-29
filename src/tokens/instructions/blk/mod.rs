@@ -77,7 +77,7 @@ impl InstructionMethods for Blk {
 
         self.inner = parse_args!(params, 1, Token, "Block inner should be of token type");
 
-        if self.inner.get_opcode() == self.get_opcode() {
+        if self.inner.get_string_repr() == "blk" {
             return Err(
                 AtpError::new(
                     AtpErrorCode::NestedBlocksNotAllowedError(
