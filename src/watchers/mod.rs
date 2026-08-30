@@ -1,6 +1,9 @@
 use std::{ collections::HashMap, fs::OpenOptions, io::Write, path::Path };
 
-use crate::{ utils::{ errors::TextForgeError }, watchers::ExecutionWindows::All };
+use crate::{
+    utils::errors::{ TextForgeError, TextForgeErrorCode },
+    watchers::ExecutionWindows::All,
+};
 use std::borrow::Cow;
 
 pub mod default_watchers;
@@ -111,7 +114,7 @@ pub enum ExecutionWindows {
 /// ```
 #[derive(Default)]
 pub struct WatcherList {
-    result: HashMap<u64, HashMap<String, String>>,
+    result: Vec<HashMap<String, String>>,
     watchers: HashMap<&'static str, Box<dyn (Fn(WatcherContext) -> String) + 'static>>,
     schedule: HashMap<&'static str, ExecutionWindows>,
     counter: u64,
@@ -149,7 +152,7 @@ impl WatcherList {
     /// ```
     pub fn reset(&mut self) -> () {
         self.counter = 0;
-        self.result = HashMap::new();
+        self.result = Vec::new();
     }
 
     fn add_to_result(
@@ -158,7 +161,18 @@ impl WatcherList {
         watcher_name: String,
         return_value: String
     ) -> Result<(), TextForgeError> {
-        self.result.entry(counter).or_insert_with(HashMap::new).insert(watcher_name, return_value);
+        self.result.push(HashMap::new());
+        let iteration_result = self.result
+            .get_mut(counter as usize)
+            .ok_or_else(||
+                TextForgeError::new(
+                    TextForgeErrorCode::GenericError(Cow::from("Iteration result not found")),
+                    Cow::from("add_to_result"),
+                    Cow::from("vec.get")
+                )
+            )?;
+
+        iteration_result.insert(watcher_name, return_value);
 
         Ok(())
     }
@@ -388,7 +402,7 @@ mod tests {
         wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
         // Nunca agendado -> run_watchers não deve produzir nenhuma entrada
         wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
-        assert!(wl.result.get(&0).is_none());
+        assert!(wl.result.get(0).is_none());
     }
 
     #[test]
@@ -413,7 +427,7 @@ mod tests {
 
         wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
 
-        let step0 = wl.result.get(&0).expect("step 0 deveria existir");
+        let step0 = wl.result.get(0).expect("step 0 deveria existir");
         assert_eq!(step0.get("len").unwrap(), "6");
     }
 
@@ -427,9 +441,9 @@ mod tests {
         wl.run_watchers(ctx("a", "ab", None, "add_to_end")).unwrap();
         wl.run_watchers(ctx("ab", "abc", None, "add_to_end")).unwrap();
 
-        assert_eq!(wl.result.get(&0).unwrap().get("len").unwrap(), "1");
-        assert_eq!(wl.result.get(&1).unwrap().get("len").unwrap(), "2");
-        assert_eq!(wl.result.get(&2).unwrap().get("len").unwrap(), "3");
+        assert_eq!(wl.result.get(0).unwrap().get("len").unwrap(), "1");
+        assert_eq!(wl.result.get(1).unwrap().get("len").unwrap(), "2");
+        assert_eq!(wl.result.get(2).unwrap().get("len").unwrap(), "3");
     }
 
     #[test]
@@ -442,7 +456,7 @@ mod tests {
 
         wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
 
-        let step0 = wl.result.get(&0).unwrap();
+        let step0 = wl.result.get(0).unwrap();
         assert_eq!(step0.get("len").unwrap(), "6");
         assert_eq!(step0.get("is_empty").unwrap(), "false");
     }
@@ -461,7 +475,7 @@ mod tests {
         // "len" continua registrado e agendado: run_watchers volta a produzir resultado
         // sem precisar chamar set_watcher/schedule_watcher de novo.
         wl.run_watchers(ctx("", "abcd", None, "add_to_end")).unwrap();
-        assert_eq!(wl.result.get(&0).unwrap().get("len").unwrap(), "4");
+        assert_eq!(wl.result.get(0).unwrap().get("len").unwrap(), "4");
     }
 
     // NOTA: o branch de erro "Watcher Not Found" dentro de run_watchers (o segundo
