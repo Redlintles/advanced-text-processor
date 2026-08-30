@@ -61,8 +61,8 @@ impl Default for Emj {
     fn default() -> Self {
         Emj {
             pattern: Regex::new("").unwrap(),
-            separator: "_".to_string(),
-            params: vec!["".to_string().into(), "_".to_string().into()],
+            separator: "".to_string(),
+            params: vec!["".to_string().into(), "".to_string().into()],
         }
     }
 }

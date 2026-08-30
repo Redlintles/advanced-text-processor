@@ -11,7 +11,10 @@ use crate::{
 
 use regex::Regex;
 
-use crate::{ tokens::InstructionMethods, utils::{ errors::{ TextForgeError, TextForgeErrorCode } } };
+use crate::{
+    tokens::InstructionMethods,
+    utils::{ errors::{ TextForgeError, TextForgeErrorCode } },
+};
 
 use crate::utils::params::TextForgeParamTypes;
 /// RLW - Replace Last With
@@ -63,9 +66,9 @@ impl Default for Rnw {
     fn default() -> Self {
         Rnw {
             pattern: Regex::new("").unwrap(),
-            text_to_replace: "_".to_string(),
+            text_to_replace: "".to_string(),
             index: 0,
-            params: vec!["".to_string().into(), "_".to_string().into(), (0).into()],
+            params: vec!["".to_string().into(), "".to_string().into(), (0).into()],
         }
     }
 }

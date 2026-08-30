@@ -55,8 +55,8 @@ impl Default for Rlw {
     fn default() -> Self {
         Rlw {
             pattern: Regex::new("").unwrap(),
-            text_to_replace: "_".to_string(),
-            params: vec!["".to_string().into(), "_".to_string().into()],
+            text_to_replace: "".to_string(),
+            params: vec!["".to_string().into(), "".to_string().into()],
         }
     }
 }
