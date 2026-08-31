@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{params::TextForgeParamTypes, validations::check_vec_len},
+    utils::{ errors::TextForgeError, params::TextForgeParamTypes, validations::check_vec_len },
 };
 
 #[cfg(feature = "test_access")]
@@ -15,7 +15,6 @@ pub mod test;
 pub struct Null {
     params: Vec<TextForgeParamTypes>,
 }
-
 
 impl InstructionMethods for Null {
     fn get_params(&self) -> &Vec<TextForgeParamTypes> {
@@ -36,21 +35,19 @@ impl InstructionMethods for Null {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, crate::utils::errors::TextForgeError> {
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, TextForgeError> {
         Ok(input.to_string())
     }
 
-    fn from_params(
-        &mut self,
-        params: &Vec<crate::utils::params::TextForgeParamTypes>,
-    ) -> Result<(), crate::utils::errors::TextForgeError> {
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(params, 0, "null", "param parsing error, invalid vec len")?;
 
         Ok(())
     }
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
+        use crate::{ to_bytecode };
         let result = to_bytecode!(self.get_opcode(), []);
         Ok(result)
     }
