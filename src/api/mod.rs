@@ -25,7 +25,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -54,7 +54,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -81,7 +81,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -108,7 +108,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -135,7 +135,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -162,7 +162,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -190,7 +190,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -219,7 +219,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -248,7 +248,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -278,7 +278,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -315,7 +315,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -357,7 +357,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -397,7 +397,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -440,7 +440,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -483,7 +483,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -526,7 +526,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -560,7 +560,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -593,7 +593,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -626,7 +626,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -668,7 +668,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -701,7 +701,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -735,7 +735,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -773,7 +773,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -812,7 +812,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -857,7 +857,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -902,7 +902,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -935,7 +935,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -970,7 +970,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1011,7 +1011,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1054,7 +1054,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1095,7 +1095,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1130,7 +1130,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1163,7 +1163,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1194,7 +1194,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1224,7 +1224,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1258,7 +1258,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1291,7 +1291,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1324,7 +1324,7 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1352,7 +1352,7 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1381,7 +1381,7 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1416,7 +1416,7 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1446,7 +1446,7 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1478,7 +1478,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1507,7 +1507,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1535,7 +1535,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1563,7 +1563,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1589,7 +1589,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1623,7 +1623,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1654,7 +1654,7 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1680,7 +1680,7 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1706,7 +1706,7 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// ``` rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
@@ -1740,7 +1740,7 @@ pub trait TextForgeBuilderMethods: Sized {
     ///
     /// ```rust
     /// use textforge::api::{
-    ///     textforge_builder::TextForgeBuilder,
+    ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
     /// };
