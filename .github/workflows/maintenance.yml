@@ -27,14 +27,24 @@ jobs:
       - name: Clippy fix
         run: cargo clippy --fix --lib -p textforge
 
-      - name: test
+      - name: Test
         run: cargo test --features test_access,bytecode --release
-      - name: push
+
+      - name: Commit maintenance changes
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add .
-          git commit -m "Executed workflow maintenance"
-          git push
-      - name: publish
-        if: success()
-        run: |
-          cargo publish
+
+          if git diff --cached --quiet; then
+            echo "No maintenance changes to commit."
+          else
+            git commit -m "Executed workflow maintenance"
+            git push
+          fi
+
+      - name: Publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+        run: cargo publish
