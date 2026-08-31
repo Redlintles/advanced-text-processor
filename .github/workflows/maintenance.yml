@@ -1,0 +1,36 @@
+name: Rust maintenance
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Format all
+        run: cargo fmt --all
+
+      - name: Clippy fix
+        run: cargo clippy --fix --lib -p textforge
+
+      - name: test
+        run: cargo test --features test_access,bytecode --release
+      - name: push
+        run: |
+          git add .
+          git commit -m "Executed workflow maintenance"
+          git push
