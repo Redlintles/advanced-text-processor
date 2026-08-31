@@ -1,10 +1,14 @@
-use std::ops::Deref;
+use std::{ ops::Deref };
 
 use crate::{
     context::execution_context::{ GlobalContextMethods, GlobalExecutionContext, VarValues },
     globals::table::{ QuerySource, QueryTarget, SyntaxDef, SyntaxToken, TOKEN_TABLE, TargetValue },
     tokens::{ InstructionMethods, instructions::null::Null },
-    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, params::TextForgeParamTypes },
+    utils::{
+        errors::{ TextForgeError, TextForgeErrorCode },
+        params::TextForgeParamTypes,
+        regexes::VAR_REF_RE,
+    },
 };
 
 #[cfg(feature = "bytecode")]
@@ -17,12 +21,16 @@ pub enum ValType {
 
 impl From<String> for ValType {
     fn from(value: String) -> Self {
-        return Self::Literal(TextForgeParamTypes::String(value));
+        ValType::from(value.as_str())
     }
 }
+
 impl From<&str> for ValType {
     fn from(value: &str) -> Self {
-        return Self::Literal(TextForgeParamTypes::String(value.to_string()));
+        match VAR_REF_RE.captures(value) {
+            Some(caps) => Self::VarRef(caps[1].to_string()),
+            None => Self::Literal(TextForgeParamTypes::String(value.to_string())),
+        }
     }
 }
 impl From<usize> for ValType {
