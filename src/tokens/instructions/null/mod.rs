@@ -25,7 +25,7 @@ impl InstructionMethods for Null {
         0x36
     }
     fn get_string_repr(&self) -> &'static str {
-        "val"
+        "null"
     }
 
     fn to_textforge_line(&self) -> Cow<'static, str> {

@@ -31,7 +31,7 @@ impl Default for Val {
             val_value: TextForgeParamTypes::String("".to_string()),
             params: vec![
                 TextForgeParamTypes::String("x".to_string()),
-                TextForgeParamTypes::Token(TokenWrapper::default())
+                TextForgeParamTypes::String("".to_string())
             ],
         }
     }
@@ -50,7 +50,7 @@ impl InstructionMethods for Val {
     }
 
     fn to_textforge_line(&self) -> std::borrow::Cow<'static, str> {
-        format!("val {} = {}", self.val_name, self.val_value.to_string()).into()
+        format!("val {} = {};\n", self.val_name, self.val_value.to_string()).into()
     }
 
     fn transform(
