@@ -1762,9 +1762,18 @@ pub trait TextForgeBuilderMethods: Sized {
         val_name: impl Into<ValType>,
         val_value: impl Into<ValType>
     ) -> Result<&mut Self, TextForgeError> {
+        let val_value: ValType = val_value.into();
+
+        let val_value = match val_value {
+            ValType::Literal(value) => {
+                ValType::Literal(TextForgeParamTypes::String(value.to_string()))
+            }
+            ValType::VarRef(name) => ValType::VarRef(name),
+        };
+
         let tok = TokenWrapper::new(
             Box::new(val::Val::default()),
-            Some(vec![val_name.into(), val_value.into()])
+            Some(vec![val_name.into(), val_value])
         );
 
         self.push_token(tok)?;
