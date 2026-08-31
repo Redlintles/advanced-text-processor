@@ -34,3 +34,7 @@ jobs:
           git add .
           git commit -m "Executed workflow maintenance"
           git push
+      - name: publish
+        if: success()
+        run: |
+          cargo publish
