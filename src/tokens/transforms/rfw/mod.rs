@@ -45,7 +45,7 @@ pub struct Rfw {
 
 impl Rfw {
     pub fn new(pattern: &str, text_to_replace: &str) -> Result<Self, String> {
-        let pattern = Regex::new(&pattern).map_err(|x| x.to_string())?;
+        let pattern = Regex::new(pattern).map_err(|x| x.to_string())?;
         Ok(Rfw {
             text_to_replace: text_to_replace.to_string(),
             params: vec![
@@ -92,7 +92,7 @@ impl InstructionMethods for Rfw {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 2, "rfw", "")?;
+        check_vec_len(params, 2, "rfw", "")?;
 
         let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
 
@@ -116,7 +116,7 @@ impl InstructionMethods for Rfw {
             self.text_to_replace.to_string().into(),
         ];
 
-        return Ok(());
+        Ok(())
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {

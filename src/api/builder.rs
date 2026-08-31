@@ -20,9 +20,9 @@ impl<'ap> TextForgeBuilder<'ap> {
     }
 
     pub fn build(&mut self) -> String {
-        let id = self.processor.add_transform(self.tokens.clone());
+        
 
-        id
+        self.processor.add_transform(self.tokens.clone())
     }
 }
 

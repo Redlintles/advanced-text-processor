@@ -73,7 +73,7 @@ impl InstructionMethods for Rtl {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 1, "rtl", "")?;
+        check_vec_len(params, 1, "rtl", "")?;
 
         self.times = parse_args!(params, 0, Usize, "Index should be of usize type");
         self.params = vec![self.times.into()];

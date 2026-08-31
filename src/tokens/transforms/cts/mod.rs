@@ -82,12 +82,12 @@ impl InstructionMethods for Cts {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 1, "cts", "")?;
+        check_vec_len(params, 1, "cts", "")?;
 
         self.index = parse_args!(params, 0, Usize, "Index should be of usize type");
         self.params = vec![self.index.into()];
 
-        return Ok(());
+        Ok(())
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {

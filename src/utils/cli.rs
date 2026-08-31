@@ -12,9 +12,9 @@ fn process_run(
     debug: bool,
 ) -> Result<String, TextForgeError> {
     if debug {
-        return Ok(processor.process_all_with_debug(identifier, input)?);
+        processor.process_all_with_debug(identifier, input)
     } else {
-        return Ok(processor.process_all(identifier, input)?);
+        processor.process_all(identifier, input)
     }
 }
 
@@ -27,7 +27,7 @@ pub fn process_input_single_chunk(
     if input.is_empty() {
         return Ok(String::new());
     }
-    Ok(process_run(processor, identifier, input, debug)?)
+    process_run(processor, identifier, input, debug)
 }
 
 pub fn process_input_line_by_line(

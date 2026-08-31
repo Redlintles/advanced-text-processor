@@ -22,7 +22,7 @@ pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, TextForgeError
     if line.is_empty() || line.starts_with("//") {
         return Ok(TokenWrapper::default());
     }
-    let chunks = match shell_words::split(&line.trim_end().strip_suffix(";").ok_or_else(|| {
+    let chunks = match shell_words::split(line.trim_end().strip_suffix(";").ok_or_else(|| {
         TextForgeError::new(
             TextForgeErrorCode::TextParsingError(
                 "An ATP Parsing error ocurred: Error splitting file line".into(),

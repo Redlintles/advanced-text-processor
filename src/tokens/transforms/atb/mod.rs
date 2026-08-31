@@ -44,7 +44,7 @@ impl Atb {
 
 impl InstructionMethods for Atb {
     fn get_params(&self) -> &Vec<TextForgeParamTypes> {
-        return &self.params;
+        &self.params
     }
     fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("atb {};\n", self.text).into()
@@ -68,7 +68,7 @@ impl InstructionMethods for Atb {
         use crate::parse_args;
         use crate::utils::params::TextForgeParamTypesJoin;
 
-        check_vec_len(&params, 1, "atb", params.join(""))?;
+        check_vec_len(params, 1, "atb", params.join(""))?;
 
         self.text = parse_args!(params, 0, String, "Text should be of string type");
 

@@ -23,7 +23,6 @@ use crate::utils::apply::apply_transform;
 use crate::utils::errors::{
     ErrorManager, TextForgeError, TextForgeErrorCode, token_array_not_found,
 };
-use crate::utils::validations::check_file_path;
 
 /// ATP Processor
 ///
@@ -359,7 +358,7 @@ pub trait TextForgeProcessorMethods {
     /// This is pure side-effect (stdout). It does not return the data.
     ///
     /// The trait provides a default empty body `{}` so implementors may override it.
-    fn show_transforms(&self) -> () {}
+    fn show_transforms(&self) {}
 
     /// Checks whether a transform with the given `id` exists.
     ///
@@ -587,15 +586,15 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
             )
         }) {
             Ok(_) => {
-                return Ok(());
+                Ok(())
             }
             Err(e) => {
-                return Err(e);
+                Err(e)
             }
         }
     }
 
-    fn show_transforms(&self) -> () {
+    fn show_transforms(&self) {
         for (i, k) in self.transforms.keys().enumerate() {
             println!("{} - {}", i, k);
         }
@@ -621,7 +620,7 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
             .clone())
     }
     fn get_text_transform_vec(&self, id: &str) -> Result<Vec<String>, TextForgeError> {
-        Ok(self
+        self
             .transforms
             .get(id)
             .ok_or_else(|| {
@@ -636,7 +635,7 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
             .clone()
             .iter()
             .map(|t| t.to_text_line_unresolved().map(|s| s.to_string()))
-            .collect::<Result<Vec<String>, TextForgeError>>()?)
+            .collect::<Result<Vec<String>, TextForgeError>>()
     }
 
     fn process_single(
@@ -918,8 +917,8 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
 
                     let output = self.run_transform(pipeline_id, &input)?;
 
-                    if let Some(parent) = target.parent() {
-                        if !parent.as_os_str().is_empty() && !parent.exists() {
+                    if let Some(parent) = target.parent()
+                        && !parent.as_os_str().is_empty() && !parent.exists() {
                             std::fs::create_dir_all(parent).map_err(|e| {
                                 TextForgeError::new(
                                     TextForgeErrorCode::FileWritingError(
@@ -930,7 +929,6 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
                                 )
                             })?;
                         }
-                    }
 
                     std::fs::write(target, output).map_err(|e| {
                         TextForgeError::new(

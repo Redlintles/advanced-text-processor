@@ -1,8 +1,8 @@
 #[macro_export]
 macro_rules! parse_args {
     ($params:expr, $idx:expr, String, $msg:expr) => {{
-        use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
-        use crate::utils::params::TextForgeParamTypes;
+        use $crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+        use $crate::utils::params::TextForgeParamTypes;
         match &$params[$idx] {
             TextForgeParamTypes::String(payload) => payload.clone(),
             _ => {

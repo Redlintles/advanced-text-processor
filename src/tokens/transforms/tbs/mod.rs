@@ -49,7 +49,7 @@ impl InstructionMethods for Tbs {
         "tbs"
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "tbs", "")?;
+        check_vec_len(params, 0, "tbs", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

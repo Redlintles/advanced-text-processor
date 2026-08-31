@@ -59,7 +59,7 @@ impl InstructionMethods for Clw {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::utils::params::TextForgeParamTypesJoin;
 
-        check_vec_len(&params, 0, "clw", params.join(""))?;
+        check_vec_len(params, 0, "clw", params.join(""))?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

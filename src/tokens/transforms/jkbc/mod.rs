@@ -61,7 +61,7 @@ impl InstructionMethods for Jkbc {
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "jkbc", "")?;
+        check_vec_len(params, 0, "jkbc", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

@@ -97,13 +97,13 @@ impl InstructionMethods for Ctr {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 2, "ctr", "")?;
+        check_vec_len(params, 2, "ctr", "")?;
 
         self.start_index = parse_args!(params, 0, Usize, "Index should be of usize type");
         self.end_index = parse_args!(params, 1, Usize, "Index should be of usize type");
         self.params = vec![self.start_index.into(), self.end_index.into()];
 
-        return Ok(());
+        Ok(())
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {

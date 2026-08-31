@@ -80,7 +80,7 @@ impl InstructionMethods for Tlcs {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 1, "tlcs", "")?;
+        check_vec_len(params, 1, "tlcs", "")?;
 
         self.index = parse_args!(params, 0, Usize, "Index should be of usize type");
         self.params = vec![self.index.into()];

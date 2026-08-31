@@ -3,10 +3,10 @@ macro_rules! to_bytecode {
     // 1) Forma antiga: lista literal
     ($opcode:expr, [$($param:expr),* $(,)?]) => {
         {
-        use crate::context::execution_context::GlobalExecutionContext;
+        use $crate::context::execution_context::GlobalExecutionContext;
 
         // Coleta os params pra contar e iterar
-        let params_vec: Vec<crate::utils::params::TextForgeParamTypes> = vec![$($param),*];
+        let params_vec: Vec<$crate::utils::params::TextForgeParamTypes> = vec![$($param),*];
 
         let opcode_u32: u32 = $opcode;
         let param_count_u8: u8 = params_vec

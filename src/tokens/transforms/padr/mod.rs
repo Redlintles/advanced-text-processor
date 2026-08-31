@@ -72,13 +72,13 @@ impl InstructionMethods for Padr {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 2, "padr", "")?;
+        check_vec_len(params, 2, "padr", "")?;
 
         self.text = parse_args!(params, 0, String, "Text_to_insert should be of String type");
         self.max_len = parse_args!(params, 1, Usize, "Index should be of usize type");
         self.params = vec![self.text.to_string().into(), self.max_len.into()];
 
-        return Ok(());
+        Ok(())
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {

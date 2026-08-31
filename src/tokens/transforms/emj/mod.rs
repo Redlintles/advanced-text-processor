@@ -48,7 +48,7 @@ impl Emj {
     /// Returns `Err` (the underlying regex crate's error message, as a `String`)
     /// if `pattern` is not a valid regular expression.
     pub fn new(pattern: &str, separator: &str) -> Result<Self, String> {
-        let pattern = Regex::new(&pattern).map_err(|x| x.to_string())?;
+        let pattern = Regex::new(pattern).map_err(|x| x.to_string())?;
         Ok(Emj {
             params: vec![pattern.to_string().into(), separator.to_string().into()],
             pattern,
@@ -99,8 +99,8 @@ impl InstructionMethods for Emj {
     fn to_textforge_line(&self) -> std::borrow::Cow<'static, str> {
         format!(
             "emj {} {};\n",
-            self.pattern.to_string(),
-            self.separator.to_string()
+            self.pattern,
+            self.separator
         )
         .into()
     }

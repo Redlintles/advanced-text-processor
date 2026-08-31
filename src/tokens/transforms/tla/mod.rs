@@ -48,7 +48,7 @@ impl InstructionMethods for Tla {
         Ok(input.to_lowercase())
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "tla", "")?;
+        check_vec_len(params, 0, "tla", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

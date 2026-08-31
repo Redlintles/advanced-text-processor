@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::{GlobalContextMethods, GlobalExecutionContext},
     globals::var::TokenWrapper,
-    parse_args, to_bytecode,
+    parse_args,
     tokens::InstructionMethods,
     utils::{
         errors::{
@@ -39,14 +39,14 @@ impl Default for Blk {
 
 impl InstructionMethods for Blk {
     fn get_params(&self) -> &Vec<TextForgeParamTypes> {
-        return &self.params;
+        &self.params
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
         0x34
     }
     fn get_string_repr(&self) -> &'static str {
-        "blk".into()
+        "blk"
     }
 
     fn to_textforge_line(&self) -> std::borrow::Cow<'static, str> {
@@ -71,7 +71,7 @@ impl InstructionMethods for Blk {
             )
         })?;
         context.add_to_block(&self.block_name, self.inner.clone())?;
-        return Ok(input.to_string());
+        Ok(input.to_string())
     }
 
     fn from_params(
@@ -79,7 +79,7 @@ impl InstructionMethods for Blk {
         params: &Vec<crate::utils::params::TextForgeParamTypes>,
     ) -> Result<(), crate::utils::errors::TextForgeError> {
         check_vec_len(
-            &params,
+            params,
             2,
             "block assoc",
             "param parsing error, invalid vec len",

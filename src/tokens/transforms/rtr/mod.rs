@@ -79,7 +79,7 @@ impl InstructionMethods for Rtr {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 1, "rtr", "")?;
+        check_vec_len(params, 1, "rtr", "")?;
 
         self.times = parse_args!(params, 0, Usize, "Index should be of usize type");
         self.params = vec![self.times.into()];

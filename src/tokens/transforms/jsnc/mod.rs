@@ -61,7 +61,7 @@ impl InstructionMethods for Jsnc {
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "jsnc", "")?;
+        check_vec_len(params, 0, "jsnc", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

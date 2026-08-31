@@ -54,7 +54,7 @@ impl InstructionMethods for Trs {
         0x07
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "trs", "")?;
+        check_vec_len(params, 0, "trs", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

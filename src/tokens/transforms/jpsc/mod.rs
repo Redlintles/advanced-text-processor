@@ -55,7 +55,7 @@ impl InstructionMethods for Jpsc {
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "jpsc", "")?;
+        check_vec_len(params, 0, "jpsc", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

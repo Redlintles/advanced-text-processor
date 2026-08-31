@@ -1,6 +1,6 @@
 use crate::{
     context::execution_context::{GlobalContextMethods, GlobalExecutionContext},
-    parse_args, to_bytecode,
+    parse_args,
     tokens::InstructionMethods,
     utils::{
         errors::{TextForgeError, TextForgeErrorCode::RequiredContextError},
@@ -28,14 +28,14 @@ impl Default for Cblk {
 
 impl InstructionMethods for Cblk {
     fn get_params(&self) -> &Vec<TextForgeParamTypes> {
-        return &self.params;
+        &self.params
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
         0x35
     }
     fn get_string_repr(&self) -> &'static str {
-        "cblk".into()
+        "cblk"
     }
 
     fn to_textforge_line(&self) -> std::borrow::Cow<'static, str> {
@@ -47,7 +47,7 @@ impl InstructionMethods for Cblk {
         input: &str,
         context: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, crate::utils::errors::TextForgeError> {
-        let mut context = context.ok_or_else(|| {
+        let context = context.ok_or_else(|| {
             TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("val"),
@@ -58,7 +58,7 @@ impl InstructionMethods for Cblk {
         let tokens = context.take_block(&self.block_name)?;
 
         for token in tokens.iter() {
-            result = token.apply_token(&result, &mut context)?;
+            result = token.apply_token(&result, context)?;
         }
 
         context.put_block(&self.block_name, tokens);
@@ -70,7 +70,7 @@ impl InstructionMethods for Cblk {
         params: &Vec<crate::utils::params::TextForgeParamTypes>,
     ) -> Result<(), crate::utils::errors::TextForgeError> {
         check_vec_len(
-            &params,
+            params,
             1,
             "call block",
             "param parsing error, invalid vec len",

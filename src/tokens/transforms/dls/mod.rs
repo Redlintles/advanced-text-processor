@@ -66,9 +66,9 @@ impl InstructionMethods for Dls {
             .enumerate()
             .filter_map(|(i, c)| {
                 if self.index == i {
-                    return None;
+                    None
                 } else {
-                    return Some(c);
+                    Some(c)
                 }
             })
             .collect())
@@ -77,7 +77,7 @@ impl InstructionMethods for Dls {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 1, "dls", "")?;
+        check_vec_len(params, 1, "dls", "")?;
 
         self.index = parse_args!(params, 0, Usize, "Index should be of usize type");
         self.params = vec![self.index.into()];

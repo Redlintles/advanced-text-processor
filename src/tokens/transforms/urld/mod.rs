@@ -88,7 +88,7 @@ impl InstructionMethods for Urld {
         0x21
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "urld", "")?;
+        check_vec_len(params, 0, "urld", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

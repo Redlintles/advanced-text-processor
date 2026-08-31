@@ -59,7 +59,7 @@ impl Ifdc {
 
 impl InstructionMethods for Ifdc {
     fn get_params(&self) -> &Vec<TextForgeParamTypes> {
-        return &self.params;
+        &self.params
     }
     fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("ifdc {} do {}", self.text, self.inner.to_textforge_line()).into()
@@ -75,7 +75,7 @@ impl InstructionMethods for Ifdc {
         context: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         if input.contains(&self.text) {
-            return Ok(self.inner.transform(input, context)?);
+            return self.inner.transform(input, context);
         }
 
         Ok(input.to_string())
@@ -90,7 +90,7 @@ impl InstructionMethods for Ifdc {
 
         use crate::utils::params::TextForgeParamTypesJoin;
 
-        check_vec_len(&params, 2, "ifdc", params.join(""))?;
+        check_vec_len(params, 2, "ifdc", params.join(""))?;
 
         self.text = parse_args!(params, 0, String, "");
 

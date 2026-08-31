@@ -14,7 +14,6 @@ use std::{
     sync::Arc,
 };
 
-use regex::Regex;
 
 use crate::{
     context::execution_context::VarValues,
@@ -421,13 +420,11 @@ impl TextForgeParamTypes {
         assoc_mode: AssocMode,
     ) -> Result<TextForgeParamTypes, TextForgeError> {
         // Layout novo: [u64 total][u32 type][u32 payload_size][payload]
-        if bytes.len() >= 16 {
-            if let Ok(total) = Self::peek_u64_be(&bytes[0..8]) {
-                if (total as usize) == bytes.len() {
+        if bytes.len() >= 16
+            && let Ok(total) = Self::peek_u64_be(&bytes[0..8])
+                && (total as usize) == bytes.len() {
                     return Self::parse_param_new_layout(bytes, token_depth, assoc_mode);
                 }
-            }
-        }
         // Layout antigo: [u32 type][u32 payload_size][payload]
         Self::parse_param_old_layout(bytes, token_depth, assoc_mode)
     }
@@ -651,8 +648,8 @@ impl TextForgeParamTypes {
                         let mut cursor = Cursor::new(full_param.as_slice());
                         cursor.set_position(8);
                         Self::read_u32_be(&mut cursor, "")
-                    }) {
-                        if next_param_type == PARAM_TOKEN {
+                    })
+                        && next_param_type == PARAM_TOKEN {
                             let next_depth = token_depth + 1;
                             let max_depth = match child_assoc_mode {
                                 AssocMode::Normal => MAX_DEPTH_NORMAL,
@@ -671,7 +668,6 @@ impl TextForgeParamTypes {
                                 ));
                             }
                         }
-                    }
 
                     // Agora decodifica o child param como ValType (pode ser VarRef)
                     let parsed_val = Self::decode_full_param_as_valtype(
@@ -681,8 +677,8 @@ impl TextForgeParamTypes {
                     )?;
 
                     // Regra: em AssocPayload não pode existir block-like (só se child for Token literal)
-                    if child_assoc_mode == AssocMode::AssocPayload {
-                        if let ValType::Literal(TextForgeParamTypes::Token(ref tok)) = parsed_val {
+                    if child_assoc_mode == AssocMode::AssocPayload
+                        && let ValType::Literal(TextForgeParamTypes::Token(ref tok)) = parsed_val {
                             let nested_expected = match TOKEN_TABLE.find((
                                 QuerySource::Identifier(Cow::Owned(
                                     tok.get_string_repr().to_string(),
@@ -703,7 +699,6 @@ impl TextForgeParamTypes {
                                 ));
                             }
                         }
-                    }
 
                     params.push(parsed_val);
                 }

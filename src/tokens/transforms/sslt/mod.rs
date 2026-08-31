@@ -36,7 +36,7 @@ pub struct Sslt {
 
 impl Sslt {
     pub fn new(pattern: &str, index: usize) -> Result<Self, TextForgeError> {
-        let pattern = Regex::new(&pattern).map_err(|e| {
+        let pattern = Regex::new(pattern).map_err(|e| {
             TextForgeError::new(
                 TextForgeErrorCode::TextParsingError(e.to_string().into()),
                 "",
@@ -92,7 +92,7 @@ impl InstructionMethods for Sslt {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 2, "sslt", "")?;
+        check_vec_len(params, 2, "sslt", "")?;
 
         let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
 
@@ -108,7 +108,7 @@ impl InstructionMethods for Sslt {
 
         self.params = vec![self.pattern.to_string().into(), self.index.into()];
 
-        return Ok(());
+        Ok(())
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {

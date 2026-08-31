@@ -2,9 +2,8 @@ use std::borrow::Cow;
 
 use crate::{
     context::execution_context::GlobalExecutionContext,
-    to_bytecode,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, params::TextForgeParamTypes, validations::check_vec_len},
+    utils::{params::TextForgeParamTypes, validations::check_vec_len},
 };
 
 #[cfg(feature = "test_access")]
@@ -12,30 +11,26 @@ pub mod test;
 
 /// Null - Does nothing
 #[derive(Clone)]
+#[derive(Default)]
 pub struct Null {
     params: Vec<TextForgeParamTypes>,
 }
 
-impl Default for Null {
-    fn default() -> Self {
-        Null { params: vec![] }
-    }
-}
 
 impl InstructionMethods for Null {
     fn get_params(&self) -> &Vec<TextForgeParamTypes> {
-        return &self.params;
+        &self.params
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
         0x36
     }
     fn get_string_repr(&self) -> &'static str {
-        "val".into()
+        "val"
     }
 
     fn to_textforge_line(&self) -> Cow<'static, str> {
-        Cow::from(format!("null;\n"))
+        Cow::from("null;\n".to_string())
     }
 
     fn transform(
@@ -50,7 +45,7 @@ impl InstructionMethods for Null {
         &mut self,
         params: &Vec<crate::utils::params::TextForgeParamTypes>,
     ) -> Result<(), crate::utils::errors::TextForgeError> {
-        check_vec_len(&params, 0, "null", "param parsing error, invalid vec len")?;
+        check_vec_len(params, 0, "null", "param parsing error, invalid vec len")?;
 
         Ok(())
     }

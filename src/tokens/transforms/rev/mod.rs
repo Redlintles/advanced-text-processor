@@ -45,7 +45,7 @@ impl InstructionMethods for Rev {
         Ok(input.chars().rev().collect())
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "rev", "")?;
+        check_vec_len(params, 0, "rev", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

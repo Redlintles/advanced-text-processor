@@ -43,7 +43,7 @@ pub struct Rcw {
 
 impl Rcw {
     pub fn new(pattern: &str, text_to_replace: &str, count: usize) -> Result<Self, String> {
-        let pattern = Regex::new(&pattern).map_err(|x| x.to_string())?;
+        let pattern = Regex::new(pattern).map_err(|x| x.to_string())?;
         Ok(Rcw {
             text_to_replace: text_to_replace.to_string(),
             params: vec![
@@ -62,7 +62,7 @@ impl Default for Rcw {
         Rcw {
             pattern: Regex::new("").unwrap(),
             text_to_replace: "".to_string(),
-            count: 0 as usize,
+            count: 0_usize,
             params: vec!["".to_string().into(), "".to_string().into(), (0).into()],
         }
     }
@@ -100,7 +100,7 @@ impl InstructionMethods for Rcw {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 3, "rcw", "")?;
+        check_vec_len(params, 3, "rcw", "")?;
 
         let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
 
@@ -125,7 +125,7 @@ impl InstructionMethods for Rcw {
             self.text_to_replace.to_string().into(),
             self.count.into(),
         ];
-        return Ok(());
+        Ok(())
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {

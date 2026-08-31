@@ -55,7 +55,7 @@ pub trait GlobalContextMethods {
     fn get_mut_var(&mut self, var_id: &str) -> Result<&mut VarEntry, TextForgeError>;
 
     // It would require a more complex implementation. but would help optimizing textforge in the future. This will remove data that will no longer be used from the context.
-    fn clean_context(&mut self) -> () {}
+    fn clean_context(&mut self) {}
     fn take_block(&mut self, block_id: &str) -> Result<Vec<TokenWrapper>, TextForgeError>;
     fn put_block(&mut self, block_id: &str, block: Vec<TokenWrapper>);
 }
@@ -144,13 +144,13 @@ impl GlobalContextMethods for GlobalExecutionContext {
     }
 
     fn get_var(&self, var_id: &str) -> Result<&VarEntry, TextForgeError> {
-        Ok(self.variables.get(var_id).ok_or_else(|| {
+        self.variables.get(var_id).ok_or_else(|| {
             TextForgeError::new(
                 TextForgeErrorCode::VariableNotFound("Variable not found".into()),
                 "get_var",
                 var_id.to_string(),
             )
-        })?)
+        })
     }
 
     fn get_mut_var(&mut self, var_id: &str) -> Result<&mut VarEntry, TextForgeError> {

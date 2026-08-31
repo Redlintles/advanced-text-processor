@@ -41,13 +41,13 @@ pub fn extend_string(input: &str, max_len: usize) -> String {
     }
     let to_repeat = max_len.div_ceil(input.chars().count());
 
-    let repeated_string = input.repeat(to_repeat).chars().take(max_len).collect();
+    
 
-    repeated_string
+    input.repeat(to_repeat).chars().take(max_len).collect()
 }
 
 pub fn get_safe_utf8_char_index(index: usize, input: &str) -> Result<usize, TextForgeError> {
-    Ok(input
+    input
         .char_indices()
         .nth(index)
         .map(|(i, _)| i)
@@ -57,7 +57,7 @@ pub fn get_safe_utf8_char_index(index: usize, input: &str) -> Result<usize, Text
                 Cow::Borrowed("Get safe utf-8 char index"),
                 input.to_string(),
             )
-        })?)
+        })
 }
 
 // tests for utils/string utils (or wherever these fns live)

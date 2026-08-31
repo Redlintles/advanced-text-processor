@@ -88,7 +88,7 @@ impl InstructionMethods for Ins {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
 
-        check_vec_len(&params, 2, "ins", "")?;
+        check_vec_len(params, 2, "ins", "")?;
 
         self.index = parse_args!(params, 0, Usize, "Index should be of usize type");
         self.text_to_insert =
@@ -96,7 +96,7 @@ impl InstructionMethods for Ins {
 
         self.params = vec![self.index.into(), self.text_to_insert.to_string().into()];
 
-        return Ok(());
+        Ok(())
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {

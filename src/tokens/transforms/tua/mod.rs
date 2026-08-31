@@ -39,7 +39,7 @@ impl InstructionMethods for Tua {
         0x12
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "tua", "")?;
+        check_vec_len(params, 0, "tua", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

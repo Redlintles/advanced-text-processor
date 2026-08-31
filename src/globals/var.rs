@@ -35,7 +35,7 @@ impl From<&str> for ValType {
 }
 impl From<usize> for ValType {
     fn from(value: usize) -> Self {
-        return Self::Literal(TextForgeParamTypes::Usize(value));
+        Self::Literal(TextForgeParamTypes::Usize(value))
     }
 }
 
@@ -76,7 +76,7 @@ impl From<Box<dyn InstructionMethods>> for TokenWrapper {
             .get_params()
             .clone()
             .into_iter()
-            .map(|i| ValType::Literal(i))
+            .map(ValType::Literal)
             .collect::<Vec<ValType>>();
         TokenWrapper {
             params: token_params,
@@ -87,7 +87,7 @@ impl From<Box<dyn InstructionMethods>> for TokenWrapper {
 
 impl From<TokenWrapper> for Box<dyn InstructionMethods> {
     fn from(value: TokenWrapper) -> Self {
-        return value.token;
+        value.token
     }
 }
 
@@ -109,7 +109,7 @@ impl TokenWrapper {
                     .get_params()
                     .clone()
                     .into_iter()
-                    .map(|i| ValType::Literal(i))
+                    .map(ValType::Literal)
                     .collect::<Vec<ValType>>();
                 TokenWrapper {
                     params: token_params,

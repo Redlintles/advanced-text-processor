@@ -52,7 +52,7 @@ impl InstructionMethods for Htmlu {
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "dlf", "")?;
+        check_vec_len(params, 0, "dlf", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

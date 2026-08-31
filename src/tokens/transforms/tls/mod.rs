@@ -50,7 +50,7 @@ impl InstructionMethods for Tls {
         "tls"
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 0, "tls", "")?;
+        check_vec_len(params, 0, "tls", "")?;
         Ok(())
     }
     #[cfg(feature = "bytecode")]

@@ -47,7 +47,7 @@ pub struct Rnw {
 
 impl Rnw {
     pub fn new(pattern: &str, text_to_replace: &str, index: usize) -> Result<Self, String> {
-        let pattern = Regex::new(&pattern).map_err(|x| x.to_string())?;
+        let pattern = Regex::new(pattern).map_err(|x| x.to_string())?;
         Ok(Rnw {
             text_to_replace: text_to_replace.to_string(),
             params: vec![
@@ -115,7 +115,7 @@ impl InstructionMethods for Rnw {
         "rnw"
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        check_vec_len(&params, 3, "rnw", "")?;
+        check_vec_len(params, 3, "rnw", "")?;
 
         let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
 
@@ -141,7 +141,7 @@ impl InstructionMethods for Rnw {
             self.text_to_replace.to_string().into(),
             self.index.into(),
         ];
-        return Ok(());
+        Ok(())
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
