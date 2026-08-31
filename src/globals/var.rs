@@ -192,6 +192,57 @@ pub fn get_effective_param_types(expected: &[SyntaxDef]) -> Vec<SyntaxToken> {
 }
 
 impl ValType {
+    fn coerce_var_value(
+        value: VarValues,
+        expected: SyntaxToken,
+        var_name: &str
+    ) -> Result<TextForgeParamTypes, TextForgeError> {
+        match (value, expected) {
+            (VarValues::String(v), SyntaxToken::String) => Ok(TextForgeParamTypes::String(v)),
+            (VarValues::Usize(v), SyntaxToken::Usize) => Ok(TextForgeParamTypes::Usize(v)),
+            (VarValues::Token(v), SyntaxToken::Token) => Ok(TextForgeParamTypes::Token(v)),
+
+            // Coerção elástica: string <-> número
+            (VarValues::String(s), SyntaxToken::Usize) => {
+                s.parse::<usize>()
+                    .map(TextForgeParamTypes::Usize)
+                    .map_err(|_| {
+                        TextForgeError::new(
+                            TextForgeErrorCode::IncompatibleTypeError(
+                                format!(
+                                    "variável '{}' contém \"{}\", que não é um número válido",
+                                    var_name,
+                                    s
+                                ).into()
+                            ),
+                            "resolve_variables()",
+                            ""
+                        )
+                    })
+            }
+            (VarValues::Usize(n), SyntaxToken::String) => {
+                Ok(TextForgeParamTypes::String(n.to_string()))
+            }
+
+            // Token não tem conversão sensata a partir de String/Usize
+            (_, expected) => {
+                Err(
+                    TextForgeError::new(
+                        TextForgeErrorCode::IncompatibleTypeError(
+                            format!(
+                                "variável '{}' não pode ser usada como {:?} aqui",
+                                var_name,
+                                expected
+                            ).into()
+                        ),
+                        "resolve_variables()",
+                        ""
+                    )
+                )
+            }
+        }
+    }
+
     fn resolve_variables(
         t: &Box<dyn InstructionMethods>,
         values: &Vec<ValType>,
@@ -253,28 +304,12 @@ impl ValType {
                 }
                 ValType::VarRef(name) => {
                     let variable = context.get_var(name)?;
-                    match (variable.value.clone(), expected_params[i]) {
-                        (VarValues::String(v), SyntaxToken::String) => {
-                            result.push(TextForgeParamTypes::String(v));
-                        }
-                        (VarValues::Usize(v), SyntaxToken::Usize) => {
-                            result.push(TextForgeParamTypes::Usize(v));
-                        }
-                        (VarValues::Token(v), SyntaxToken::Token) => {
-                            result.push(TextForgeParamTypes::Token(v));
-                        }
-                        _ => {
-                            return Err(
-                                TextForgeError::new(
-                                    TextForgeErrorCode::IncompatibleTypeError(
-                                        "Var type and required param type are different".into()
-                                    ),
-                                    "resolve_variables()",
-                                    ""
-                                )
-                            );
-                        }
-                    }
+                    let coerced = Self::coerce_var_value(
+                        variable.value.clone(),
+                        expected_params[i],
+                        name
+                    )?;
+                    result.push(coerced);
                 }
             }
         }
