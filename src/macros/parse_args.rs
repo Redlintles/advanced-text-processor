@@ -1,9 +1,8 @@
 #[macro_export]
 macro_rules! parse_args {
-    ($params:expr, $idx:expr, String, $msg:expr) => {
-        {
-        use crate::utils::params::TextForgeParamTypes;
+    ($params:expr, $idx:expr, String, $msg:expr) => {{
         use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
         match &$params[$idx] {
             TextForgeParamTypes::String(payload) => payload.clone(),
             _ => {
@@ -14,12 +13,10 @@ macro_rules! parse_args {
                 ));
             }
         }
-        }
-    };
-    ($params:expr, $idx:expr, Usize, $msg:expr) => {
-        {
-        use crate::utils::params::TextForgeParamTypes;
+    }};
+    ($params:expr, $idx:expr, Usize, $msg:expr) => {{
         use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
         match &$params[$idx] {
             TextForgeParamTypes::Usize(payload) => payload.clone(),
             _ => {
@@ -30,12 +27,10 @@ macro_rules! parse_args {
                 ));
             }
         }
-        }
-    };
-    ($params:expr, $idx:expr, Token, $msg:expr) => {
-        {
-        use crate::utils::params::TextForgeParamTypes;
+    }};
+    ($params:expr, $idx:expr, Token, $msg:expr) => {{
         use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
         match &$params[$idx] {
             TextForgeParamTypes::Token(payload) => payload.clone(),
             _ => {
@@ -46,12 +41,10 @@ macro_rules! parse_args {
                 ));
             }
         }
-        }
-    };
-    ($param:expr, String) => {
-        {
-        use crate::utils::params::TextForgeParamTypes;
+    }};
+    ($param:expr, String) => {{
         use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
         match &$param {
             TextForgeParamTypes::String(payload) => payload.clone(),
             _ => {
@@ -62,12 +55,10 @@ macro_rules! parse_args {
                 ));
             }
         }
-        }
-    };
-    ($param:expr, Usize) => {
-        {
-        use crate::utils::params::TextForgeParamTypes;
+    }};
+    ($param:expr, Usize) => {{
         use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
         match $param {
             TextForgeParamTypes::Usize(payload) => payload.clone(),
             _ => {
@@ -78,12 +69,10 @@ macro_rules! parse_args {
                 ));
             }
         }
-        }
-    };
-    ($param:expr, Token) => {
-        {
-        use crate::utils::params::TextForgeParamTypes;
+    }};
+    ($param:expr, Token) => {{
         use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+        use crate::utils::params::TextForgeParamTypes;
         match $param {
             TextForgeParamTypes::Token(payload) => payload.clone(),
             _ => {
@@ -94,6 +83,5 @@ macro_rules! parse_args {
                 ));
             }
         }
-        }
-    };
+    }};
 }

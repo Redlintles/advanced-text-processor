@@ -2,7 +2,7 @@ use crate::{
     api::TextForgeBuilderMethods,
     globals::var::TokenWrapper,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, params::TextForgeParamTypes },
+    utils::{errors::TextForgeError, params::TextForgeParamTypes},
 };
 
 pub struct ConditionalBuilderEach {

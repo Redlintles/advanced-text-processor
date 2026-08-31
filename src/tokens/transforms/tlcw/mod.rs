@@ -8,7 +8,7 @@ use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
 use crate::{
     tokens::InstructionMethods,
-    utils::{ errors::{ TextForgeError }, validations::{ check_index_against_words } },
+    utils::{errors::TextForgeError, validations::check_index_against_words},
 };
 
 /// TLCW - To Lowercase Word
@@ -33,7 +33,10 @@ pub struct Tlcw {
 
 impl Tlcw {
     pub fn new(index: usize) -> Self {
-        Tlcw { index, params: vec![index.into()] }
+        Tlcw {
+            index,
+            params: vec![index.into()],
+        }
     }
 }
 impl InstructionMethods for Tlcw {
@@ -51,20 +54,22 @@ impl InstructionMethods for Tlcw {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, crate::utils::errors::TextForgeError> {
         check_index_against_words(self.index, input)?;
-        Ok(
-            input
-                .split_whitespace()
-                .enumerate()
-                .map(|(i, w)| {
-                    if i == self.index { w.to_lowercase() } else { w.to_string() }
-                })
-                .collect::<Vec<_>>()
-                .join(" ")
-                .to_string()
-        )
+        Ok(input
+            .split_whitespace()
+            .enumerate()
+            .map(|(i, w)| {
+                if i == self.index {
+                    w.to_lowercase()
+                } else {
+                    w.to_string()
+                }
+            })
+            .collect::<Vec<_>>()
+            .join(" ")
+            .to_string())
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
@@ -84,7 +89,8 @@ impl InstructionMethods for Tlcw {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
+        let result: Vec<u8> =
+            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
         Ok(result)
     }
 }

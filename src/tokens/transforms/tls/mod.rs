@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::context::execution_context::GlobalExecutionContext;
 use crate::tokens::InstructionMethods;
 
-use crate::utils::errors::{ TextForgeError };
+use crate::utils::errors::TextForgeError;
 
 use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
@@ -38,7 +38,11 @@ impl InstructionMethods for Tls {
         "tls;\n".into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, TextForgeError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>,
+    ) -> Result<String, TextForgeError> {
         Ok(String::from(input.trim_start()))
     }
 

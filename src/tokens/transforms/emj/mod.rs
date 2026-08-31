@@ -4,7 +4,7 @@ use crate::{
     parse_args,
     tokens::InstructionMethods,
     utils::{
-        errors::{ TextForgeError, TextForgeErrorCode },
+        errors::{TextForgeError, TextForgeErrorCode},
         params::TextForgeParamTypes,
         validations::check_vec_len,
     },
@@ -76,12 +76,15 @@ impl InstructionMethods for Emj {
             TextForgeError::new(
                 TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "emj",
-                pattern_payload.clone()
+                pattern_payload.clone(),
             )
         })?;
 
         self.separator = parse_args!(params, 1, String, "separator should be of type String");
-        self.params = vec![self.pattern.to_string().clone().into(), self.separator.clone().into()];
+        self.params = vec![
+            self.pattern.to_string().clone().into(),
+            self.separator.clone().into(),
+        ];
         Ok(())
     }
 
@@ -94,7 +97,12 @@ impl InstructionMethods for Emj {
     }
 
     fn to_textforge_line(&self) -> std::borrow::Cow<'static, str> {
-        format!("emj {} {};\n", self.pattern.to_string(), self.separator.to_string()).into()
+        format!(
+            "emj {} {};\n",
+            self.pattern.to_string(),
+            self.separator.to_string()
+        )
+        .into()
     }
 
     #[cfg(feature = "bytecode")]
@@ -105,10 +113,13 @@ impl InstructionMethods for Emj {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.pattern.to_string()),
-            TextForgeParamTypes::String(self.separator.clone()),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::String(self.pattern.to_string()),
+                TextForgeParamTypes::String(self.separator.clone()),
+            ]
+        );
         Ok(result)
     }
 
@@ -118,7 +129,7 @@ impl InstructionMethods for Emj {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut crate::context::execution_context::GlobalExecutionContext>
+        _: Option<&mut crate::context::execution_context::GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         let mut result: Vec<String> = vec![];
 

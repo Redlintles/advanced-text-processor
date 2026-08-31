@@ -32,7 +32,10 @@ mod tests {
         let t = Dls::new(3);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("banna".to_string()));
+        assert_eq!(
+            t.transform("banana", Some(&mut ctx)),
+            Ok("banna".to_string())
+        );
     }
 
     #[test]
@@ -40,7 +43,10 @@ mod tests {
         let t = Dls::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("anana".to_string()));
+        assert_eq!(
+            t.transform("banana", Some(&mut ctx)),
+            Ok("anana".to_string())
+        );
     }
 
     #[test]
@@ -48,7 +54,10 @@ mod tests {
         let t = Dls::new(5);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("banan".to_string()));
+        assert_eq!(
+            t.transform("banana", Some(&mut ctx)),
+            Ok("banan".to_string())
+        );
     }
 
     #[test]
@@ -85,7 +94,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -104,13 +116,11 @@ mod tests {
 
         let got = t.from_params(&params);
 
-        let expected = Err(
-            crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
-                "",
-                ""
-            )
-        );
+        let expected = Err(crate::utils::errors::TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
+            "",
+            "",
+        ));
 
         assert_eq!(got, expected);
     }

@@ -4,13 +4,12 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::errors::{ TextForgeError };
+use crate::utils::errors::TextForgeError;
 
 use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
 use crate::{
-    tokens::InstructionMethods,
-    utils::transforms::capitalize,
+    tokens::InstructionMethods, utils::transforms::capitalize,
     utils::validations::check_chunk_bound_indexes,
 };
 
@@ -60,7 +59,7 @@ impl InstructionMethods for Ctr {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         if input.trim().is_empty() {
             return Ok("".to_string());
@@ -80,7 +79,11 @@ impl InstructionMethods for Ctr {
             .split_whitespace()
             .enumerate()
             .map(|(i, c)| {
-                if (self.start_index..=end).contains(&i) { capitalize(c) } else { c.to_string() }
+                if (self.start_index..=end).contains(&i) {
+                    capitalize(c)
+                } else {
+                    c.to_string()
+                }
             })
             .collect::<Vec<_>>()
             .join(" ");
@@ -109,10 +112,13 @@ impl InstructionMethods for Ctr {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::Usize(self.start_index),
-            TextForgeParamTypes::Usize(self.end_index),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::Usize(self.start_index),
+                TextForgeParamTypes::Usize(self.end_index),
+            ]
+        );
         Ok(result)
     }
 }

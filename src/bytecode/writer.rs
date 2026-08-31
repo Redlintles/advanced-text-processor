@@ -1,25 +1,31 @@
-use std::{ fs::OpenOptions, io::Write, path::Path };
+use std::{fs::OpenOptions, io::Write, path::Path};
 
 use crate::{
     globals::var::TokenWrapper,
-    utils::{ errors::TextForgeError, validations::check_file_path },
+    utils::{errors::TextForgeError, validations::check_file_path},
 };
 
-pub fn write_bytecode_to_file(path: &Path, tokens: Vec<TokenWrapper>) -> Result<(), TextForgeError> {
+pub fn write_bytecode_to_file(
+    path: &Path,
+    tokens: Vec<TokenWrapper>,
+) -> Result<(), TextForgeError> {
     check_file_path(path, Some("textforgebc"))?;
 
-    let mut file = match OpenOptions::new().create(true).truncate(true).write(true).open(path) {
+    let mut file = match OpenOptions::new()
+        .create(true)
+        .truncate(true)
+        .write(true)
+        .open(path)
+    {
         Ok(x) => x,
         Err(_) => {
-            return Err(
-                TextForgeError::new(
-                    crate::utils::errors::TextForgeErrorCode::FileOpeningError(
-                        "Failed opening File".into()
-                    ),
-                    "",
-                    format!("{:?}", path)
-                )
-            );
+            return Err(TextForgeError::new(
+                crate::utils::errors::TextForgeErrorCode::FileOpeningError(
+                    "Failed opening File".into(),
+                ),
+                "",
+                format!("{:?}", path),
+            ));
         }
     };
 
@@ -38,15 +44,13 @@ pub fn write_bytecode_to_file(path: &Path, tokens: Vec<TokenWrapper>) -> Result<
     match file.write(&header) {
         Ok(_) => (),
         Err(_) => {
-            return Err(
-                TextForgeError::new(
-                    crate::utils::errors::TextForgeErrorCode::FileWritingError(
-                        "Failed writing text to textforge file".into()
-                    ),
-                    "Write bytecode to file",
-                    "Header writing error"
-                )
-            );
+            return Err(TextForgeError::new(
+                crate::utils::errors::TextForgeErrorCode::FileWritingError(
+                    "Failed writing text to textforge file".into(),
+                ),
+                "Write bytecode to file",
+                "Header writing error",
+            ));
         }
     }
 
@@ -56,15 +60,13 @@ pub fn write_bytecode_to_file(path: &Path, tokens: Vec<TokenWrapper>) -> Result<
         match file.write(&line) {
             Ok(_) => (),
             Err(_) => {
-                return Err(
-                    TextForgeError::new(
-                        crate::utils::errors::TextForgeErrorCode::FileWritingError(
-                            "Failed writing text to textforge file".into()
-                        ),
-                        "Write bytecode to file",
-                        token.to_textforge_line()
-                    )
-                );
+                return Err(TextForgeError::new(
+                    crate::utils::errors::TextForgeErrorCode::FileWritingError(
+                        "Failed writing text to textforge file".into(),
+                    ),
+                    "Write bytecode to file",
+                    token.to_textforge_line(),
+                ));
             }
         }
     }

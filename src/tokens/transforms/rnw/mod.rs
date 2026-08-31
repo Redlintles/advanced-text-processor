@@ -4,8 +4,7 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::{
-    context::execution_context::GlobalExecutionContext,
-    parse_args,
+    context::execution_context::GlobalExecutionContext, parse_args,
     utils::validations::check_vec_len,
 };
 
@@ -13,7 +12,7 @@ use regex::Regex;
 
 use crate::{
     tokens::InstructionMethods,
-    utils::{ errors::{ TextForgeError, TextForgeErrorCode } },
+    utils::errors::{TextForgeError, TextForgeErrorCode},
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -54,7 +53,7 @@ impl Rnw {
             params: vec![
                 text_to_replace.to_string().into(),
                 pattern.to_string().into(),
-                index.into()
+                index.into(),
             ],
             pattern,
             index,
@@ -78,13 +77,17 @@ impl InstructionMethods for Rnw {
         &self.params
     }
     fn to_textforge_line(&self) -> Cow<'static, str> {
-        format!("rnw {} {} {};\n", self.pattern, self.text_to_replace, self.index).into()
+        format!(
+            "rnw {} {} {};\n",
+            self.pattern, self.text_to_replace, self.index
+        )
+        .into()
     }
 
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         let mut count = 0;
 
@@ -99,9 +102,8 @@ impl InstructionMethods for Rnw {
         }
 
         if let Some((start, end)) = idx {
-            let mut result = String::with_capacity(
-                input.len() - (end - start) + self.text_to_replace.len()
-            );
+            let mut result =
+                String::with_capacity(input.len() - (end - start) + self.text_to_replace.len());
             result.push_str(&input[..start]);
             result.push_str(&self.text_to_replace);
             result.push_str(&input[end..]);
@@ -121,7 +123,7 @@ impl InstructionMethods for Rnw {
             TextForgeError::new(
                 TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
-                pattern_payload.clone()
+                pattern_payload.clone(),
             )
         })?;
 
@@ -137,7 +139,7 @@ impl InstructionMethods for Rnw {
         self.params = vec![
             self.pattern.to_string().into(),
             self.text_to_replace.to_string().into(),
-            self.index.into()
+            self.index.into(),
         ];
         return Ok(());
     }
@@ -148,11 +150,14 @@ impl InstructionMethods for Rnw {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.pattern.to_string()),
-            TextForgeParamTypes::String(self.text_to_replace.clone()),
-            TextForgeParamTypes::Usize(self.index),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::String(self.pattern.to_string()),
+                TextForgeParamTypes::String(self.text_to_replace.clone()),
+                TextForgeParamTypes::Usize(self.index),
+            ]
+        );
         Ok(result)
     }
 }

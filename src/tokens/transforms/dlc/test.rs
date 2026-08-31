@@ -5,7 +5,7 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::dlc::Dlc;
-    use crate::utils::errors::{ TextForgeErrorCode };
+    use crate::utils::errors::TextForgeErrorCode;
     use crate::utils::params::TextForgeParamTypes;
 
     #[test]
@@ -71,7 +71,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -87,17 +90,18 @@ mod tests {
     #[test]
     fn from_params_rejects_wrong_param_type() {
         let mut t = Dlc::default();
-        let params = vec![TextForgeParamTypes::String("x".to_string()), TextForgeParamTypes::Usize(2)];
+        let params = vec![
+            TextForgeParamTypes::String("x".to_string()),
+            TextForgeParamTypes::Usize(2),
+        ];
 
         let got = t.from_params(&params);
 
-        let expected = Err(
-            crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
-                "",
-                ""
-            )
-        );
+        let expected = Err(crate::utils::errors::TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
+            "",
+            "",
+        ));
 
         assert_eq!(got, expected);
     }

@@ -36,7 +36,10 @@ mod tests {
         let t = Jcmc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("banana".to_string()));
+        assert_eq!(
+            t.transform("banana", Some(&mut ctx)),
+            Ok("banana".to_string())
+        );
     }
 
     #[test]
@@ -66,7 +69,10 @@ mod tests {
 
         // depende do capitalize() do seu projeto, mas normalmente:
         // "maçã" -> "Maçã"
-        assert_eq!(t.transform("maçã com canela", Some(&mut ctx)), Ok("maçãComCanela".to_string()));
+        assert_eq!(
+            t.transform("maçã com canela", Some(&mut ctx)),
+            Ok("maçãComCanela".to_string())
+        );
     }
 
     #[test]
@@ -84,7 +90,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

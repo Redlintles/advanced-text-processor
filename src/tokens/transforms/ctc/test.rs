@@ -5,7 +5,7 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::ctc::Ctc;
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
     use crate::utils::params::TextForgeParamTypes;
 
     #[test]
@@ -33,7 +33,10 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         let t = Ctc::new(1, 5).unwrap();
-        assert_eq!(t.transform("bananabananosa", Some(&mut ctx)), Ok("bAnanabananosa".to_string()));
+        assert_eq!(
+            t.transform("bananabananosa", Some(&mut ctx)),
+            Ok("bAnanabananosa".to_string())
+        );
     }
 
     #[test]
@@ -48,7 +51,10 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         let t = Ctc::new(3, 10).unwrap();
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok("xx Foo Bar yy".to_string()));
+        assert_eq!(
+            t.transform(input, Some(&mut ctx)),
+            Ok("xx Foo Bar yy".to_string())
+        );
     }
 
     #[test]
@@ -69,7 +75,10 @@ mod tests {
         let t = Ctc::new(0, 3).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok("Ábc def".to_string()));
+        assert_eq!(
+            t.transform(input, Some(&mut ctx)),
+            Ok("Ábc def".to_string())
+        );
     }
 
     #[test]
@@ -89,7 +98,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -105,17 +117,18 @@ mod tests {
     #[test]
     fn from_params_rejects_wrong_param_type() {
         let mut t = Ctc::default();
-        let params = vec![TextForgeParamTypes::String("x".to_string()), TextForgeParamTypes::Usize(5)];
+        let params = vec![
+            TextForgeParamTypes::String("x".to_string()),
+            TextForgeParamTypes::Usize(5),
+        ];
 
         let got = t.from_params(&params);
 
-        let expected = Err(
-            crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
-                "",
-                ""
-            )
-        );
+        let expected = Err(crate::utils::errors::TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
+            "",
+            "",
+        ));
 
         assert_eq!(got, expected);
     }

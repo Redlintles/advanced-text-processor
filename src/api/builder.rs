@@ -1,10 +1,10 @@
 use crate::{
-    api::{ TextForgeBlockMethods, TextForgeBuilderMethods, TextForgeConditionalMethods },
+    api::{TextForgeBlockMethods, TextForgeBuilderMethods, TextForgeConditionalMethods},
     globals::var::TokenWrapper,
     utils::errors::TextForgeError,
 };
 
-use super::processor::{ TextForgeProcessor, TextForgeProcessorMethods };
+use super::processor::{TextForgeProcessor, TextForgeProcessorMethods};
 
 pub struct TextForgeBuilder<'ap> {
     tokens: Vec<TokenWrapper>,
@@ -13,7 +13,10 @@ pub struct TextForgeBuilder<'ap> {
 
 impl<'ap> TextForgeBuilder<'ap> {
     pub fn new(processor: &'ap mut TextForgeProcessor) -> TextForgeBuilder<'ap> {
-        TextForgeBuilder { tokens: Vec::new(), processor }
+        TextForgeBuilder {
+            tokens: Vec::new(),
+            processor,
+        }
     }
 
     pub fn build(&mut self) -> String {

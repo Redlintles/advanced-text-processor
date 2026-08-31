@@ -8,7 +8,7 @@ use html_escape::decode_html_entities;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, validations::check_vec_len },
+    utils::{errors::TextForgeError, validations::check_vec_len},
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -43,7 +43,11 @@ impl InstructionMethods for Htmlu {
     fn to_textforge_line(&self) -> Cow<'static, str> {
         "htmlu;\n".into()
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, TextForgeError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>,
+    ) -> Result<String, TextForgeError> {
         Ok(decode_html_entities(input).to_string())
     }
 

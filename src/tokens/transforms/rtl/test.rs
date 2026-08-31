@@ -3,8 +3,8 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
-    use crate::tokens::{ InstructionMethods, transforms::rtl::Rtl };
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::tokens::{InstructionMethods, transforms::rtl::Rtl};
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
     use crate::utils::params::TextForgeParamTypes;
 
     #[test]
@@ -75,13 +75,11 @@ mod tests {
 
         let got = t.transform("", Some(&mut ctx));
 
-        let expected = Err(
-            TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Input is empty".into()),
-                t.to_textforge_line(),
-                "\" \""
-            )
-        );
+        let expected = Err(TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Input is empty".into()),
+            t.to_textforge_line(),
+            "\" \"",
+        ));
 
         assert_eq!(got, expected);
     }
@@ -104,7 +102,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]

@@ -1,13 +1,13 @@
-pub mod builder;
-pub mod processor;
-pub mod conditional_builder;
 pub mod block_builder;
+pub mod builder;
+pub mod conditional_builder;
+pub mod processor;
 
 use crate::api::block_builder::BlockBuilder;
 use crate::api::conditional_builder::ConditionalBuilderEach;
-use crate::globals::var::{ TokenWrapper, ValType };
-use crate::tokens::{ transforms::*, instructions::*, InstructionMethods };
-use crate::utils::errors::{ TextForgeError };
+use crate::globals::var::{TokenWrapper, ValType};
+use crate::tokens::{InstructionMethods, instructions::*, transforms::*};
+use crate::utils::errors::TextForgeError;
 use crate::utils::params::TextForgeParamTypes;
 
 pub trait TextForgeBuilderMethods: Sized {
@@ -293,11 +293,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn delete_chunk(
         &mut self,
         start_index: impl Into<ValType>,
-        end_index: impl Into<ValType>
+        end_index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(dlc::Dlc::default()),
-            Some(vec![start_index.into(), end_index.into()])
+            Some(vec![start_index.into(), end_index.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -335,11 +335,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn replace_all_with(
         &mut self,
         pattern: impl Into<ValType>,
-        text_to_replace: impl Into<ValType>
+        text_to_replace: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(raw::Raw::default()),
-            Some(vec![pattern.into(), text_to_replace.into()])
+            Some(vec![pattern.into(), text_to_replace.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -376,11 +376,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn replace_first_with(
         &mut self,
         pattern: impl Into<ValType>,
-        text_to_replace: impl Into<ValType>
+        text_to_replace: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(rfw::Rfw::default()),
-            Some(vec![pattern.into(), text_to_replace.into()])
+            Some(vec![pattern.into(), text_to_replace.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -417,11 +417,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn replace_last_with(
         &mut self,
         pattern: impl Into<ValType>,
-        text_to_replace: impl Into<ValType>
+        text_to_replace: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(rlw::Rlw::default()),
-            Some(vec![pattern.into(), text_to_replace.into()])
+            Some(vec![pattern.into(), text_to_replace.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -461,11 +461,11 @@ pub trait TextForgeBuilderMethods: Sized {
         &mut self,
         pattern: impl Into<ValType>,
         text_to_replace: impl Into<ValType>,
-        index: impl Into<ValType>
+        index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(rnw::Rnw::default()),
-            Some(vec![pattern.into(), text_to_replace.into(), index.into()])
+            Some(vec![pattern.into(), text_to_replace.into(), index.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -504,11 +504,11 @@ pub trait TextForgeBuilderMethods: Sized {
         &mut self,
         pattern: impl Into<ValType>,
         text_to_replace: impl Into<ValType>,
-        count: impl Into<ValType>
+        count: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(rcw::Rcw::default()),
-            Some(vec![pattern.into(), text_to_replace.into(), count.into()])
+            Some(vec![pattern.into(), text_to_replace.into(), count.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -646,11 +646,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn select(
         &mut self,
         start_index: impl Into<ValType>,
-        end_index: impl Into<ValType>
+        end_index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(slt::Slt::default()),
-            Some(vec![start_index.into(), end_index.into()])
+            Some(vec![start_index.into(), end_index.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -754,7 +754,7 @@ pub trait TextForgeBuilderMethods: Sized {
 
     fn to_uppercase_single(
         &mut self,
-        index: impl Into<ValType>
+        index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tucs::Tucs::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
@@ -792,7 +792,7 @@ pub trait TextForgeBuilderMethods: Sized {
 
     fn to_lowercase_single(
         &mut self,
-        index: impl Into<ValType>
+        index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tlcs::Tlcs::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
@@ -834,11 +834,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn to_uppercase_chunk(
         &mut self,
         start_index: impl Into<ValType>,
-        end_index: impl Into<ValType>
+        end_index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(tucc::Tucc::default()),
-            Some(vec![start_index.into(), end_index.into()])
+            Some(vec![start_index.into(), end_index.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -879,11 +879,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn to_lowercase_chunk(
         &mut self,
         start_index: impl Into<ValType>,
-        end_index: impl Into<ValType>
+        end_index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(tlcc::Tlcc::default()),
-            Some(vec![start_index.into(), end_index.into()])
+            Some(vec![start_index.into(), end_index.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -989,11 +989,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn split_select(
         &mut self,
         pattern: impl Into<ValType>,
-        index: impl Into<ValType>
+        index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(sslt::Sslt::default()),
-            Some(vec![pattern.into(), index.into()])
+            Some(vec![pattern.into(), index.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -1031,11 +1031,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn capitalize_chunk(
         &mut self,
         start_index: impl Into<ValType>,
-        end_index: impl Into<ValType>
+        end_index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(ctc::Ctc::default()),
-            Some(vec![start_index.into(), end_index.into()])
+            Some(vec![start_index.into(), end_index.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -1073,11 +1073,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn capitalize_range(
         &mut self,
         start_index: impl Into<ValType>,
-        end_index: impl Into<ValType>
+        end_index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(ctr::Ctr::default()),
-            Some(vec![start_index.into(), end_index.into()])
+            Some(vec![start_index.into(), end_index.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -1112,7 +1112,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// ```
     fn capitalize_single_word(
         &mut self,
-        index: impl Into<ValType>
+        index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(cts::Cts::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
@@ -1394,11 +1394,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn insert(
         &mut self,
         index: impl Into<ValType>,
-        text_to_insert: impl Into<ValType>
+        text_to_insert: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(ins::Ins::default()),
-            Some(vec![index.into(), text_to_insert.into()])
+            Some(vec![index.into(), text_to_insert.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -1428,7 +1428,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// ```
     fn to_lowercase_word(
         &mut self,
-        index: impl Into<ValType>
+        index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tlcw::Tlcw::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
@@ -1458,7 +1458,7 @@ pub trait TextForgeBuilderMethods: Sized {
     /// ```
     fn to_uppercase_word(
         &mut self,
-        index: impl Into<ValType>
+        index: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(Box::new(tucw::Tucw::default()), Some(vec![index.into()]));
         self.push_token(tok)?;
@@ -1603,11 +1603,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn pad_left(
         &mut self,
         text: impl Into<ValType>,
-        times: impl Into<ValType>
+        times: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(padl::Padl::default()),
-            Some(vec![text.into(), times.into()])
+            Some(vec![text.into(), times.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -1637,11 +1637,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn pad_right(
         &mut self,
         text: impl Into<ValType>,
-        times: impl Into<ValType>
+        times: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(padr::Padr::default()),
-            Some(vec![text.into(), times.into()])
+            Some(vec![text.into(), times.into()]),
         );
         self.push_token(tok)?;
         Ok(self)
@@ -1720,11 +1720,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn extract_matches_joined(
         &mut self,
         pattern: impl Into<ValType>,
-        separator: impl Into<ValType>
+        separator: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(emj::Emj::default()),
-            Some(vec![pattern.into(), separator.into()])
+            Some(vec![pattern.into(), separator.into()]),
         );
 
         self.push_token(tok)?;
@@ -1754,11 +1754,11 @@ pub trait TextForgeBuilderMethods: Sized {
     fn val(
         &mut self,
         val_name: impl Into<ValType>,
-        val_value: impl Into<ValType>
+        val_value: impl Into<ValType>,
     ) -> Result<&mut Self, TextForgeError> {
         let tok = TokenWrapper::new(
             Box::new(val::Val::default()),
-            Some(vec![val_name.into(), val_value.into()])
+            Some(vec![val_name.into(), val_value.into()]),
         );
 
         self.push_token(tok)?;
@@ -1768,7 +1768,8 @@ pub trait TextForgeBuilderMethods: Sized {
 
 pub trait TextForgeConditionalMethods: TextForgeBuilderMethods {
     fn if_do_contains_each<F>(&mut self, value: &str, f: F) -> Result<&mut Self, TextForgeError>
-        where F: FnOnce(&mut ConditionalBuilderEach) -> Result<(), TextForgeError>
+    where
+        F: FnOnce(&mut ConditionalBuilderEach) -> Result<(), TextForgeError>,
     {
         let params = vec![TextForgeParamTypes::String(value.to_string())];
         let token: Box<dyn InstructionMethods> = Box::new(ifdc::Ifdc::default());
@@ -1790,9 +1791,10 @@ pub trait TextForgeBlockMethods: TextForgeBuilderMethods {
     fn block_assoc<F>(
         &mut self,
         block_name: &'static str,
-        f: F
+        f: F,
     ) -> Result<&mut Self, TextForgeError>
-        where F: FnOnce(&mut BlockBuilder) -> Result<(), TextForgeError>
+    where
+        F: FnOnce(&mut BlockBuilder) -> Result<(), TextForgeError>,
     {
         let mut block_builder = BlockBuilder::new(block_name);
 

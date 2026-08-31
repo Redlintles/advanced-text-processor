@@ -5,7 +5,7 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::urld::Urld;
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
     use crate::utils::params::TextForgeParamTypes;
 
     #[test]
@@ -85,13 +85,11 @@ mod tests {
 
         let got = t.transform(input, Some(&mut ctx));
 
-        let expected = Err(
-            TextForgeError::new(
-                TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
-                "urld",
-                input.to_string()
-            )
-        );
+        let expected = Err(TextForgeError::new(
+            TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
+            "urld",
+            input.to_string(),
+        ));
 
         assert_eq!(got, expected);
     }
@@ -127,7 +125,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

@@ -6,7 +6,10 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, validations::{ check_index_against_input, check_vec_len } },
+    utils::{
+        errors::TextForgeError,
+        validations::{check_index_against_input, check_vec_len},
+    },
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -34,7 +37,10 @@ pub struct Tucs {
 
 impl Tucs {
     pub fn new(index: usize) -> Self {
-        Tucs { index, params: vec![index.into()] }
+        Tucs {
+            index,
+            params: vec![index.into()],
+        }
     }
 }
 
@@ -52,13 +58,17 @@ impl InstructionMethods for Tucs {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         check_index_against_input(self.index, input)?;
         let result: String = input
             .char_indices()
             .map(|(i, c)| {
-                if i == self.index { c.to_uppercase().to_string() } else { c.to_string() }
+                if i == self.index {
+                    c.to_uppercase().to_string()
+                } else {
+                    c.to_string()
+                }
             })
             .collect();
         Ok(result)
@@ -81,7 +91,8 @@ impl InstructionMethods for Tucs {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
+        let result: Vec<u8> =
+            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
         Ok(result)
     }
 }

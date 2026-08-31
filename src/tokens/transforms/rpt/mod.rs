@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, validations::check_vec_len },
+    utils::{errors::TextForgeError, validations::check_vec_len},
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -33,7 +33,10 @@ pub struct Rpt {
 
 impl Rpt {
     pub fn new(times: usize) -> Self {
-        Rpt { times, params: vec![times.into()] }
+        Rpt {
+            times,
+            params: vec![times.into()],
+        }
     }
 }
 
@@ -48,7 +51,7 @@ impl InstructionMethods for Rpt {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         Ok(input.repeat(self.times))
     }
@@ -73,7 +76,8 @@ impl InstructionMethods for Rpt {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.times)]);
+        let result: Vec<u8> =
+            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.times)]);
         Ok(result)
     }
 }

@@ -6,7 +6,10 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, validations::{ check_chunk_bound_indexes, check_vec_len } },
+    utils::{
+        errors::TextForgeError,
+        validations::{check_chunk_bound_indexes, check_vec_len},
+    },
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -57,14 +60,18 @@ impl InstructionMethods for Tlcc {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         check_chunk_bound_indexes(self.start_index, self.end_index, Some(input))?;
 
         let total_chars = input.chars().count();
         let last_char_index = total_chars.saturating_sub(1);
 
-        let end = if self.end_index > last_char_index { last_char_index } else { self.end_index };
+        let end = if self.end_index > last_char_index {
+            last_char_index
+        } else {
+            self.end_index
+        };
 
         let result: String = input
             .chars()
@@ -99,10 +106,13 @@ impl InstructionMethods for Tlcc {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::Usize(self.start_index),
-            TextForgeParamTypes::Usize(self.end_index),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::Usize(self.start_index),
+                TextForgeParamTypes::Usize(self.end_index),
+            ]
+        );
         Ok(result)
     }
 }

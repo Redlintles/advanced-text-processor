@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, transforms::capitalize, validations::check_vec_len },
+    utils::{errors::TextForgeError, transforms::capitalize, validations::check_vec_len},
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -34,7 +34,11 @@ impl InstructionMethods for Cfw {
     fn get_string_repr(&self) -> &'static str {
         "cfw"
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, TextForgeError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>,
+    ) -> Result<String, TextForgeError> {
         Ok(capitalize(input))
     }
 

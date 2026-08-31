@@ -6,11 +6,11 @@ use std::borrow::Cow;
 use regex::Regex;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
+use crate::tokens::InstructionMethods;
 use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
-use crate::{ tokens::InstructionMethods };
 
 /// RCW - Replace Count With
 ///
@@ -49,7 +49,7 @@ impl Rcw {
             params: vec![
                 pattern.to_string().into(),
                 text_to_replace.to_string().into(),
-                count.into()
+                count.into(),
             ],
             pattern,
             count,
@@ -73,18 +73,25 @@ impl InstructionMethods for Rcw {
         &self.params
     }
     fn to_textforge_line(&self) -> Cow<'static, str> {
-        format!("rcw {} {} {};\n", self.pattern, self.text_to_replace, self.count).into()
+        format!(
+            "rcw {} {} {};\n",
+            self.pattern, self.text_to_replace, self.count
+        )
+        .into()
     }
 
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         if self.count == 0 {
             return Ok(input.to_string());
         }
-        Ok(self.pattern.replacen(input, self.count, &self.text_to_replace).to_string())
+        Ok(self
+            .pattern
+            .replacen(input, self.count, &self.text_to_replace)
+            .to_string())
     }
 
     fn get_string_repr(&self) -> &'static str {
@@ -101,7 +108,7 @@ impl InstructionMethods for Rcw {
             TextForgeError::new(
                 TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
-                pattern_payload.clone()
+                pattern_payload.clone(),
             )
         })?;
 
@@ -116,7 +123,7 @@ impl InstructionMethods for Rcw {
         self.params = vec![
             self.pattern.to_string().into(),
             self.text_to_replace.to_string().into(),
-            self.count.into()
+            self.count.into(),
         ];
         return Ok(());
     }
@@ -127,11 +134,14 @@ impl InstructionMethods for Rcw {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.pattern.to_string()),
-            TextForgeParamTypes::String(self.text_to_replace.clone()),
-            TextForgeParamTypes::Usize(self.count),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::String(self.pattern.to_string()),
+                TextForgeParamTypes::String(self.text_to_replace.clone()),
+                TextForgeParamTypes::Usize(self.count),
+            ]
+        );
         Ok(result)
     }
 }

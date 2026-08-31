@@ -2,8 +2,8 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
-    use crate::tokens::{ InstructionMethods, transforms::rpt::Rpt };
-    use crate::utils::errors::{ TextForgeErrorCode };
+    use crate::tokens::{InstructionMethods, transforms::rpt::Rpt};
+    use crate::utils::errors::TextForgeErrorCode;
     use crate::utils::params::TextForgeParamTypes;
 
     #[test]
@@ -23,7 +23,10 @@ mod tests {
         let t = Rpt::new(3);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "bananabananabanana");
+        assert_eq!(
+            t.transform("banana", Some(&mut ctx)).unwrap(),
+            "bananabananabanana"
+        );
     }
 
     #[test]
@@ -60,7 +63,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]

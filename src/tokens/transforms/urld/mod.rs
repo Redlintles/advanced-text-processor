@@ -6,7 +6,10 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_vec_len },
+    utils::{
+        errors::{TextForgeError, TextForgeErrorCode},
+        validations::check_vec_len,
+    },
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -41,7 +44,11 @@ impl InstructionMethods for Urld {
     fn to_textforge_line(&self) -> Cow<'static, str> {
         "urld;\n".into()
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, TextForgeError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>,
+    ) -> Result<String, TextForgeError> {
         // Validação de percent encoding
         let bytes = input.as_bytes();
         let len = bytes.len();
@@ -49,18 +56,15 @@ impl InstructionMethods for Urld {
         let mut i = 0;
         while i < len {
             if bytes[i] == b'%' {
-                if
-                    i + 2 >= len ||
-                    !bytes[i + 1].is_ascii_hexdigit() ||
-                    !bytes[i + 2].is_ascii_hexdigit()
+                if i + 2 >= len
+                    || !bytes[i + 1].is_ascii_hexdigit()
+                    || !bytes[i + 2].is_ascii_hexdigit()
                 {
-                    return Err(
-                        TextForgeError::new(
-                            TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
-                            "urld",
-                            input.to_string()
-                        )
-                    );
+                    return Err(TextForgeError::new(
+                        TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
+                        "urld",
+                        input.to_string(),
+                    ));
                 }
                 i += 3;
                 continue;
@@ -68,18 +72,15 @@ impl InstructionMethods for Urld {
             i += 1;
         }
 
-        Ok(
-            urlencoding
-                ::decode(input)
-                .map_err(|_| {
-                    TextForgeError::new(
-                        TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
-                        "urld",
-                        input.to_string()
-                    )
-                })?
-                .to_string()
-        )
+        Ok(urlencoding::decode(input)
+            .map_err(|_| {
+                TextForgeError::new(
+                    TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
+                    "urld",
+                    input.to_string(),
+                )
+            })?
+            .to_string())
     }
 
     #[cfg(feature = "bytecode")]

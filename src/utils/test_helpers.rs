@@ -1,25 +1,26 @@
-use crate::api::{ TextForgeBlockMethods, TextForgeConditionalMethods };
+use crate::api::{TextForgeBlockMethods, TextForgeConditionalMethods};
+use crate::api::{TextForgeBuilderMethods, processor::TextForgeProcessor};
 use crate::utils::errors::TextForgeError;
-use crate::api::{ TextForgeBuilderMethods, processor::TextForgeProcessor };
 
-pub fn build_all_tokens_pipeline_safe(processor: &mut TextForgeProcessor) -> Result<String, TextForgeError> {
+pub fn build_all_tokens_pipeline_safe(
+    processor: &mut TextForgeProcessor,
+) -> Result<String, TextForgeError> {
     let id = processor
         .create_pipeline()
-
         // ========== FASE 0: base previsível e grande ==========
         // Garante B repetido e bastante comprimento desde o início.
-        .add_to_beginning("B__SEED__B__SEED__B__SEED__ ")
-        ? // garante split_select("B", 1) seguro
-        .add_to_end(" Banana Laranja cheia de canja ")
-        ? // texto original
-        .pad_right("x", 160)
-        ? // len alto para índices
+        .add_to_beginning("B__SEED__B__SEED__B__SEED__ ")?
+        // garante split_select("B", 1) seguro
+        .add_to_end(" Banana Laranja cheia de canja ")?
+        // texto original
+        .pad_right("x", 160)?
+        // len alto para índices
         // ========== BLOCO 1: deletes/replace/insert/rotates/trims ==========
         .repeat(3)?
         .delete_after(120)?
         .delete_before(3)?
-        .delete_chunk(0, 3)
-        ? // aqui ainda é string “normal”, mas seu token existe: ok
+        .delete_chunk(0, 3)?
+        // aqui ainda é string “normal”, mas seu token existe: ok
         .delete_first()?
         .delete_last()?
         .replace_all_with(r"a", "e")?
@@ -32,13 +33,13 @@ pub fn build_all_tokens_pipeline_safe(processor: &mut TextForgeProcessor) -> Res
         .trim_left_side()?
         .trim_right_side()?
         // Checkpoint: depois de reduzir/alterar, re-garantir comprimento
-        .add_to_end(" B__GUARD__B__GUARD__B__GUARD__ ")
-        ? // mantém Bs
+        .add_to_end(" B__GUARD__B__GUARD__B__GUARD__ ")?
+        // mantém Bs
         .pad_right("p", 140)?
         // ========== BLOCO 2: select + caps + split_select ==========
         .add_to_beginning("laranjadebananavermelha")?
-        .select(0, 60)
-        ? // (mudança importante) janela maior e previsível
+        .select(0, 60)?
+        // (mudança importante) janela maior e previsível
         .replace_count_with("a", "b", 3)?
         .to_uppercase_all()?
         .to_lowercase_all()?
@@ -49,31 +50,31 @@ pub fn build_all_tokens_pipeline_safe(processor: &mut TextForgeProcessor) -> Res
         .capitalize_last_word()?
         .capitalize_range(1, 3)?
         // split_select: agora é seguro porque forçamos vários "B" no começo/fim
-        .split_select("B", 1)
-        ? // não deve virar "nj" minúsculo aqui
+        .split_select("B", 1)?
+        // não deve virar "nj" minúsculo aqui
         // Checkpoint pós split_select (porque ele pode encolher muito)
         .add_to_end(" SAFE_SEGMENT_ABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789 ")?
         .pad_right("q", 120)?
         // ========== BLOCO 3: replace nth/last + url/html/json ==========
-        .capitalize_chunk(1, 3)
-        ? // ainda existe, mas chunk ainda não foi criado -> seu token aceita? ok.
+        .capitalize_chunk(1, 3)?
+        // ainda existe, mas chunk ainda não foi criado -> seu token aceita? ok.
         .replace_last_with("b", "c")?
-        .replace_nth_with("b", "d", 1)
-        ? // (mudança importante) nth menor pra não depender de muitas ocorrências
+        .replace_nth_with("b", "d", 1)?
+        // (mudança importante) nth menor pra não depender de muitas ocorrências
         .to_url_encoded()?
         .to_url_decoded()?
         .to_reverse()?
-        .split_characters()
-        ? // daqui em diante estamos em chunks
+        .split_characters()?
+        // daqui em diante estamos em chunks
         .to_html_escaped()?
         .to_html_unescaped()?
         .to_json_escaped()?
         .to_json_unescaped()?
         // Checkpoint: garantir chunk suficiente (split_characters já cria muitos)
-        .insert(1, "banana")
-        ? // insere item/trecho em posição baixa
-        .to_uppercase_chunk(0, 6)
-        ? // ranges curtos e seguros
+        .insert(1, "banana")?
+        // insere item/trecho em posição baixa
+        .to_uppercase_chunk(0, 6)?
+        // ranges curtos e seguros
         .to_lowercase_chunk(0, 10)?
         // ========== BLOCO 4: joins + pads ==========
         .join_to_camel_case()?
@@ -85,8 +86,7 @@ pub fn build_all_tokens_pipeline_safe(processor: &mut TextForgeProcessor) -> Res
         // ========== BLOCO 5: if_do_contains_each ==========
         // Condição sempre verdadeira porque pad_left colocou "xy" e pad_right colocou "yx"
         .if_do_contains_each("xy", |b| {
-            b
-                .add_to_beginning("Banana")?
+            b.add_to_beginning("Banana")?
                 .add_to_end("Bonanza")?
                 .capitalize_first_word()?
                 .capitalize_last_word()?
@@ -94,8 +94,7 @@ pub fn build_all_tokens_pipeline_safe(processor: &mut TextForgeProcessor) -> Res
             Ok(())
         })?
         .block_assoc("x", |b| {
-            b
-                .add_to_beginning("laranja")?
+            b.add_to_beginning("laranja")?
                 .delete_first()?
                 .replace_all_with("anja", "anjo")?
                 .to_uppercase_chunk(0, 40)?

@@ -5,7 +5,7 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::jsonu::Jsonu;
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
     use crate::utils::params::TextForgeParamTypes;
 
     #[test]
@@ -26,7 +26,10 @@ mod tests {
         let expected_output = "{banana: '10'}".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("\"{banana: '10'}\"", Some(&mut ctx)), Ok(expected_output));
+        assert_eq!(
+            t.transform("\"{banana: '10'}\"", Some(&mut ctx)),
+            Ok(expected_output)
+        );
     }
 
     #[test]
@@ -70,13 +73,11 @@ mod tests {
 
         let got = t.transform(input, Some(&mut ctx));
 
-        let expected = Err(
-            TextForgeError::new(
-                TextForgeErrorCode::TextParsingError("Failed to deserialize to JSON".into()),
-                "serde_json::from_str",
-                input.to_string()
-            )
-        );
+        let expected = Err(TextForgeError::new(
+            TextForgeErrorCode::TextParsingError("Failed to deserialize to JSON".into()),
+            "serde_json::from_str",
+            input.to_string(),
+        ));
 
         assert_eq!(got, expected);
     }
@@ -96,7 +97,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]

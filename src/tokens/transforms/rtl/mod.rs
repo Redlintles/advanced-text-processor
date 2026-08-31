@@ -4,11 +4,11 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::context::execution_context::GlobalExecutionContext;
+use crate::tokens::InstructionMethods;
 use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
-use crate::{ tokens::InstructionMethods };
 
-use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
 /// RTL - Rotate Left
 ///
@@ -32,7 +32,10 @@ pub struct Rtl {
 
 impl Rtl {
     pub fn new(times: usize) -> Rtl {
-        Rtl { times, params: vec![times.into()] }
+        Rtl {
+            times,
+            params: vec![times.into()],
+        }
     }
 }
 
@@ -43,28 +46,21 @@ impl InstructionMethods for Rtl {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         if input.is_empty() {
-            return Err(
-                TextForgeError::new(
-                    TextForgeErrorCode::InvalidParameters("Input is empty".into()),
-                    self.to_textforge_line(),
-                    "\" \""
-                )
-            );
+            return Err(TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters("Input is empty".into()),
+                self.to_textforge_line(),
+                "\" \"",
+            ));
         }
 
         let chars: Vec<char> = input.chars().collect();
         let len = chars.len();
         let times = self.times % len;
 
-        Ok(
-            chars[times..]
-                .iter()
-                .chain(&chars[..times])
-                .collect()
-        )
+        Ok(chars[times..].iter().chain(&chars[..times]).collect())
     }
 
     fn to_textforge_line(&self) -> Cow<'static, str> {
@@ -91,7 +87,8 @@ impl InstructionMethods for Rtl {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.times)]);
+        let result: Vec<u8> =
+            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.times)]);
         Ok(result)
     }
 }

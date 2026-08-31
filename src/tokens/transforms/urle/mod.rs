@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, validations::check_vec_len },
+    utils::{errors::TextForgeError, validations::check_vec_len},
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -41,7 +41,11 @@ impl InstructionMethods for Urle {
     fn to_textforge_line(&self) -> Cow<'static, str> {
         "urle;\n".into()
     }
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, TextForgeError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>,
+    ) -> Result<String, TextForgeError> {
         Ok(urlencoding::encode(input).to_string())
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

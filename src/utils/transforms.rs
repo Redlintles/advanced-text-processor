@@ -11,15 +11,13 @@ pub fn string_to_usize(chunk: &str) -> Result<usize, TextForgeError> {
         Ok(v) => Ok(v),
         Err(_) => {
             let str_chunk = chunk.to_string();
-            Err(
-                TextForgeError::new(
-                    super::errors::TextForgeErrorCode::TextParsingError(
-                        "String to usize Parsing failed".into()
-                    ),
-                    Cow::Owned(str_chunk),
-                    chunk.to_string()
-                )
-            )
+            Err(TextForgeError::new(
+                super::errors::TextForgeErrorCode::TextParsingError(
+                    "String to usize Parsing failed".into(),
+                ),
+                Cow::Owned(str_chunk),
+                chunk.to_string(),
+            ))
         }
     }
 }
@@ -49,19 +47,17 @@ pub fn extend_string(input: &str, max_len: usize) -> String {
 }
 
 pub fn get_safe_utf8_char_index(index: usize, input: &str) -> Result<usize, TextForgeError> {
-    Ok(
-        input
-            .char_indices()
-            .nth(index)
-            .map(|(i, _)| i)
-            .ok_or_else(|| {
-                TextForgeError::new(
-                    super::errors::TextForgeErrorCode::IndexOutOfRange("".into()),
-                    Cow::Borrowed("Get safe utf-8 char index"),
-                    input.to_string()
-                )
-            })?
-    )
+    Ok(input
+        .char_indices()
+        .nth(index)
+        .map(|(i, _)| i)
+        .ok_or_else(|| {
+            TextForgeError::new(
+                super::errors::TextForgeErrorCode::IndexOutOfRange("".into()),
+                Cow::Borrowed("Get safe utf-8 char index"),
+                input.to_string(),
+            )
+        })?)
 }
 
 // tests for utils/string utils (or wherever these fns live)
@@ -80,7 +76,7 @@ mod test_access {
 
     #[cfg(test)]
     mod string_to_usize_tests {
-        use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+        use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
         use crate::utils::transforms::string_to_usize;
 
         #[test]
@@ -242,7 +238,7 @@ mod test_access {
 
     #[cfg(test)]
     mod get_safe_utf8_char_index_tests {
-        use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+        use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
         use crate::utils::transforms::get_safe_utf8_char_index;
 
         #[test]

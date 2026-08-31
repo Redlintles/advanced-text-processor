@@ -1,10 +1,10 @@
+pub mod apply;
 pub mod cli;
 pub mod errors;
 pub mod params;
+pub mod regexes;
 pub mod transforms;
 pub mod validations;
-pub mod apply;
-pub mod regexes;
 
 #[cfg(feature = "test_access")]
 pub mod test_helpers;

@@ -4,10 +4,13 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::params::{ TextForgeParamTypes };
+use crate::utils::params::TextForgeParamTypes;
 
 use crate::utils::validations::check_vec_len;
-use crate::{ tokens::InstructionMethods, utils::{ errors::{ TextForgeError, TextForgeErrorCode } } };
+use crate::{
+    tokens::InstructionMethods,
+    utils::errors::{TextForgeError, TextForgeErrorCode},
+};
 /// Ins - Insert
 ///
 /// Inserts `text` after `index` position in `input`
@@ -53,7 +56,7 @@ impl InstructionMethods for Ins {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         if self.index > input.chars().count() {
             return Err(
@@ -88,12 +91,8 @@ impl InstructionMethods for Ins {
         check_vec_len(&params, 2, "ins", "")?;
 
         self.index = parse_args!(params, 0, Usize, "Index should be of usize type");
-        self.text_to_insert = parse_args!(
-            params,
-            1,
-            String,
-            "Text_to_insert should be of String type"
-        );
+        self.text_to_insert =
+            parse_args!(params, 1, String, "Text_to_insert should be of String type");
 
         self.params = vec![self.index.into(), self.text_to_insert.to_string().into()];
 
@@ -106,10 +105,13 @@ impl InstructionMethods for Ins {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::Usize(self.index),
-            TextForgeParamTypes::String(self.text_to_insert.clone()),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::Usize(self.index),
+                TextForgeParamTypes::String(self.text_to_insert.clone()),
+            ]
+        );
         Ok(result)
     }
 }

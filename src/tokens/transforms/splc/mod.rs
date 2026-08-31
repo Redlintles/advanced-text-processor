@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::context::execution_context::GlobalExecutionContext;
 use crate::tokens::InstructionMethods;
 
-use crate::utils::errors::{ TextForgeError };
+use crate::utils::errors::TextForgeError;
 use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
 
@@ -40,14 +40,16 @@ impl InstructionMethods for Splc {
         "splc;\n".into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, TextForgeError> {
-        Ok(
-            input
-                .chars()
-                .map(|c| c.to_string())
-                .collect::<Vec<_>>()
-                .join(" ")
-        )
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>,
+    ) -> Result<String, TextForgeError> {
+        Ok(input
+            .chars()
+            .map(|c| c.to_string())
+            .collect::<Vec<_>>()
+            .join(" "))
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(&params, 0, "rmws", "")?;

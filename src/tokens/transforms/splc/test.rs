@@ -3,8 +3,8 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
-    use crate::tokens::{ InstructionMethods, transforms::splc::Splc };
-    use crate::utils::errors::{ TextForgeErrorCode };
+    use crate::tokens::{InstructionMethods, transforms::splc::Splc};
+    use crate::utils::errors::TextForgeErrorCode;
     use crate::utils::params::TextForgeParamTypes;
 
     #[test]
@@ -24,7 +24,10 @@ mod tests {
         let t = Splc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana", Some(&mut ctx)).unwrap(), "b a n a n a");
+        assert_eq!(
+            t.transform("banana", Some(&mut ctx)).unwrap(),
+            "b a n a n a"
+        );
     }
 
     #[test]
@@ -66,7 +69,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

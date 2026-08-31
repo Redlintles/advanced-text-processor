@@ -4,7 +4,7 @@
 mod tests {
     use crate::{
         context::execution_context::GlobalExecutionContext,
-        tokens::{ InstructionMethods, transforms::rmws::Rmws },
+        tokens::{InstructionMethods, transforms::rmws::Rmws},
         utils::params::TextForgeParamTypes,
     };
 
@@ -26,7 +26,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja cheia de canja", Some(&mut ctx)).unwrap(),
+            t.transform("banana laranja cheia de canja", Some(&mut ctx))
+                .unwrap(),
             "bananalaranjacheiadecanja"
         );
     }
@@ -36,7 +37,10 @@ mod tests {
         let t = Rmws::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("  a\tb\nc\r\nd  ", Some(&mut ctx)).unwrap(), "abcd");
+        assert_eq!(
+            t.transform("  a\tb\nc\r\nd  ", Some(&mut ctx)).unwrap(),
+            "abcd"
+        );
     }
 
     #[test]

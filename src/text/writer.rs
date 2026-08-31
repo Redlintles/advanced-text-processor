@@ -1,8 +1,8 @@
-use std::{ fs::OpenOptions, io::Write, path::Path };
+use std::{fs::OpenOptions, io::Write, path::Path};
 
 use crate::{
     globals::var::TokenWrapper,
-    utils::{ errors::TextForgeError, validations::check_file_path },
+    utils::{errors::TextForgeError, validations::check_file_path},
 };
 
 pub fn write_to_file(path: &Path, tokens: &Vec<TokenWrapper>) -> Result<(), TextForgeError> {
@@ -14,9 +14,11 @@ pub fn write_to_file(path: &Path, tokens: &Vec<TokenWrapper>) -> Result<(), Text
         .open(path)
         .map_err(|_| {
             TextForgeError::new(
-                crate::utils::errors::TextForgeErrorCode::FileOpeningError("Failed opening File".into()),
+                crate::utils::errors::TextForgeErrorCode::FileOpeningError(
+                    "Failed opening File".into(),
+                ),
                 "",
-                format!("{:?}", path)
+                format!("{:?}", path),
             )
         })?;
 
@@ -35,15 +37,12 @@ pub fn write_to_file(path: &Path, tokens: &Vec<TokenWrapper>) -> Result<(), Text
 
     match success {
         true => Ok(()),
-        false =>
-            Err(
-                TextForgeError::new(
-                    crate::utils::errors::TextForgeErrorCode::FileWritingError(
-                        "Failed writing text to textforge file".into()
-                    ),
-                    "",
-                    ""
-                )
+        false => Err(TextForgeError::new(
+            crate::utils::errors::TextForgeErrorCode::FileWritingError(
+                "Failed writing text to textforge file".into(),
             ),
+            "",
+            "",
+        )),
     }
 }

@@ -100,7 +100,9 @@ pub fn check_chunk_bound_indexes(
         // end também precisa existir
         if !(0..total_chars).contains(&end_index) {
             return Err(TextForgeError::new(
-                TextForgeErrorCode::IndexOutOfRange("End index does not exist in current string!".into()),
+                TextForgeErrorCode::IndexOutOfRange(
+                    "End index does not exist in current string!".into(),
+                ),
                 Cow::Borrowed("check_chunk_bound_indexes"),
                 text.to_string(),
             ));

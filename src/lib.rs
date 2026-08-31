@@ -24,8 +24,8 @@ pub mod text;
 
 // Public
 
-pub mod tokens;
 pub mod api;
+pub mod tokens;
 
 // Bytecode
 #[cfg(feature = "bytecode")]

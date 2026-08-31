@@ -3,8 +3,8 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
-    use crate::tokens::{ InstructionMethods, transforms::sslt::Sslt };
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::tokens::{InstructionMethods, transforms::sslt::Sslt};
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
     use crate::utils::params::TextForgeParamTypes;
 
     #[test]
@@ -47,20 +47,21 @@ mod tests {
 
         let got = t.transform("a_b", Some(&mut ctx));
 
-        let expected = Err(
-            TextForgeError::new(
-                TextForgeErrorCode::IndexOutOfRange("Index does not exist in the splitted vec".into()),
-                t.to_textforge_line(),
-                "a_b".to_string()
-            )
-        );
+        let expected = Err(TextForgeError::new(
+            TextForgeErrorCode::IndexOutOfRange("Index does not exist in the splitted vec".into()),
+            t.to_textforge_line(),
+            "a_b".to_string(),
+        ));
 
         assert_eq!(got, expected);
     }
     #[test]
     fn from_params_accepts_two_params() {
         let mut t = Sslt::default();
-        let params = vec![TextForgeParamTypes::String("_".to_string()), TextForgeParamTypes::Usize(1)];
+        let params = vec![
+            TextForgeParamTypes::String("_".to_string()),
+            TextForgeParamTypes::Usize(1),
+        ];
 
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.index, 1);
@@ -74,7 +75,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

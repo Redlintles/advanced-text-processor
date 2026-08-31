@@ -1,14 +1,14 @@
 use crate::{
     context::execution_context::GlobalExecutionContext,
     globals::var::TokenWrapper,
-    utils::errors::{ TextForgeError, ErrorManager },
+    utils::errors::{ErrorManager, TextForgeError},
 };
 
 pub fn apply_transform(
     token: &TokenWrapper,
     input: &str,
     error_manager: &mut ErrorManager,
-    context: &mut GlobalExecutionContext
+    context: &mut GlobalExecutionContext,
 ) -> Result<String, TextForgeError> {
     match token.apply_token(input, &mut *context) {
         Ok(x) => Ok(x),

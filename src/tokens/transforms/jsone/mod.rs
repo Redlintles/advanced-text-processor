@@ -8,7 +8,7 @@ use crate::tokens::InstructionMethods;
 
 use crate::utils::params::TextForgeParamTypes;
 
-use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 use crate::utils::validations::check_vec_len;
 
 /// Jsone - Json Escape
@@ -46,19 +46,15 @@ impl InstructionMethods for Jsone {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
-        Ok(
-            serde_json
-                ::to_string(input)
-                .map_err(|_| {
-                    TextForgeError::new(
-                        TextForgeErrorCode::TextParsingError("Failed to serialize to JSON".into()),
-                        "serde_json::to_string".to_string(),
-                        input.to_string()
-                    )
-                })?
-        )
+        Ok(serde_json::to_string(input).map_err(|_| {
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed to serialize to JSON".into()),
+                "serde_json::to_string".to_string(),
+                input.to_string(),
+            )
+        })?)
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(&params, 0, "jcmc", "")?;

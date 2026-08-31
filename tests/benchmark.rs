@@ -1,11 +1,11 @@
 #[cfg(feature = "test_access")]
 #[cfg(test)]
 pub mod benchmark {
+    use std::time::Instant;
     use textforge::{
-        api::{ processor::{ TextForgeProcessor, TextForgeProcessorMethods } },
+        api::processor::{TextForgeProcessor, TextForgeProcessorMethods},
         utils::test_helpers::build_all_tokens_pipeline_safe,
     };
-    use std::time::Instant;
 
     use textforge::utils::errors::TextForgeError;
 
@@ -67,11 +67,17 @@ pub mod benchmark {
 
         let max_tolerance = no_debug_exectime * 100.0;
 
-        println!("Execução do método process_all_with_debug: {:.6}", debug_exectime);
+        println!(
+            "Execução do método process_all_with_debug: {:.6}",
+            debug_exectime
+        );
         println!("Execução do método process_all: {:.6}", no_debug_exectime);
         println!("Tolerância máxima: {:.6}", max_tolerance);
 
-        assert!(debug_exectime < max_tolerance, "Overhead do debug muito alto");
+        assert!(
+            debug_exectime < max_tolerance,
+            "Overhead do debug muito alto"
+        );
         Ok(())
     }
 
@@ -90,10 +96,8 @@ pub mod benchmark {
 
             let string_to_process = "Banana Laranja cheia de canja";
 
-            let processed_string = processor.process_all_with_debug(
-                &identifier,
-                string_to_process
-            )?;
+            let processed_string =
+                processor.process_all_with_debug(&identifier, string_to_process)?;
 
             println!("{}", processed_string);
             let elapsed = start.elapsed().as_secs_f64();

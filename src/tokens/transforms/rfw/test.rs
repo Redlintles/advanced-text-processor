@@ -5,7 +5,7 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::rfw::Rfw;
-    use crate::utils::errors::{ TextForgeErrorCode };
+    use crate::utils::errors::TextForgeErrorCode;
 
     #[test]
     fn get_string_repr_is_rfw() {
@@ -38,7 +38,10 @@ mod tests {
         let t = Rfw::new("a", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("baaaa".to_string()));
+        assert_eq!(
+            t.transform("aaaaa", Some(&mut ctx)),
+            Ok("baaaa".to_string())
+        );
     }
 
     #[test]
@@ -55,7 +58,10 @@ mod tests {
         let t = Rfw::new("z", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("aaaaa".to_string()));
+        assert_eq!(
+            t.transform("aaaaa", Some(&mut ctx)),
+            Ok("aaaaa".to_string())
+        );
     }
 
     #[test]
@@ -63,7 +69,10 @@ mod tests {
         let t = Rfw::new(r"\d+", "X").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a1 b22 c333", Some(&mut ctx)), Ok("aX b22 c333".to_string()));
+        assert_eq!(
+            t.transform("a1 b22 c333", Some(&mut ctx)),
+            Ok("aX b22 c333".to_string())
+        );
     }
     // ============================
     // Bytecode-only tests
@@ -85,7 +94,7 @@ mod tests {
 
             let params = vec![
                 TextForgeParamTypes::String("a+".to_string()),
-                TextForgeParamTypes::String("b".to_string())
+                TextForgeParamTypes::String("b".to_string()),
             ];
 
             assert_eq!(t.from_params(&params), Ok(()));
@@ -101,7 +110,10 @@ mod tests {
 
             let err = t.from_params(&params).unwrap_err();
 
-            assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+            assert!(matches!(
+                err.error_code,
+                TextForgeErrorCode::InvalidArgumentNumber(_)
+            ));
         }
 
         #[test]
@@ -110,18 +122,16 @@ mod tests {
 
             let params = vec![
                 TextForgeParamTypes::Usize(7), // deveria ser String (pattern)
-                TextForgeParamTypes::String("b".to_string())
+                TextForgeParamTypes::String("b".to_string()),
             ];
 
             let got = t.from_params(&params);
 
-            let expected = Err(
-                crate::utils::errors::TextForgeError::new(
-                    TextForgeErrorCode::InvalidParameters("Pattern should be of string type".into()),
-                    "",
-                    ""
-                )
-            );
+            let expected = Err(crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters("Pattern should be of string type".into()),
+                "",
+                "",
+            ));
 
             assert_eq!(got, expected);
         }
@@ -132,18 +142,16 @@ mod tests {
 
             let params = vec![
                 TextForgeParamTypes::String("(".to_string()),
-                TextForgeParamTypes::String("b".to_string())
+                TextForgeParamTypes::String("b".to_string()),
             ];
 
             let got = t.from_params(&params);
 
-            let expected = Err(
-                crate::utils::errors::TextForgeError::new(
-                    TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
-                    "sslt",
-                    "(".to_string()
-                )
-            );
+            let expected = Err(crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
+                "sslt",
+                "(".to_string(),
+            ));
 
             assert_eq!(got, expected);
         }

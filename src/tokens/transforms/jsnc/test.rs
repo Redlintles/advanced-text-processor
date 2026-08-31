@@ -36,7 +36,10 @@ mod tests {
         let t = Jsnc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("Banana", Some(&mut ctx)), Ok("banana".to_string()));
+        assert_eq!(
+            t.transform("Banana", Some(&mut ctx)),
+            Ok("banana".to_string())
+        );
     }
 
     #[test]
@@ -63,7 +66,10 @@ mod tests {
         let t = Jsnc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("Maçã Com Canela", Some(&mut ctx)), Ok("maçã_com_canela".to_string()));
+        assert_eq!(
+            t.transform("Maçã Com Canela", Some(&mut ctx)),
+            Ok("maçã_com_canela".to_string())
+        );
     }
 
     #[test]
@@ -81,7 +87,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

@@ -3,8 +3,8 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
-    use crate::tokens::{ InstructionMethods, transforms::tla::Tla };
-    use crate::utils::errors::{ TextForgeErrorCode };
+    use crate::tokens::{InstructionMethods, transforms::tla::Tla};
+    use crate::utils::errors::TextForgeErrorCode;
     use crate::utils::params::TextForgeParamTypes;
 
     #[test]
@@ -32,7 +32,10 @@ mod tests {
         let t = Tla::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("BA-NA_NA 123!", Some(&mut ctx)).unwrap(), "ba-na_na 123!");
+        assert_eq!(
+            t.transform("BA-NA_NA 123!", Some(&mut ctx)).unwrap(),
+            "ba-na_na 123!"
+        );
     }
 
     #[test]
@@ -66,7 +69,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

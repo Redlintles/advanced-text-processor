@@ -7,7 +7,7 @@ use crate::context::execution_context::GlobalExecutionContext;
 use crate::utils::params::TextForgeParamTypes;
 
 use crate::utils::validations::check_vec_len;
-use crate::{ tokens::InstructionMethods, utils::errors::{ TextForgeError } };
+use crate::{tokens::InstructionMethods, utils::errors::TextForgeError};
 
 /// Rev - Reverse
 ///
@@ -37,7 +37,11 @@ impl InstructionMethods for Rev {
         "rev;\n".into()
     }
 
-    fn transform(&self, input: &str, _: Option<&mut GlobalExecutionContext>) -> Result<String, TextForgeError> {
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>,
+    ) -> Result<String, TextForgeError> {
         Ok(input.chars().rev().collect())
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

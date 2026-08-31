@@ -8,7 +8,10 @@ use regex::Regex;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_vec_len },
+    utils::{
+        errors::{TextForgeError, TextForgeErrorCode},
+        validations::check_vec_len,
+    },
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -45,7 +48,10 @@ impl Rlw {
         let pattern = Regex::new(&pattern).map_err(|x| x.to_string())?;
         Ok(Rlw {
             text_to_replace: text_to_replace.to_string(),
-            params: vec![pattern.to_string().into(), text_to_replace.to_string().into()],
+            params: vec![
+                pattern.to_string().into(),
+                text_to_replace.to_string().into(),
+            ],
             pattern,
         })
     }
@@ -72,16 +78,15 @@ impl InstructionMethods for Rlw {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         let caps: Vec<_> = self.pattern.find_iter(input).collect();
 
         if let Some(m) = caps.last() {
             let (start, end) = (m.start(), m.end());
 
-            let mut result = String::with_capacity(
-                input.len() - (end - start) + self.text_to_replace.len()
-            );
+            let mut result =
+                String::with_capacity(input.len() - (end - start) + self.text_to_replace.len());
             result.push_str(&input[..start]);
             result.push_str(&self.text_to_replace);
             result.push_str(&input[end..]);
@@ -104,7 +109,7 @@ impl InstructionMethods for Rlw {
             TextForgeError::new(
                 TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
-                pattern_payload.clone()
+                pattern_payload.clone(),
             )
         })?;
 
@@ -117,7 +122,7 @@ impl InstructionMethods for Rlw {
 
         self.params = vec![
             self.pattern.to_string().into(),
-            self.text_to_replace.to_string().into()
+            self.text_to_replace.to_string().into(),
         ];
 
         return Ok(());
@@ -129,10 +134,13 @@ impl InstructionMethods for Rlw {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.pattern.to_string()),
-            TextForgeParamTypes::String(self.text_to_replace.clone()),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::String(self.pattern.to_string()),
+                TextForgeParamTypes::String(self.text_to_replace.clone()),
+            ]
+        );
         Ok(result)
     }
 }

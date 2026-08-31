@@ -6,9 +6,9 @@ use std::borrow::Cow;
 use crate::context::execution_context::GlobalExecutionContext;
 use crate::utils::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
-use crate::{ tokens::InstructionMethods, utils::validations::check_chunk_bound_indexes };
+use crate::{tokens::InstructionMethods, utils::validations::check_chunk_bound_indexes};
 
-use crate::utils::errors::{ TextForgeError };
+use crate::utils::errors::TextForgeError;
 
 /// Slt - Select
 ///
@@ -54,7 +54,7 @@ impl InstructionMethods for Slt {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         let len = input.chars().count();
         let mut end = self.end_index;
@@ -102,10 +102,13 @@ impl InstructionMethods for Slt {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::Usize(self.start_index),
-            TextForgeParamTypes::Usize(self.end_index),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::Usize(self.start_index),
+                TextForgeParamTypes::Usize(self.end_index),
+            ]
+        );
         Ok(result)
     }
 }

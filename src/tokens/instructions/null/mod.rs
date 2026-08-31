@@ -1,10 +1,10 @@
 use std::borrow::Cow;
 
 use crate::{
-    context::execution_context::{ GlobalExecutionContext },
+    context::execution_context::GlobalExecutionContext,
     to_bytecode,
     tokens::InstructionMethods,
-    utils::{ errors::{ TextForgeError }, params::TextForgeParamTypes, validations::check_vec_len },
+    utils::{errors::TextForgeError, params::TextForgeParamTypes, validations::check_vec_len},
 };
 
 #[cfg(feature = "test_access")]
@@ -18,9 +18,7 @@ pub struct Null {
 
 impl Default for Null {
     fn default() -> Self {
-        Null {
-            params: vec![],
-        }
+        Null { params: vec![] }
     }
 }
 
@@ -43,14 +41,14 @@ impl InstructionMethods for Null {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, crate::utils::errors::TextForgeError> {
         Ok(input.to_string())
     }
 
     fn from_params(
         &mut self,
-        params: &Vec<crate::utils::params::TextForgeParamTypes>
+        params: &Vec<crate::utils::params::TextForgeParamTypes>,
     ) -> Result<(), crate::utils::errors::TextForgeError> {
         check_vec_len(&params, 0, "null", "param parsing error, invalid vec len")?;
 

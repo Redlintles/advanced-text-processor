@@ -8,7 +8,10 @@ use regex::Regex;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_vec_len },
+    utils::{
+        errors::{TextForgeError, TextForgeErrorCode},
+        validations::check_vec_len,
+    },
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -45,7 +48,10 @@ impl Rfw {
         let pattern = Regex::new(&pattern).map_err(|x| x.to_string())?;
         Ok(Rfw {
             text_to_replace: text_to_replace.to_string(),
-            params: vec![pattern.to_string().into(), text_to_replace.to_string().into()],
+            params: vec![
+                pattern.to_string().into(),
+                text_to_replace.to_string().into(),
+            ],
             pattern,
         })
     }
@@ -72,9 +78,12 @@ impl InstructionMethods for Rfw {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
-        Ok(self.pattern.replace(input, &self.text_to_replace).to_string())
+        Ok(self
+            .pattern
+            .replace(input, &self.text_to_replace)
+            .to_string())
     }
 
     fn get_string_repr(&self) -> &'static str {
@@ -91,7 +100,7 @@ impl InstructionMethods for Rfw {
             TextForgeError::new(
                 TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
-                pattern_payload.clone()
+                pattern_payload.clone(),
             )
         })?;
 
@@ -104,7 +113,7 @@ impl InstructionMethods for Rfw {
 
         self.params = vec![
             self.pattern.to_string().into(),
-            self.text_to_replace.to_string().into()
+            self.text_to_replace.to_string().into(),
         ];
 
         return Ok(());
@@ -116,10 +125,13 @@ impl InstructionMethods for Rfw {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.pattern.to_string()),
-            TextForgeParamTypes::String(self.text_to_replace.clone()),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::String(self.pattern.to_string()),
+                TextForgeParamTypes::String(self.text_to_replace.clone()),
+            ]
+        );
         Ok(result)
     }
 }

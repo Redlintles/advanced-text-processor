@@ -6,7 +6,10 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, validations::{ check_index_against_input, check_vec_len } },
+    utils::{
+        errors::TextForgeError,
+        validations::{check_index_against_input, check_vec_len},
+    },
 };
 
 use crate::utils::params::TextForgeParamTypes;
@@ -34,7 +37,10 @@ pub struct Dls {
 
 impl Dls {
     pub fn new(index: usize) -> Self {
-        Dls { index, params: vec![index.into()] }
+        Dls {
+            index,
+            params: vec![index.into()],
+        }
     }
 }
 
@@ -52,22 +58,20 @@ impl InstructionMethods for Dls {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         check_index_against_input(self.index, input)?;
-        Ok(
-            input
-                .chars()
-                .enumerate()
-                .filter_map(|(i, c)| {
-                    if self.index == i {
-                        return None;
-                    } else {
-                        return Some(c);
-                    }
-                })
-                .collect()
-        )
+        Ok(input
+            .chars()
+            .enumerate()
+            .filter_map(|(i, c)| {
+                if self.index == i {
+                    return None;
+                } else {
+                    return Some(c);
+                }
+            })
+            .collect())
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
@@ -87,7 +91,8 @@ impl InstructionMethods for Dls {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
+        let result: Vec<u8> =
+            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
         Ok(result)
     }
 }
