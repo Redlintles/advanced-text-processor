@@ -7,7 +7,7 @@
 
 use core::str;
 use std::{ array::TryFromSliceError, borrow::Cow, io::{ Cursor, Read }, sync::Arc };
-use crate::context::execution_context::GlobalExecutionContext;
+use crate::{ context::execution_context::GlobalExecutionContext, utils::regexes::VAR_REF_RE };
 
 use regex::Regex;
 
@@ -143,7 +143,8 @@ impl std::fmt::Debug for TextForgeParamTypes {
         match self {
             TextForgeParamTypes::String(s) => f.debug_tuple("String").field(s).finish(),
             TextForgeParamTypes::Usize(n) => f.debug_tuple("Usize").field(n).finish(),
-            TextForgeParamTypes::Token(t) => f.debug_tuple("Token").field(&t.get_string_repr()).finish(),
+            TextForgeParamTypes::Token(t) =>
+                f.debug_tuple("Token").field(&t.get_string_repr()).finish(),
             TextForgeParamTypes::VarRef(s) => f.debug_tuple("VarRef").field(s).finish(),
         }
     }
@@ -229,15 +230,6 @@ impl TextForgeParamTypes {
         token_depth: u8,
         assoc_mode: AssocMode
     ) -> Result<(Vec<ValType>, usize), TextForgeError> {
-        // Regex compilada uma vez por chamada (ok por enquanto; se quiser otimizar, use OnceLock)
-        let var_re = Regex::new(r"^\{\{([a-zA-Z][a-zA-Z0-9]+)\}\}$").map_err(|e| {
-            TextForgeError::new(
-                TextForgeErrorCode::TextParsingError("Error creating regex".into()),
-                "TextForgeParamTypes::parse_with_cursor(regex)",
-                e.to_string()
-            )
-        })?;
-
         let mut out: Vec<ValType> = Vec::with_capacity(expected.len());
         let this_is_block_like = Self::is_block_like_signature(&expected);
 
@@ -275,13 +267,15 @@ impl TextForgeParamTypes {
                         .get(i)
                         .ok_or_else(|| {
                             TextForgeError::new(
-                                TextForgeErrorCode::TextParsingError("Missing String parameter".into()),
+                                TextForgeErrorCode::TextParsingError(
+                                    "Missing String parameter".into()
+                                ),
                                 "TextForgeParamTypes::parse_with_cursor",
                                 format!("index={}", i)
                             )
                         })?;
 
-                    if let Some(caps) = var_re.captures(s) {
+                    if let Some(caps) = VAR_REF_RE.captures(s) {
                         let name = caps
                             .get(1)
                             .map(|m| m.as_str().trim().to_string())
@@ -310,7 +304,9 @@ impl TextForgeParamTypes {
                         .get(i)
                         .ok_or_else(|| {
                             TextForgeError::new(
-                                TextForgeErrorCode::TextParsingError("Missing Usize parameter".into()),
+                                TextForgeErrorCode::TextParsingError(
+                                    "Missing Usize parameter".into()
+                                ),
                                 "TextForgeParamTypes::parse_with_cursor",
                                 format!("index={}", i)
                             )
@@ -490,7 +486,10 @@ impl TextForgeParamTypes {
             );
         }
 
-        let param_type = Self::read_u32_be(&mut reader, "TextForgeParamTypes::from_bytecode(type)")?;
+        let param_type = Self::read_u32_be(
+            &mut reader,
+            "TextForgeParamTypes::from_bytecode(type)"
+        )?;
         let payload_size = Self::read_u32_be(
             &mut reader,
             "TextForgeParamTypes::from_bytecode(payload_size)"
@@ -531,7 +530,10 @@ impl TextForgeParamTypes {
         }
 
         let mut reader = Cursor::new(bytes);
-        let param_type = Self::read_u32_be(&mut reader, "TextForgeParamTypes::from_bytecode(type)")?;
+        let param_type = Self::read_u32_be(
+            &mut reader,
+            "TextForgeParamTypes::from_bytecode(type)"
+        )?;
         let payload_size = Self::read_u32_be(
             &mut reader,
             "TextForgeParamTypes::from_bytecode(payload_size)"
@@ -659,7 +661,9 @@ impl TextForgeParamTypes {
                         ::try_from(size_u64)
                         .map_err(|_| {
                             TextForgeError::new(
-                                TextForgeErrorCode::BytecodeParsingError("Param size overflow".into()),
+                                TextForgeErrorCode::BytecodeParsingError(
+                                    "Param size overflow".into()
+                                ),
                                 "TextForgeParamTypes::from_bytecode(Token.param_total_size)",
                                 format!("size_u64={}", size_u64)
                             )
@@ -864,7 +868,9 @@ impl TextForgeParamTypes {
                 if name.is_empty() {
                     return Err(
                         TextForgeError::new(
-                            TextForgeErrorCode::BytecodeParamParsingError("Empty VarRef name".into()),
+                            TextForgeErrorCode::BytecodeParamParsingError(
+                                "Empty VarRef name".into()
+                            ),
                             "TextForgeParamTypes::from_bytecode(VarRef)",
                             ""
                         )
@@ -905,7 +911,10 @@ impl TextForgeParamTypes {
         Ok(buf.to_vec())
     }
 
-    fn read_u8(reader: &mut Cursor<&[u8]>, instruction: &'static str) -> Result<u8, TextForgeError> {
+    fn read_u8(
+        reader: &mut Cursor<&[u8]>,
+        instruction: &'static str
+    ) -> Result<u8, TextForgeError> {
         let mut b = [0u8; 1];
         reader
             .read_exact(&mut b)
@@ -919,7 +928,10 @@ impl TextForgeParamTypes {
         Ok(u8::from_be_bytes(b))
     }
 
-    fn read_u32_be(reader: &mut Cursor<&[u8]>, instruction: &'static str) -> Result<u32, TextForgeError> {
+    fn read_u32_be(
+        reader: &mut Cursor<&[u8]>,
+        instruction: &'static str
+    ) -> Result<u32, TextForgeError> {
         let mut b = [0u8; 4];
         reader
             .read_exact(&mut b)
@@ -933,7 +945,10 @@ impl TextForgeParamTypes {
         Ok(u32::from_be_bytes(b))
     }
 
-    fn read_u64_be(reader: &mut Cursor<&[u8]>, instruction: &'static str) -> Result<u64, TextForgeError> {
+    fn read_u64_be(
+        reader: &mut Cursor<&[u8]>,
+        instruction: &'static str
+    ) -> Result<u64, TextForgeError> {
         let mut b = [0u8; 8];
         reader
             .read_exact(&mut b)
@@ -952,7 +967,9 @@ impl TextForgeParamTypes {
             .try_into()
             .map_err(|_| {
                 TextForgeError::new(
-                    TextForgeErrorCode::BytecodeParamParsingError("Failed reading u64 header".into()),
+                    TextForgeErrorCode::BytecodeParamParsingError(
+                        "Failed reading u64 header".into()
+                    ),
                     "TextForgeParamTypes::peek_u64_be",
                     format!("len={}", bytes.len())
                 )
