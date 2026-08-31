@@ -1,15 +1,12 @@
 use crate::{
     context::execution_context::{
-        GlobalContextMethods,
-        GlobalExecutionContext,
-        VarEntry,
-        VarValues,
+        GlobalContextMethods, GlobalExecutionContext, VarEntry, VarValues,
     },
     globals::var::TokenWrapper,
     parse_args,
     tokens::InstructionMethods,
     utils::{
-        errors::{ TextForgeError, TextForgeErrorCode::RequiredContextError },
+        errors::{TextForgeError, TextForgeErrorCode::RequiredContextError},
         params::TextForgeParamTypes,
         validations::check_vec_len,
     },
@@ -31,7 +28,7 @@ impl Default for Val {
             val_value: TextForgeParamTypes::String("".to_string()),
             params: vec![
                 TextForgeParamTypes::String("x".to_string()),
-                TextForgeParamTypes::String("".to_string())
+                TextForgeParamTypes::String("".to_string()),
             ],
         }
     }
@@ -56,13 +53,13 @@ impl InstructionMethods for Val {
     fn transform(
         &self,
         input: &str,
-        context: Option<&mut GlobalExecutionContext>
+        context: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, crate::utils::errors::TextForgeError> {
         let context = context.ok_or_else(|| {
             TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("val"),
-                std::borrow::Cow::Borrowed("")
+                std::borrow::Cow::Borrowed(""),
             )
         })?;
         let value = match &self.val_value {
@@ -70,17 +67,20 @@ impl InstructionMethods for Val {
             other => VarValues::try_from(other.clone())?,
         };
 
-        context.add_var(&self.val_name, VarEntry {
-            value,
-            mutable: false,
-        })?;
+        context.add_var(
+            &self.val_name,
+            VarEntry {
+                value,
+                mutable: false,
+            },
+        )?;
 
         Ok(input.to_string())
     }
 
     fn from_params(
         &mut self,
-        params: &Vec<crate::utils::params::TextForgeParamTypes>
+        params: &Vec<crate::utils::params::TextForgeParamTypes>,
     ) -> Result<(), crate::utils::errors::TextForgeError> {
         check_vec_len(params, 2, "val", "param parsing error, invalid vec len")?;
 
@@ -95,10 +95,13 @@ impl InstructionMethods for Val {
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
 
-        let result = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.val_name.clone()),
-            self.val_value.clone(),
-        ]);
+        let result = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::String(self.val_name.clone()),
+                self.val_value.clone(),
+            ]
+        );
         Ok(result)
     }
 }

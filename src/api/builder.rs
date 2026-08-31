@@ -20,8 +20,6 @@ impl<'ap> TextForgeBuilder<'ap> {
     }
 
     pub fn build(&mut self) -> String {
-        
-
         self.processor.add_transform(self.tokens.clone())
     }
 }
