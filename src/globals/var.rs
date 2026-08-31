@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
 use crate::{
-    context::execution_context::{GlobalContextMethods, GlobalExecutionContext, VarValues},
+    context::execution_context::{GlobalContextMethods, GlobalExecutionContext},
     globals::table::{QuerySource, QueryTarget, SyntaxDef, SyntaxToken, TOKEN_TABLE, TargetValue},
     tokens::{InstructionMethods, instructions::null::Null},
     utils::{
