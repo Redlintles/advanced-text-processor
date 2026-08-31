@@ -10,6 +10,10 @@ use crate::tokens::{ InstructionMethods, instructions::*, transforms::* };
 use crate::utils::errors::TextForgeError;
 use crate::utils::params::TextForgeParamTypes;
 
+// Helper for referencing variables in code
+pub fn var(var_name: &str) -> ValType {
+    ValType::VarRef(var_name.to_string())
+}
 pub trait TextForgeBuilderMethods: Sized {
     fn push_token(&mut self, t: impl Into<TokenWrapper>) -> Result<(), TextForgeError>;
 
@@ -1739,13 +1743,15 @@ pub trait TextForgeBuilderMethods: Sized {
     /// # Example:
     ///
     /// ```rust
+    ///
     /// use textforge::api::{
     ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
+    ///     var
     /// };
     /// let mut processor = TextForgeProcessor::new();
-    /// let id = TextForgeBuilder::new(&mut processor).val("x", 3)delete_single("{{x}}").unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).val("x", 3).unwrap().delete_single(var("x")).unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("banna".to_string()));
