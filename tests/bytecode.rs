@@ -1,7 +1,7 @@
 #[cfg(feature = "test_access")]
 #[cfg(test)]
 pub mod bytecode {
-    use std::{fs::File, io::Read};
+    use std::{ fs::File, io::Read };
 
     use textforge::globals::var::TokenWrapper;
 
@@ -14,7 +14,7 @@ pub mod bytecode {
         use textforge::bytecode::writer::write_bytecode_to_file;
         use textforge::globals::var::TokenWrapper;
         use textforge::tokens::InstructionMethods;
-        use textforge::tokens::transforms::{atb::Atb, ate::Ate, ctc::Ctc, dlf::Dlf, rpt::Rpt};
+        use textforge::tokens::transforms::{ atb::Atb, ate::Ate, ctc::Ctc, dlf::Dlf, rpt::Rpt };
         use textforge::utils::params::TextForgeParamTypes;
 
         fn parse_header(bytes: &[u8]) -> (Vec<u8>, u64, u32, &[u8]) {
@@ -28,29 +28,22 @@ pub mod bytecode {
 
         /// Helper: create an empty file first so `canonicalize()` doesn't fail in `check_file_path`.
         fn touch(path: &PathBuf) {
-            fs::OpenOptions::new()
-                .create(true)
-                .truncate(true)
-                .write(true)
-                .open(path)
-                .unwrap();
+            fs::OpenOptions::new().create(true).truncate(true).write(true).open(path).unwrap();
         }
 
         /// Um exemplar de cada "forma" de instrução: 1 String, 1 Usize, 2 Usize e zero params.
         fn sample_tokens() -> Vec<TokenWrapper> {
             let mut ctc = Ctc::default();
-            ctc.from_params(&vec![
-                TextForgeParamTypes::Usize(0),
-                TextForgeParamTypes::Usize(3),
-            ])
-            .unwrap();
+            ctc.from_params(
+                &vec![TextForgeParamTypes::Usize(0), TextForgeParamTypes::Usize(3)]
+            ).unwrap();
 
             return vec![
                 TokenWrapper::new(Box::new(Atb::new("Banana")), None), // String
-                TokenWrapper::new(Box::new(Ate::new("Pizza")), None),  // String
-                TokenWrapper::new(Box::new(Rpt::new(5_usize)), None),  // Usize
-                TokenWrapper::new(Box::new(Dlf::default()), None),     // zero params
-                TokenWrapper::new(Box::new(ctc), None),                // 2x Usize
+                TokenWrapper::new(Box::new(Ate::new("Pizza")), None), // String
+                TokenWrapper::new(Box::new(Rpt::new(5_usize)), None), // Usize
+                TokenWrapper::new(Box::new(Dlf::default()), None), // zero params
+                TokenWrapper::new(Box::new(ctc), None) // 2x Usize
             ];
         }
 
@@ -59,18 +52,16 @@ pub mod bytecode {
         /// sem depender de literais de bytes escritos à mão.
         fn sample_instructions() -> Vec<Box<dyn InstructionMethods>> {
             let mut ctc = Ctc::default();
-            ctc.from_params(&vec![
-                TextForgeParamTypes::Usize(0),
-                TextForgeParamTypes::Usize(3),
-            ])
-            .unwrap();
+            ctc.from_params(
+                &vec![TextForgeParamTypes::Usize(0), TextForgeParamTypes::Usize(3)]
+            ).unwrap();
 
             return vec![
                 Box::new(Atb::new("Banana")),
                 Box::new(Ate::new("Pizza")),
                 Box::new(Rpt::new(5_usize)),
                 Box::new(Dlf::default()),
-                Box::new(ctc),
+                Box::new(ctc)
             ];
         }
 
@@ -131,9 +122,9 @@ pub mod bytecode {
 
             let msg = format!("{err:?}");
             assert!(
-                msg.contains("ValidationError")
-                    || msg.contains("check_file_path")
-                    || msg.contains("textforgebc"),
+                msg.contains("ValidationError") ||
+                    msg.contains("check_file_path") ||
+                    msg.contains("textforgebc"),
                 "expected an extension/path validation error, got: {msg}"
             );
         }
@@ -161,19 +152,15 @@ pub mod bytecode {
     fn test_write_bytecode_to_file() {
         use tempfile::Builder;
         use textforge::bytecode::writer::write_bytecode_to_file;
-        use textforge::tokens::transforms::{atb::Atb, ate::Ate, rpt::Rpt};
-        let file = Builder::new()
-            .suffix(".textforgebc")
-            .prefix("output_")
-            .tempfile()
-            .unwrap();
+        use textforge::tokens::transforms::{ atb::Atb, ate::Ate, rpt::Rpt };
+        let file = Builder::new().suffix(".textforgebc").prefix("output_").tempfile().unwrap();
 
         let path = file.path();
 
         let tokens: Vec<TokenWrapper> = vec![
             TokenWrapper::new(Box::new(Atb::new("Banana")), None),
             TokenWrapper::new(Box::new(Ate::new("Pizza")), None),
-            TokenWrapper::new(Box::new(Rpt::new(5_usize)), None),
+            TokenWrapper::new(Box::new(Rpt::new(5_usize)), None)
         ];
 
         let mut header: Vec<u8> = Vec::new();
@@ -200,7 +187,8 @@ pub mod bytecode {
         opened_file.read_to_end(&mut content).unwrap();
 
         assert_eq!(
-            content, expected_content,
+            content,
+            expected_content,
             "Unexpected Output in test_write_to_file: content differs"
         );
     }
@@ -211,9 +199,9 @@ pub mod bytecode {
         use tempfile::Builder;
 
         use textforge::{
-            api::processor::{TextForgeProcessor, TextForgeProcessorMethods},
-            bytecode::{reader::read_bytecode_from_file, writer::write_bytecode_to_file},
-            tokens::transforms::{atb::Atb, ate::Ate, rpt::Rpt},
+            api::processor::{ TextForgeProcessor, TextForgeProcessorMethods },
+            bytecode::{ reader::read_bytecode_from_file, writer::write_bytecode_to_file },
+            tokens::transforms::{ atb::Atb, ate::Ate, rpt::Rpt },
         };
 
         // atb "Banana" + ate "Pizza" + rpt 5 sobre "Coxinha":
@@ -221,14 +209,10 @@ pub mod bytecode {
         let tokens: Vec<TokenWrapper> = vec![
             TokenWrapper::new(Box::new(Atb::new("Banana")), None),
             TokenWrapper::new(Box::new(Ate::new("Pizza")), None),
-            TokenWrapper::new(Box::new(Rpt::new(5_usize)), None),
+            TokenWrapper::new(Box::new(Rpt::new(5_usize)), None)
         ];
 
-        let tmp = Builder::new()
-            .prefix("banana_")
-            .suffix(".textforgebc")
-            .tempfile()
-            .unwrap();
+        let tmp = Builder::new().prefix("banana_").suffix(".textforgebc").tempfile().unwrap();
         let file_path = tmp.path().to_path_buf();
         write_bytecode_to_file(Path::new(&file_path), tokens).unwrap();
 
@@ -236,16 +220,9 @@ pub mod bytecode {
         let data = fs::read(&file_path).unwrap();
         eprintln!("len = {}", data.len());
         eprintln!("header bytes = {:02x?}", &data[..(20).min(data.len())]);
-        eprintln!(
-            "first body bytes = {:02x?}",
-            &data[20..(20 + 16).min(data.len())]
-        );
+        eprintln!("first body bytes = {:02x?}", &data[20..(20 + 16).min(data.len())]);
 
-        assert!(
-            file_path.exists(),
-            "writer não criou o arquivo: {:?}",
-            file_path
-        );
+        assert!(file_path.exists(), "writer não criou o arquivo: {:?}", file_path);
 
         let read_tokens = read_bytecode_from_file(Path::new(&file_path)).unwrap();
 
@@ -258,9 +235,7 @@ pub mod bytecode {
         println!("read_tokens len {}", read_tokens.len());
         let identifier = processor.add_transform(read_tokens);
 
-        let output = processor
-            .process_all_bytecode_with_debug(&identifier, input)
-            .unwrap();
+        let output = processor.process_all_with_debug(&identifier, input).unwrap();
 
         assert_eq!(output, expected_output);
     }

@@ -1,13 +1,9 @@
-use clap::{Arg, ArgAction, Command, value_parser};
-use std::{
-    fs::OpenOptions,
-    io::{self, Error, Read, Write},
-    path::PathBuf,
-};
+use clap::{ Arg, ArgAction, Command, value_parser };
+use std::{ fs::OpenOptions, io::{ self, Error, Read, Write }, path::PathBuf };
 use textforge::{
-    api::processor::{TextForgeProcessor, TextForgeProcessorMethods},
+    api::processor::{ TextForgeProcessor, TextForgeProcessorMethods },
     utils::{
-        cli::{process_input_by_chunks, process_input_line_by_line, process_input_single_chunk},
+        cli::{ process_input_by_chunks, process_input_line_by_line, process_input_single_chunk },
         errors::TextForgeError,
     },
 };
@@ -110,7 +106,7 @@ fn process_by_mode(
     id: &str,
     data: &str,
     debug: bool,
-    processor: &mut TextForgeProcessor,
+    processor: &mut TextForgeProcessor
 ) -> Result<String, TextForgeError> {
     match read_mode {
         ReadMode::All => process_input_single_chunk(processor, id, data, debug),
@@ -129,8 +125,9 @@ fn main() -> Result<(), TextForgeError> {
     let read_mode = matches.get_one::<ReadMode>("read_mode").unwrap();
     let debug = matches.get_one::<bool>("debug").unwrap();
 
-    if textforge_mode == &"b"
-        && file.extension().expect("Could not get input extension") != "textforgebc"
+    if
+        textforge_mode == &"b" &&
+        file.extension().expect("Could not get input extension") != "textforgebc"
     {
         panic!(
             "You're using mode 'b'(bytecode), so the textforge file must have the .textforgebc extension!"
@@ -149,22 +146,19 @@ fn main() -> Result<(), TextForgeError> {
                 panic!("The specified file does not exists");
             }
 
-            let mut file = OpenOptions::new().read(true).open(path).expect(&format!(
-                "Error opening file {}",
-                path.display().to_string()
-            ));
+            let mut file = OpenOptions::new()
+                .read(true)
+                .open(path)
+                .expect(&format!("Error opening file {}", path.display().to_string()));
 
-            file.read_to_string(&mut b)
-                .expect("Error reading input file");
+            file.read_to_string(&mut b).expect("Error reading input file");
 
             b
         }
         None => {
             let mut b = String::new();
 
-            io::stdin()
-                .read_to_string(&mut b)
-                .expect("Error while reading from stdin");
+            io::stdin().read_to_string(&mut b).expect("Error while reading from stdin");
 
             b
         }
@@ -179,7 +173,7 @@ fn main() -> Result<(), TextForgeError> {
         result = process_by_mode(read_mode, &id, &data, *debug, &mut processor)?;
     } else if textforge_mode == &"t" {
         let mut processor = TextForgeProcessor::new();
-        let id = processor.read_from_text_file(file)?;
+        let id = processor.read_from_bytecode_file(file)?;
 
         result = process_by_mode(read_mode, &id, &data, *debug, &mut processor)?;
     }
@@ -193,8 +187,7 @@ fn main() -> Result<(), TextForgeError> {
                     .open(p)
                     .expect("It was not possible to open the file for writing");
 
-                f.write_all(result.as_bytes())
-                    .expect("Failed to write result to file");
+                f.write_all(result.as_bytes()).expect("Failed to write result to file");
             } else {
                 let mut f = OpenOptions::new()
                     .create(true)
@@ -202,8 +195,7 @@ fn main() -> Result<(), TextForgeError> {
                     .open(p)
                     .expect("It was not possible to open the file for writing");
 
-                f.write_all(result.as_bytes())
-                    .expect("Failed to write result to file");
+                f.write_all(result.as_bytes()).expect("Failed to write result to file");
             }
         }
         None => {
@@ -218,13 +210,14 @@ fn main() -> Result<(), TextForgeError> {
 #[cfg(test)]
 mod textforge_tests {
     mod parser_tests {
-        use crate::{ReadMode, build_cli};
-        use std::{path::PathBuf, str::FromStr};
+        use crate::{ ReadMode, build_cli };
+        use std::{ path::PathBuf, str::FromStr };
 
         #[test]
         fn test_all_with_long_params() {
             let parser = build_cli();
-            let c = "textforge --file ./instructions.textforgebc --input ./example.txt --output output.txt --debug --mode b --read-mode line";
+            let c =
+                "textforge --file ./instructions.textforgebc --input ./example.txt --output output.txt --debug --mode b --read-mode line";
 
             let arg_vec = shell_words::split(c).unwrap();
 
@@ -237,10 +230,7 @@ mod textforge_tests {
             let read_mode = m.get_one::<ReadMode>("read_mode").unwrap();
             let debug = m.get_one::<bool>("debug").unwrap();
 
-            assert_eq!(
-                *file,
-                PathBuf::from_str("./instructions.textforgebc").unwrap()
-            );
+            assert_eq!(*file, PathBuf::from_str("./instructions.textforgebc").unwrap());
             assert_eq!(*input, PathBuf::from_str("./example.txt").unwrap());
             assert_eq!(*output, PathBuf::from_str("output.txt").unwrap());
             assert_eq!(*textforge_mode, "b".to_string());
@@ -250,7 +240,8 @@ mod textforge_tests {
         #[test]
         fn test_all_with_short_params() {
             let parser = build_cli();
-            let c = "textforge -f ./instructions.textforgebc -i ./example.txt -o output.txt -d -m b -r line";
+            let c =
+                "textforge -f ./instructions.textforgebc -i ./example.txt -o output.txt -d -m b -r line";
 
             let arg_vec = shell_words::split(c).unwrap();
 
@@ -263,10 +254,7 @@ mod textforge_tests {
             let read_mode = m.get_one::<ReadMode>("read_mode").unwrap();
             let debug = m.get_one::<bool>("debug").unwrap();
 
-            assert_eq!(
-                *file,
-                PathBuf::from_str("./instructions.textforgebc").unwrap()
-            );
+            assert_eq!(*file, PathBuf::from_str("./instructions.textforgebc").unwrap());
             assert_eq!(*input, PathBuf::from_str("./example.txt").unwrap());
             assert_eq!(*output, PathBuf::from_str("output.txt").unwrap());
             assert_eq!(*textforge_mode, "b".to_string());
