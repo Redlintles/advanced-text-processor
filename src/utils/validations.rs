@@ -1,59 +1,83 @@
-use std::{borrow::Cow, path::Path};
+use std::{ borrow::Cow, path::Path };
 
-use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 
 pub fn check_file_path(path: &Path, ext: Option<&str>) -> Result<(), TextForgeError> {
-    let parsed_ext = ext.unwrap_or("textforge");
+    let allowed_extensions = ["textforge", "tft", "textforgebc", "tfb"];
+    let parsed_ext = ext.unwrap_or("tft");
 
     // canonicalize() exige que o path exista; isso é ok aqui porque queremos validar um arquivo real.
-    let path = path.canonicalize().map_err(|e| {
-        TextForgeError::new(
-            TextForgeErrorCode::ValidationError("Path canonicalization failed".into()),
-            Cow::Borrowed("canonicalize"),
-            format!("{:?} - {}", path, e),
-        )
-    })?;
+    let path = path
+        .canonicalize()
+        .map_err(|e| {
+            TextForgeError::new(
+                TextForgeErrorCode::ValidationError("Path canonicalization failed".into()),
+                Cow::Borrowed("canonicalize"),
+                format!("{:?} - {}", path, e)
+            )
+        })?;
 
     // Extensão
-    let os_ext = path.extension().and_then(|x| x.to_str()).ok_or_else(|| {
-        TextForgeError::new(
-            TextForgeErrorCode::ValidationError("No file extension found".into()),
-            Cow::Borrowed("check_file_path"),
-            path.to_string_lossy().to_string(),
-        )
-    })?;
+    let file_ext = path
+        .extension()
+        .and_then(|x| x.to_str())
+        .ok_or_else(|| {
+            TextForgeError::new(
+                TextForgeErrorCode::ValidationError("No file extension found".into()),
+                Cow::Borrowed("check_file_path"),
+                path.to_string_lossy().to_string()
+            )
+        })?;
 
-    if os_ext != parsed_ext {
-        return Err(TextForgeError::new(
-            TextForgeErrorCode::ValidationError("Wrong file extension".into()),
-            Cow::Borrowed("check_file_path"),
-            path.to_string_lossy().to_string(),
-        ));
+    if ext.is_some() && file_ext != parsed_ext {
+        return Err(
+            TextForgeError::new(
+                TextForgeErrorCode::ValidationError("Wrong file extension".into()),
+                Cow::Borrowed("check_file_path"),
+                path.to_string_lossy().to_string()
+            )
+        );
+    }
+
+    if ext.is_none() && !allowed_extensions.contains(&file_ext) {
+        return Err(
+            TextForgeError::new(
+                TextForgeErrorCode::ValidationError("Wrong file extension".into()),
+                Cow::Borrowed("check_file_path"),
+                path.to_string_lossy().to_string()
+            )
+        );
     }
 
     // Diretório pai (redundante depois do canonicalize, mas mantém a intenção explícita)
-    let parent = path.parent().ok_or_else(|| {
-        TextForgeError::new(
-            TextForgeErrorCode::ValidationError("Path has no parent directory".into()),
-            Cow::Borrowed("check_file_path"),
-            path.to_string_lossy().to_string(),
-        )
-    })?;
+    let parent = path
+        .parent()
+        .ok_or_else(|| {
+            TextForgeError::new(
+                TextForgeErrorCode::ValidationError("Path has no parent directory".into()),
+                Cow::Borrowed("check_file_path"),
+                path.to_string_lossy().to_string()
+            )
+        })?;
 
     if !parent.exists() {
-        return Err(TextForgeError::new(
-            TextForgeErrorCode::ValidationError("Parent directory does not exist".into()),
-            Cow::Borrowed("check_file_path"),
-            parent.to_string_lossy().to_string(),
-        ));
+        return Err(
+            TextForgeError::new(
+                TextForgeErrorCode::ValidationError("Parent directory does not exist".into()),
+                Cow::Borrowed("check_file_path"),
+                parent.to_string_lossy().to_string()
+            )
+        );
     }
 
     if path.is_dir() {
-        return Err(TextForgeError::new(
-            TextForgeErrorCode::ValidationError("Path is a directory, not a file".into()),
-            Cow::Borrowed("check_file_path"),
-            path.to_string_lossy().to_string(),
-        ));
+        return Err(
+            TextForgeError::new(
+                TextForgeErrorCode::ValidationError("Path is a directory, not a file".into()),
+                Cow::Borrowed("check_file_path"),
+                path.to_string_lossy().to_string()
+            )
+        );
     }
 
     Ok(())
@@ -71,16 +95,20 @@ pub fn check_file_path(path: &Path, ext: Option<&str>) -> Result<(), TextForgeEr
 pub fn check_chunk_bound_indexes(
     start_index: usize,
     end_index: usize,
-    check_against: Option<&str>,
+    check_against: Option<&str>
 ) -> Result<(), TextForgeError> {
     // regra estrutural (independente do texto)
     if start_index >= end_index {
         let fmt_err = format!("check_chunk_bound_indexes {} {};", start_index, end_index);
-        return Err(TextForgeError::new(
-            TextForgeErrorCode::InvalidIndex("Start index must be smaller than end index".into()),
-            Cow::Owned(fmt_err),
-            format!("Start Index: {}, End Index: {}", start_index, end_index),
-        ));
+        return Err(
+            TextForgeError::new(
+                TextForgeErrorCode::InvalidIndex(
+                    "Start index must be smaller than end index".into()
+                ),
+                Cow::Owned(fmt_err),
+                format!("Start Index: {}, End Index: {}", start_index, end_index)
+            )
+        );
     }
 
     if let Some(text) = check_against {
@@ -88,24 +116,28 @@ pub fn check_chunk_bound_indexes(
 
         // start precisa existir
         if !(0..total_chars).contains(&start_index) {
-            return Err(TextForgeError::new(
-                TextForgeErrorCode::IndexOutOfRange(
-                    "Start index does not exist in current string!".into(),
-                ),
-                Cow::Borrowed("check_chunk_bound_indexes"),
-                text.to_string(),
-            ));
+            return Err(
+                TextForgeError::new(
+                    TextForgeErrorCode::IndexOutOfRange(
+                        "Start index does not exist in current string!".into()
+                    ),
+                    Cow::Borrowed("check_chunk_bound_indexes"),
+                    text.to_string()
+                )
+            );
         }
 
         // end também precisa existir
         if !(0..total_chars).contains(&end_index) {
-            return Err(TextForgeError::new(
-                TextForgeErrorCode::IndexOutOfRange(
-                    "End index does not exist in current string!".into(),
-                ),
-                Cow::Borrowed("check_chunk_bound_indexes"),
-                text.to_string(),
-            ));
+            return Err(
+                TextForgeError::new(
+                    TextForgeErrorCode::IndexOutOfRange(
+                        "End index does not exist in current string!".into()
+                    ),
+                    Cow::Borrowed("check_chunk_bound_indexes"),
+                    text.to_string()
+                )
+            );
         }
     }
 
@@ -115,19 +147,20 @@ pub fn check_chunk_bound_indexes(
 pub fn check_index_against_input(index: usize, input: &str) -> Result<(), TextForgeError> {
     let character_count = input.chars().count();
     if !(0..character_count).contains(&index) {
-        return Err(TextForgeError::new(
-            TextForgeErrorCode::IndexOutOfRange(
-                format!(
-                    "Index {} does not exist for {}, only indexes between 0-{} are allowed!",
-                    index,
-                    input,
-                    character_count.saturating_sub(1)
-                )
-                .into(),
-            ),
-            Cow::Borrowed("check_index_against_input"),
-            input.to_string(),
-        ));
+        return Err(
+            TextForgeError::new(
+                TextForgeErrorCode::IndexOutOfRange(
+                    format!(
+                        "Index {} does not exist for {}, only indexes between 0-{} are allowed!",
+                        index,
+                        input,
+                        character_count.saturating_sub(1)
+                    ).into()
+                ),
+                Cow::Borrowed("check_index_against_input"),
+                input.to_string()
+            )
+        );
     }
 
     Ok(())
@@ -137,11 +170,13 @@ pub fn check_index_against_words(index: usize, input: &str) -> Result<(), TextFo
     let word_count = input.split_whitespace().count();
 
     if word_count == 0 {
-        return Err(TextForgeError::new(
-            TextForgeErrorCode::IndexOutOfRange("Input has no words".into()),
-            Cow::Borrowed("check_index_against_words"),
-            input.to_string(),
-        ));
+        return Err(
+            TextForgeError::new(
+                TextForgeErrorCode::IndexOutOfRange("Input has no words".into()),
+                Cow::Borrowed("check_index_against_words"),
+                input.to_string()
+            )
+        );
     }
 
     if !(0..word_count).contains(&index) {
@@ -167,38 +202,33 @@ pub fn check_vec_len<T>(
     v: &[T],
     expected_len: usize,
     ctx: impl Into<Cow<'static, str>>,
-    payload: impl Into<String>,
+    payload: impl Into<String>
 ) -> Result<(), TextForgeError> {
     if v.len() == expected_len {
         Ok(())
     } else {
-        Err(TextForgeError::new(
-            TextForgeErrorCode::InvalidArgumentNumber(
-                format!(
-                    "Only {} arguments are allowed for this instruction, passed {}",
-                    expected_len,
-                    v.len()
-                )
-                .into(),
-            ),
-            ctx.into(),
-            payload.into(),
-        ))
+        Err(
+            TextForgeError::new(
+                TextForgeErrorCode::InvalidArgumentNumber(
+                    format!(
+                        "Only {} arguments are allowed for this instruction, passed {}",
+                        expected_len,
+                        v.len()
+                    ).into()
+                ),
+                ctx.into(),
+                payload.into()
+            )
+        )
     }
 }
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::{
-        fs,
-        time::{SystemTime, UNIX_EPOCH},
-    };
+    use std::{ fs, time::{ SystemTime, UNIX_EPOCH } };
 
     fn unique_tmp_dir(prefix: &str) -> std::path::PathBuf {
-        let nanos = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
+        let nanos = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
         let mut p = std::env::temp_dir();
         p.push(format!("{}_{}_{}", prefix, std::process::id(), nanos));
         p
@@ -256,14 +286,14 @@ mod tests {
             fn check_vec_len_ok_for_textforgeparamtypes_vec() {
                 let instruction: Vec<TextForgeParamTypes> = vec![
                     TextForgeParamTypes::Usize(1),
-                    TextForgeParamTypes::String("abc".to_string()),
+                    TextForgeParamTypes::String("abc".to_string())
                 ];
 
                 let result = check_vec_len(
                     instruction.as_slice(),
                     2,
                     "check_vec_len(bytecode)",
-                    "<bytecode>",
+                    "<bytecode>"
                 );
 
                 assert!(result.is_ok());
@@ -273,14 +303,14 @@ mod tests {
             fn check_vec_len_err_for_textforgeparamtypes_vec() {
                 let instruction: Vec<TextForgeParamTypes> = vec![
                     TextForgeParamTypes::Usize(1),
-                    TextForgeParamTypes::String("abc".to_string()),
+                    TextForgeParamTypes::String("abc".to_string())
                 ];
 
                 let result = check_vec_len(
                     instruction.as_slice(),
                     1,
                     "check_vec_len(bytecode)",
-                    "<bytecode>",
+                    "<bytecode>"
                 );
 
                 assert!(result.is_err());
@@ -319,7 +349,7 @@ mod tests {
             let file = dir.join("input.textforgebc");
             fs::write(&file, "banana").unwrap();
 
-            assert!(check_file_path(&file, Some("textforgebc")).is_ok());
+            assert!(check_file_path(&file, None).is_ok());
 
             let _ = fs::remove_dir_all(&dir);
         }
