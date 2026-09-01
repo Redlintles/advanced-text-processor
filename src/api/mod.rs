@@ -11,7 +11,7 @@ use crate::utils::errors::TextForgeError;
 use crate::utils::params::TextForgeParamTypes;
 
 // Helper for referencing variables in code
-pub fn var(var_name: &str) -> ValType {
+pub fn get_var(var_name: &str) -> ValType {
     ValType::VarRef(var_name.to_string())
 }
 pub trait TextForgeBuilderMethods: Sized {
@@ -1759,12 +1759,12 @@ pub trait TextForgeBuilderMethods: Sized {
 
     fn val(
         &mut self,
-        val_name: impl Into<ValType>,
-        val_value: impl Into<ValType>
+        var_name: impl Into<ValType>,
+        var_value: impl Into<ValType>
     ) -> Result<&mut Self, TextForgeError> {
-        let val_value: ValType = val_value.into();
+        let var_value: ValType = var_value.into();
 
-        let val_value = match val_value {
+        let var_value = match var_value {
             ValType::Literal(value) => {
                 ValType::Literal(TextForgeParamTypes::String(value.to_string()))
             }
@@ -1773,7 +1773,50 @@ pub trait TextForgeBuilderMethods: Sized {
 
         let tok = TokenWrapper::new(
             Box::new(val::Val::default()),
-            Some(vec![val_name.into(), val_value])
+            Some(vec![var_name.into(), var_value])
+        );
+
+        self.push_token(tok)?;
+        Ok(self)
+    }
+    /// VAr - mutable Variable Declaration
+    ///
+    /// Store's an mutable Variable in GlobalExecutionContext
+    ///
+    /// # Example:
+    ///
+    /// ```rust
+    ///
+    /// use textforge::api::{
+    ///     builder::TextForgeBuilder,
+    ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
+    ///     TextForgeBuilderMethods,
+    ///     get_var
+    /// };
+    /// let mut processor = TextForgeProcessor::new();
+    /// let id = TextForgeBuilder::new(&mut processor).var("x", 3).unwrap().delete_single(get_var("x")).unwrap().build();
+    /// let input = "banana";
+    ///
+    /// assert_eq!(processor.process_all(&id,&input), Ok("banna".to_string()));
+    /// ```
+
+    fn var(
+        &mut self,
+        var_name: impl Into<ValType>,
+        var_value: impl Into<ValType>
+    ) -> Result<&mut Self, TextForgeError> {
+        let var_value: ValType = var_value.into();
+
+        let var_value = match var_value {
+            ValType::Literal(value) => {
+                ValType::Literal(TextForgeParamTypes::String(value.to_string()))
+            }
+            ValType::VarRef(name) => ValType::VarRef(name),
+        };
+
+        let tok = TokenWrapper::new(
+            Box::new(var::Var::default()),
+            Some(vec![var_name.into(), var_value])
         );
 
         self.push_token(tok)?;
