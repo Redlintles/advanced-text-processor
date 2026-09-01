@@ -97,12 +97,7 @@ impl InstructionMethods for Emj {
     }
 
     fn to_textforge_line(&self) -> std::borrow::Cow<'static, str> {
-        format!(
-            "emj {} {};\n",
-            self.pattern,
-            self.separator
-        )
-        .into()
+        format!("emj {} {};\n", self.pattern, self.separator).into()
     }
 
     #[cfg(feature = "bytecode")]

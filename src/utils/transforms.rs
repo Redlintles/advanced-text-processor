@@ -41,8 +41,6 @@ pub fn extend_string(input: &str, max_len: usize) -> String {
     }
     let to_repeat = max_len.div_ceil(input.chars().count());
 
-    
-
     input.repeat(to_repeat).chars().take(max_len).collect()
 }
 

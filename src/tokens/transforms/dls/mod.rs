@@ -64,13 +64,7 @@ impl InstructionMethods for Dls {
         Ok(input
             .chars()
             .enumerate()
-            .filter_map(|(i, c)| {
-                if self.index == i {
-                    None
-                } else {
-                    Some(c)
-                }
-            })
+            .filter_map(|(i, c)| if self.index == i { None } else { Some(c) })
             .collect())
     }
 

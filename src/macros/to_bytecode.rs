@@ -41,7 +41,7 @@ macro_rules! to_bytecode {
     //    que vire uma fatia via AsRef<[TextForgeParamTypes]>
     ($opcode:expr, $params:expr) => {
         {
-        use crate::context::execution_context::GlobalExecutionContext;
+        use $crate::context::execution_context::GlobalExecutionContext;
 
         // Importante: fixa o tipo para evitar inferência ruim
         let params_slice: &[crate::utils::params::TextForgeParamTypes] =
