@@ -45,7 +45,7 @@ macro_rules! to_bytecode {
 
         // Importante: fixa o tipo para evitar inferência ruim
         let params_slice: &[$crate::utils::params::TextForgeParamTypes] =
-            ::core::convert::AsRef::<[crate::utils::params::TextForgeParamTypes]>::as_ref(&$params);
+            ::core::convert::AsRef::<[$crate::utils::params::TextForgeParamTypes]>::as_ref(&$params);
 
         let opcode_u32: u32 = $opcode;
         let param_count_u8: u8 = params_slice
