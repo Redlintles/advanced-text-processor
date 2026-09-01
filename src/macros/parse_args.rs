@@ -15,7 +15,7 @@ macro_rules! parse_args {
         }
     }};
     ($params:expr, $idx:expr, Usize, $msg:expr) => {{
-        use crate::utils::params::TextForgeParamTypes;
+        use $crate::utils::params::TextForgeParamTypes;
         use $crate::utils::errors::{TextForgeError, TextForgeErrorCode};
         match &$params[$idx] {
             TextForgeParamTypes::Usize(payload) => payload.clone(),
