@@ -42,7 +42,7 @@ impl InstructionMethods for Var {
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
-        0x36
+        0x39
     }
     fn get_string_repr(&self) -> &'static str {
         "var"
@@ -81,7 +81,7 @@ impl InstructionMethods for Var {
         &mut self,
         params: &Vec<crate::utils::params::TextForgeParamTypes>
     ) -> Result<(), crate::utils::errors::TextForgeError> {
-        check_vec_len(params, 2, "val", "param parsing error, invalid vec len")?;
+        check_vec_len(params, 2, "var", "param parsing error, invalid vec len")?;
 
         self.var_name = parse_args!(params, 0, String, "Val name should be of string type");
         self.var_value = params[1].clone();

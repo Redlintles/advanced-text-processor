@@ -38,7 +38,7 @@ impl InstructionMethods for Mutv {
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
-        0x39
+        0x40
     }
     fn get_string_repr(&self) -> &'static str {
         "mutv"
@@ -56,7 +56,7 @@ impl InstructionMethods for Mutv {
         let context = context.ok_or_else(|| {
             TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
-                std::borrow::Cow::Borrowed("val"),
+                std::borrow::Cow::Borrowed("mutv"),
                 std::borrow::Cow::Borrowed("")
             )
         })?;
@@ -76,7 +76,7 @@ impl InstructionMethods for Mutv {
         &mut self,
         params: &Vec<crate::utils::params::TextForgeParamTypes>
     ) -> Result<(), crate::utils::errors::TextForgeError> {
-        check_vec_len(params, 2, "val", "param parsing error, invalid vec len")?;
+        check_vec_len(params, 2, "mutv", "param parsing error, invalid vec len")?;
 
         self.val_name = parse_args!(params, 0, String, "Val name should be of string type");
         self.val_value = params[1].clone();

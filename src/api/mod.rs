@@ -1748,10 +1748,10 @@ pub trait TextForgeBuilderMethods: Sized {
     ///     builder::TextForgeBuilder,
     ///     processor::{TextForgeProcessor,TextForgeProcessorMethods},
     ///     TextForgeBuilderMethods,
-    ///     var
+    ///     get_var
     /// };
     /// let mut processor = TextForgeProcessor::new();
-    /// let id = TextForgeBuilder::new(&mut processor).val("x", 3).unwrap().delete_single(var("x")).unwrap().build();
+    /// let id = TextForgeBuilder::new(&mut processor).val("x", 3).unwrap().delete_single(get_var("x")).unwrap().build();
     /// let input = "banana";
     ///
     /// assert_eq!(processor.process_all(&id,&input), Ok("banna".to_string()));
@@ -1779,7 +1779,7 @@ pub trait TextForgeBuilderMethods: Sized {
         self.push_token(tok)?;
         Ok(self)
     }
-    /// VAr - mutable Variable Declaration
+    /// VAR - mutable Variable Declaration
     ///
     /// Store's an mutable Variable in GlobalExecutionContext
     ///

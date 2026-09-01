@@ -453,7 +453,7 @@ define_token_table! {
         ("null", 0x38, || TokenRef::Shared(Arc::new(null::Null::default())), []),
         (
             "var",
-            0x38,
+            0x39,
             || TokenRef::Shared(Arc::new(var::Var::default())),
             [
                 SyntaxDef::req(SyntaxToken::String),
@@ -463,7 +463,7 @@ define_token_table! {
         ),
         (
             "mutv",
-            0x39,
+            0x40,
             || TokenRef::Shared(Arc::new(var::Var::default())),
             [
                 SyntaxDef::req(SyntaxToken::String),
