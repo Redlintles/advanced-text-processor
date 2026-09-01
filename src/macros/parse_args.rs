@@ -29,8 +29,8 @@ macro_rules! parse_args {
         }
     }};
     ($params:expr, $idx:expr, Token, $msg:expr) => {{
+        use $crate::utils::params::TextForgeParamTypes;
         use $crate::utils::errors::{TextForgeError, TextForgeErrorCode};
-        use crate::utils::params::TextForgeParamTypes;
         match &$params[$idx] {
             TextForgeParamTypes::Token(payload) => payload.clone(),
             _ => {
