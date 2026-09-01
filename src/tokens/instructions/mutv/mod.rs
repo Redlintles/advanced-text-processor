@@ -1,11 +1,5 @@
 use crate::{
-    context::execution_context::{
-        GlobalContextMethods,
-        GlobalExecutionContext,
-        VarEntry,
-        VarValues,
-    },
-    globals::var::TokenWrapper,
+    context::execution_context::{ GlobalContextMethods, GlobalExecutionContext, VarValues },
     parse_args,
     tokens::InstructionMethods,
     utils::{
@@ -17,16 +11,17 @@ use crate::{
 
 #[cfg(feature = "test_access")]
 pub mod test;
+
 #[derive(Clone)]
-pub struct Val {
+pub struct Mutv {
     val_name: String,
     val_value: TextForgeParamTypes,
     params: Vec<TextForgeParamTypes>,
 }
 
-impl Default for Val {
+impl Default for Mutv {
     fn default() -> Self {
-        Val {
+        Mutv {
             val_name: "x".to_string(),
             val_value: TextForgeParamTypes::String("".to_string()),
             params: vec![
@@ -37,20 +32,20 @@ impl Default for Val {
     }
 }
 
-impl InstructionMethods for Val {
+impl InstructionMethods for Mutv {
     fn get_params(&self) -> &Vec<TextForgeParamTypes> {
         &self.params
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
-        0x38
+        0x39
     }
     fn get_string_repr(&self) -> &'static str {
-        "val"
+        "mutv"
     }
 
     fn to_textforge_line(&self) -> std::borrow::Cow<'static, str> {
-        format!("val {} = {};\n", self.val_name, self.val_value.to_string()).into()
+        format!("mutv {} = {};\n", self.val_name, self.val_value.to_string()).into()
     }
 
     fn transform(
@@ -70,10 +65,9 @@ impl InstructionMethods for Val {
             other => VarValues::try_from(other.clone())?,
         };
 
-        context.add_var(&self.val_name, VarEntry {
-            value,
-            mutable: false,
-        })?;
+        let var = context.get_mut_var(&self.val_name)?;
+
+        var.value = value;
 
         Ok(input.to_string())
     }

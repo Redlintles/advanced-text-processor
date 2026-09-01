@@ -461,5 +461,15 @@ define_token_table! {
                 SyntaxDef::req(SyntaxToken::String),
             ],
         ),
+        (
+            "mutv",
+            0x39,
+            || TokenRef::Shared(Arc::new(var::Var::default())),
+            [
+                SyntaxDef::req(SyntaxToken::String),
+                SyntaxDef::req(SyntaxToken::Literal("=")),
+                SyntaxDef::req(SyntaxToken::String),
+            ],
+        ),
     ];
 }

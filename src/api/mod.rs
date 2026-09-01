@@ -1822,6 +1822,28 @@ pub trait TextForgeBuilderMethods: Sized {
         self.push_token(tok)?;
         Ok(self)
     }
+    fn mut_var(
+        &mut self,
+        var_name: impl Into<ValType>,
+        var_value: impl Into<ValType>
+    ) -> Result<&mut Self, TextForgeError> {
+        let var_value: ValType = var_value.into();
+
+        let var_value = match var_value {
+            ValType::Literal(value) => {
+                ValType::Literal(TextForgeParamTypes::String(value.to_string()))
+            }
+            ValType::VarRef(name) => ValType::VarRef(name),
+        };
+
+        let tok = TokenWrapper::new(
+            Box::new(mutv::Mutv::default()),
+            Some(vec![var_name.into(), var_value])
+        );
+
+        self.push_token(tok)?;
+        Ok(self)
+    }
 }
 
 pub trait TextForgeConditionalMethods: TextForgeBuilderMethods {
