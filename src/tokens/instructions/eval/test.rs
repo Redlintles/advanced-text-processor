@@ -5,19 +5,16 @@
 mod tests {
     use std::collections::HashMap;
 
-    use evalexpr::{ Context, Value };
+    use evalexpr::{Context, Value};
 
-    use crate::tokens::instructions::eval::{ Eval, build_eval_context, value_to_plain_string };
     use crate::context::execution_context::{
-        GlobalContextMethods,
-        GlobalExecutionContext,
-        VarEntry,
-        VarValues,
+        GlobalContextMethods, GlobalExecutionContext, VarEntry, VarValues,
     };
+    use crate::parser::params::TextForgeParamTypes;
     use crate::parser::resolve_var::TokenWrapper;
     use crate::tokens::InstructionMethods;
-    use crate::utils::errors::TextForgeErrorCode;
-    use crate::parser::params::TextForgeParamTypes; // ajuste pro path real (parser::params, no seu caso)
+    use crate::tokens::instructions::eval::{Eval, build_eval_context, value_to_plain_string};
+    use crate::utils::errors::TextForgeErrorCode; // ajuste pro path real (parser::params, no seu caso)
 
     // ============================
     // Contrato básico da instrução
@@ -34,7 +31,7 @@ mod tests {
         let mut t = Eval::default();
         let params = vec![
             TextForgeParamTypes::String("2 + 2".to_string()),
-            TextForgeParamTypes::String("result".to_string())
+            TextForgeParamTypes::String("result".to_string()),
         ];
 
         assert!(t.from_params(&params).is_ok());
@@ -50,7 +47,10 @@ mod tests {
         let params = vec![TextForgeParamTypes::String("2 + 2".to_string())];
 
         let err = t.from_params(&params).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -58,22 +58,24 @@ mod tests {
         let mut t = Eval::default();
         let params = vec![
             TextForgeParamTypes::Usize(1),
-            TextForgeParamTypes::String("result".to_string())
+            TextForgeParamTypes::String("result".to_string()),
         ];
 
         let err = t.from_params(&params).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidParameters(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidParameters(_)
+        ));
     }
 
     #[test]
     fn to_textforge_line_matches_eval_syntax() {
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("2 + 2".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("2 + 2".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         assert_eq!(t.to_textforge_line().as_ref(), "eval 2 + 2 in result;\n");
     }
@@ -85,7 +87,13 @@ mod tests {
     #[test]
     fn build_eval_context_converts_usize_var_to_int() {
         let mut vars = HashMap::new();
-        vars.insert("n".to_string(), VarEntry { value: VarValues::Usize(7), mutable: true });
+        vars.insert(
+            "n".to_string(),
+            VarEntry {
+                value: VarValues::Usize(7),
+                mutable: true,
+            },
+        );
 
         let ctx = build_eval_context(&vars).unwrap();
 
@@ -95,10 +103,13 @@ mod tests {
     #[test]
     fn build_eval_context_parses_numeric_string_as_int() {
         let mut vars = HashMap::new();
-        vars.insert("n".to_string(), VarEntry {
-            value: VarValues::String("42".to_string()),
-            mutable: false,
-        });
+        vars.insert(
+            "n".to_string(),
+            VarEntry {
+                value: VarValues::String("42".to_string()),
+                mutable: false,
+            },
+        );
 
         let ctx = build_eval_context(&vars).unwrap();
 
@@ -108,10 +119,13 @@ mod tests {
     #[test]
     fn build_eval_context_keeps_non_numeric_string_as_string() {
         let mut vars = HashMap::new();
-        vars.insert("name".to_string(), VarEntry {
-            value: VarValues::String("ola".to_string()),
-            mutable: false,
-        });
+        vars.insert(
+            "name".to_string(),
+            VarEntry {
+                value: VarValues::String("ola".to_string()),
+                mutable: false,
+            },
+        );
 
         let ctx = build_eval_context(&vars).unwrap();
 
@@ -123,10 +137,13 @@ mod tests {
         // Decisão de projeto: float não é tentado na conversão, então uma
         // string como "5.5" continua sendo Value::String, não Value::Float.
         let mut vars = HashMap::new();
-        vars.insert("n".to_string(), VarEntry {
-            value: VarValues::String("5.5".to_string()),
-            mutable: false,
-        });
+        vars.insert(
+            "n".to_string(),
+            VarEntry {
+                value: VarValues::String("5.5".to_string()),
+                mutable: false,
+            },
+        );
 
         let ctx = build_eval_context(&vars).unwrap();
 
@@ -136,10 +153,13 @@ mod tests {
     #[test]
     fn build_eval_context_skips_token_vars() {
         let mut vars = HashMap::new();
-        vars.insert("tok".to_string(), VarEntry {
-            value: VarValues::Token(TokenWrapper::default()),
-            mutable: false,
-        });
+        vars.insert(
+            "tok".to_string(),
+            VarEntry {
+                value: VarValues::Token(TokenWrapper::default()),
+                mutable: false,
+            },
+        );
 
         let ctx = build_eval_context(&vars).unwrap();
 
@@ -152,7 +172,10 @@ mod tests {
 
     #[test]
     fn value_to_plain_string_strips_quotes_from_string_value() {
-        assert_eq!(value_to_plain_string(&Value::from("hello".to_string())), "hello");
+        assert_eq!(
+            value_to_plain_string(&Value::from("hello".to_string())),
+            "hello"
+        );
     }
 
     #[test]
@@ -184,67 +207,80 @@ mod tests {
     #[test]
     fn transform_fails_without_context() {
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("1 + 1".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("1 + 1".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         let err = t.transform("input", None).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::RequiredContextError(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::RequiredContextError(_)
+        ));
     }
 
     #[test]
     fn transform_fails_when_target_var_does_not_exist() {
         let mut ctx = GlobalExecutionContext::new();
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("1 + 1".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("1 + 1".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         let err = t.transform("input", Some(&mut ctx)).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::VariableNotFound(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::VariableNotFound(_)
+        ));
     }
 
     #[test]
     fn transform_fails_when_target_var_is_not_mutable() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("result", VarEntry {
-            value: VarValues::String("".to_string()),
-            mutable: false,
-        }).unwrap();
+        ctx.add_var(
+            "result",
+            VarEntry {
+                value: VarValues::String("".to_string()),
+                mutable: false,
+            },
+        )
+        .unwrap();
 
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("1 + 1".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("1 + 1".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         let err = t.transform("input", Some(&mut ctx)).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::NonMutableVariableError(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::NonMutableVariableError(_)
+        ));
     }
 
     #[test]
     fn transform_preserves_input_unchanged() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("result", VarEntry {
-            value: VarValues::String("".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "result",
+            VarEntry {
+                value: VarValues::String("".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("1 + 1".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("1 + 1".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         let result = t.transform("input inalterado", Some(&mut ctx));
 
@@ -254,18 +290,21 @@ mod tests {
     #[test]
     fn transform_computes_simple_arithmetic() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("result", VarEntry {
-            value: VarValues::String("".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "result",
+            VarEntry {
+                value: VarValues::String("".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("2 + 3".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("2 + 3".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         t.transform("input", Some(&mut ctx)).unwrap();
 
@@ -276,22 +315,29 @@ mod tests {
     #[test]
     fn transform_uses_context_variable_in_expression() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("x", VarEntry {
-            value: VarValues::String("5".to_string()),
-            mutable: false,
-        }).unwrap();
-        ctx.add_var("result", VarEntry {
-            value: VarValues::String("".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "x",
+            VarEntry {
+                value: VarValues::String("5".to_string()),
+                mutable: false,
+            },
+        )
+        .unwrap();
+        ctx.add_var(
+            "result",
+            VarEntry {
+                value: VarValues::String("".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("x + 10".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("x + 10".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         t.transform("input", Some(&mut ctx)).unwrap();
 
@@ -302,22 +348,29 @@ mod tests {
     #[test]
     fn transform_concatenates_non_numeric_string_vars_without_literal_quotes() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("greeting", VarEntry {
-            value: VarValues::String("ola".to_string()),
-            mutable: false,
-        }).unwrap();
-        ctx.add_var("result", VarEntry {
-            value: VarValues::String("".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "greeting",
+            VarEntry {
+                value: VarValues::String("ola".to_string()),
+                mutable: false,
+            },
+        )
+        .unwrap();
+        ctx.add_var(
+            "result",
+            VarEntry {
+                value: VarValues::String("".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("greeting + \" mundo\"".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("greeting + \" mundo\"".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         t.transform("input", Some(&mut ctx)).unwrap();
 
@@ -330,18 +383,21 @@ mod tests {
     #[test]
     fn transform_string_literal_result_has_no_literal_quotes() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("result", VarEntry {
-            value: VarValues::String("".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "result",
+            VarEntry {
+                value: VarValues::String("".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("\"hello\"".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("\"hello\"".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         t.transform("input", Some(&mut ctx)).unwrap();
 
@@ -352,22 +408,29 @@ mod tests {
     #[test]
     fn transform_skips_token_variable_without_erroring() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("tok", VarEntry {
-            value: VarValues::Token(TokenWrapper::default()),
-            mutable: false,
-        }).unwrap();
-        ctx.add_var("result", VarEntry {
-            value: VarValues::String("".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "tok",
+            VarEntry {
+                value: VarValues::Token(TokenWrapper::default()),
+                mutable: false,
+            },
+        )
+        .unwrap();
+        ctx.add_var(
+            "result",
+            VarEntry {
+                value: VarValues::String("".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("1 + 1".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("1 + 1".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         t.transform("input", Some(&mut ctx)).unwrap();
 
@@ -378,41 +441,53 @@ mod tests {
     #[test]
     fn transform_fails_on_invalid_expression_syntax() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("result", VarEntry {
-            value: VarValues::String("".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "result",
+            VarEntry {
+                value: VarValues::String("".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("2 +".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("2 +".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         let err = t.transform("input", Some(&mut ctx)).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidExprError(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidExprError(_)
+        ));
     }
 
     #[test]
     fn transform_fails_when_expression_references_unknown_variable() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("result", VarEntry {
-            value: VarValues::String("".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "result",
+            VarEntry {
+                value: VarValues::String("".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("nao_existe + 1".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("nao_existe + 1".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         let err = t.transform("input", Some(&mut ctx)).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidExprError(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidExprError(_)
+        ));
     }
 
     #[test]
@@ -421,24 +496,34 @@ mod tests {
         // continua Value::String — somar com um Int não é uma combinação
         // válida pro operador `+` do evalexpr.
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("n", VarEntry {
-            value: VarValues::String("5.5".to_string()),
-            mutable: false,
-        }).unwrap();
-        ctx.add_var("result", VarEntry {
-            value: VarValues::String("".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "n",
+            VarEntry {
+                value: VarValues::String("5.5".to_string()),
+                mutable: false,
+            },
+        )
+        .unwrap();
+        ctx.add_var(
+            "result",
+            VarEntry {
+                value: VarValues::String("".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Eval::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("n + 1".to_string()),
-                TextForgeParamTypes::String("result".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("n + 1".to_string()),
+            TextForgeParamTypes::String("result".to_string()),
+        ])
+        .unwrap();
 
         let err = t.transform("input", Some(&mut ctx)).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidExprError(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidExprError(_)
+        ));
     }
 }

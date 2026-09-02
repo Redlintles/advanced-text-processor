@@ -3,15 +3,11 @@
 mod tests {
     use textforge::context::execution_context::GlobalExecutionContext;
     use textforge::globals::table::{
-        QuerySource,
-        QueryTarget,
-        SyntaxDef,
-        TOKEN_TABLE,
-        TargetValue,
+        QuerySource, QueryTarget, SyntaxDef, TOKEN_TABLE, TargetValue,
     };
+    use textforge::parser::params::TextForgeParamTypes;
     use textforge::parser::resolve_var::ValType;
     use textforge::utils::errors::TextForgeErrorCode;
-    use textforge::parser::params::TextForgeParamTypes;
 
     use std::sync::Arc;
 
@@ -21,7 +17,10 @@ mod tests {
 
     fn expected_for(id: &str) -> Arc<[SyntaxDef]> {
         let key = std::borrow::Cow::Owned(id.to_string());
-        match TOKEN_TABLE.find((QuerySource::Identifier(key), QueryTarget::Syntax)).unwrap() {
+        match TOKEN_TABLE
+            .find((QuerySource::Identifier(key), QueryTarget::Syntax))
+            .unwrap()
+        {
             TargetValue::Syntax(p) => p,
             _ => unreachable!("Expected Syntax"),
         }
@@ -29,17 +28,17 @@ mod tests {
 
     fn opcode_for(id: &str) -> u32 {
         let key = std::borrow::Cow::Owned(id.to_string());
-        match TOKEN_TABLE.find((QuerySource::Identifier(key), QueryTarget::Bytecode)).unwrap() {
+        match TOKEN_TABLE
+            .find((QuerySource::Identifier(key), QueryTarget::Bytecode))
+            .unwrap()
+        {
             TargetValue::Bytecode(c) => c,
             _ => unreachable!("Expected Bytecode"),
         }
     }
 
     fn chunks(parts: &[&str]) -> Vec<String> {
-        parts
-            .iter()
-            .map(|s| s.to_string())
-            .collect()
+        parts.iter().map(|s| s.to_string()).collect()
     }
 
     fn is_text_err(code: &TextForgeErrorCode) -> bool {
@@ -49,9 +48,9 @@ mod tests {
     fn is_bc_err(code: &TextForgeErrorCode) -> bool {
         return matches!(
             code,
-            TextForgeErrorCode::BytecodeParsingError(_) |
-                TextForgeErrorCode::BytecodeParamParsingError(_) |
-                TextForgeErrorCode::BytecodeParamNotRecognized(_)
+            TextForgeErrorCode::BytecodeParsingError(_)
+                | TextForgeErrorCode::BytecodeParamParsingError(_)
+                | TextForgeErrorCode::BytecodeParamNotRecognized(_)
         );
     }
 
@@ -106,8 +105,9 @@ mod tests {
         let expected = expected_for("ifdc");
         let parsed = TextForgeParamTypes::from_expected(
             expected,
-            &chunks(&["banana", "do", "atb", "pizza"])
-        ).unwrap();
+            &chunks(&["banana", "do", "atb", "pizza"]),
+        )
+        .unwrap();
 
         assert_eq!(parsed.len(), 2);
 
@@ -129,8 +129,9 @@ mod tests {
         let expected = expected_for("blk");
         let parsed = TextForgeParamTypes::from_expected(
             expected,
-            &chunks(&["x", "assoc", "ifdc", "banana", "do", "tbs"])
-        ).unwrap();
+            &chunks(&["x", "assoc", "ifdc", "banana", "do", "tbs"]),
+        )
+        .unwrap();
 
         assert_eq!(parsed.len(), 2);
 
@@ -152,8 +153,11 @@ mod tests {
         let expected = expected_for("ifdc");
         let parsed = TextForgeParamTypes::from_expected(
             expected,
-            &chunks(&["laranja", "do", "blk", "x", "assoc", "raw", "laranja", "abacaxi"])
-        ).unwrap();
+            &chunks(&[
+                "laranja", "do", "blk", "x", "assoc", "raw", "laranja", "abacaxi",
+            ]),
+        )
+        .unwrap();
 
         match &parsed[1] {
             ValType::Literal(TextForgeParamTypes::Token(t)) => {
@@ -168,22 +172,12 @@ mod tests {
         let expected = expected_for("ifdc");
         let parsed = TextForgeParamTypes::from_expected(
             expected,
-            &chunks(
-                &[
-                    "laranja",
-                    "do",
-                    "blk",
-                    "x",
-                    "assoc",
-                    "ifdc",
-                    "pera",
-                    "do",
-                    "raw",
-                    "laranja",
-                    "abacaxi",
-                ]
-            )
-        ).unwrap();
+            &chunks(&[
+                "laranja", "do", "blk", "x", "assoc", "ifdc", "pera", "do", "raw", "laranja",
+                "abacaxi",
+            ]),
+        )
+        .unwrap();
 
         match &parsed[1] {
             ValType::Literal(TextForgeParamTypes::Token(t)) => {
@@ -198,8 +192,9 @@ mod tests {
         let expected = expected_for("ifdc");
         let err = TextForgeParamTypes::from_expected(
             expected,
-            &chunks(&["banana", "do", "ifdc", "coxinha", "do", "atb", "pizza"])
-        ).unwrap_err();
+            &chunks(&["banana", "do", "ifdc", "coxinha", "do", "atb", "pizza"]),
+        )
+        .unwrap_err();
 
         assert!(is_text_err(&err.error_code));
     }
@@ -209,8 +204,9 @@ mod tests {
         let expected = expected_for("blk");
         let err = TextForgeParamTypes::from_expected(
             expected,
-            &chunks(&["x", "assoc", "blk", "y", "assoc", "atb", "banana"])
-        ).unwrap_err();
+            &chunks(&["x", "assoc", "blk", "y", "assoc", "atb", "banana"]),
+        )
+        .unwrap_err();
 
         assert!(is_text_err(&err.error_code));
     }
@@ -220,25 +216,12 @@ mod tests {
         let expected = expected_for("blk");
         let err = TextForgeParamTypes::from_expected(
             expected,
-            &chunks(
-                &[
-                    "x",
-                    "assoc",
-                    "ifdc",
-                    "a",
-                    "do",
-                    "ifdc",
-                    "b",
-                    "do",
-                    "ifdc",
-                    "c",
-                    "do",
-                    "raw",
-                    "d",
-                    "e",
-                ]
-            )
-        ).unwrap_err();
+            &chunks(&[
+                "x", "assoc", "ifdc", "a", "do", "ifdc", "b", "do", "ifdc", "c", "do", "raw", "d",
+                "e",
+            ]),
+        )
+        .unwrap_err();
 
         assert!(is_text_err(&err.error_code));
     }

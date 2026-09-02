@@ -5,11 +5,11 @@ mod globals;
 #[cfg(not(feature = "test_access"))]
 mod macros;
 #[cfg(not(feature = "test_access"))]
+mod parser;
+#[cfg(not(feature = "test_access"))]
 mod text;
 #[cfg(not(feature = "test_access"))]
 mod utils;
-#[cfg(not(feature = "test_access"))]
-mod parser;
 
 #[cfg(feature = "test_access")]
 pub mod context;

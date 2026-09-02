@@ -6,8 +6,8 @@ use std::borrow::Cow;
 use regex::Regex;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::tokens::InstructionMethods;
 use crate::parser::params::TextForgeParamTypes;
+use crate::tokens::InstructionMethods;
 use crate::utils::validations::check_vec_len;
 
 use crate::utils::errors::{TextForgeError, TextForgeErrorCode};

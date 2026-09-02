@@ -1,20 +1,20 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
 
-use evalexpr::{ ContextWithMutableVariables, HashMapContext, Value, eval_with_context };
+use evalexpr::{ContextWithMutableVariables, HashMapContext, Value, eval_with_context};
 
 use crate::{
     context::execution_context::{
-        GlobalContextMethods,
-        GlobalExecutionContext,
-        VarEntry,
-        VarValues,
+        GlobalContextMethods, GlobalExecutionContext, VarEntry, VarValues,
     },
     parse_args,
-    tokens::InstructionMethods,
     parser::params::TextForgeParamTypes,
+    tokens::InstructionMethods,
     utils::{
-        errors::{ TextForgeError, TextForgeErrorCode::{ InvalidExprError, RequiredContextError } },
+        errors::{
+            TextForgeError,
+            TextForgeErrorCode::{InvalidExprError, RequiredContextError},
+        },
         validations::check_vec_len,
     },
 };
@@ -43,25 +43,22 @@ fn build_eval_context(vars: &HashMap<String, VarEntry>) -> Result<HashMapContext
     for (name, entry) in vars.iter() {
         let value = match &entry.value {
             VarValues::Usize(n) => Value::from_int(*n as i64),
-            VarValues::String(s) =>
-                match s.parse::<i64>() {
-                    Ok(i) => Value::from_int(i),
-                    Err(_) => Value::from(s.clone()),
-                }
+            VarValues::String(s) => match s.parse::<i64>() {
+                Ok(i) => Value::from_int(i),
+                Err(_) => Value::from(s.clone()),
+            },
             VarValues::Token(_) => {
                 continue;
             }
         };
 
-        ctx
-            .set_value(name.clone(), value)
-            .map_err(|e|
-                TextForgeError::new(
-                    InvalidExprError(Cow::from(e.to_string())),
-                    Cow::from("eval.build_eval_context"),
-                    Cow::from(name.clone())
-                )
-            )?;
+        ctx.set_value(name.clone(), value).map_err(|e| {
+            TextForgeError::new(
+                InvalidExprError(Cow::from(e.to_string())),
+                Cow::from("eval.build_eval_context"),
+                Cow::from(name.clone()),
+            )
+        })?;
     }
 
     Ok(ctx)
@@ -112,13 +109,13 @@ impl InstructionMethods for Eval {
     fn transform(
         &self,
         input: &str,
-        context: Option<&mut GlobalExecutionContext>
+        context: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         let context = context.ok_or_else(|| {
             TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("val"),
-                std::borrow::Cow::Borrowed("")
+                std::borrow::Cow::Borrowed(""),
             )
         })?;
 
@@ -127,13 +124,13 @@ impl InstructionMethods for Eval {
         // referencing context's HashMap.
         let eval_ctx = build_eval_context(context.get_all_vars())?;
 
-        let result = eval_with_context(&self.expr, &eval_ctx).map_err(|e|
+        let result = eval_with_context(&self.expr, &eval_ctx).map_err(|e| {
             TextForgeError::new(
                 InvalidExprError(Cow::from(e.to_string())),
                 Cow::from("eval.transform"),
-                Cow::from(self.expr.to_string())
+                Cow::from(self.expr.to_string()),
             )
-        )?;
+        })?;
 
         let var_mut = context.get_mut_var(&self.target)?;
 

@@ -3,10 +3,10 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
+    use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::padl::Padl;
     use crate::utils::errors::TextForgeErrorCode;
-    use crate::parser::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_padl() {
@@ -113,8 +113,8 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::errors::TextForgeErrorCode;
         use crate::parser::params::TextForgeParamTypes;
+        use crate::utils::errors::TextForgeErrorCode;
 
         #[test]
         fn get_opcode_is_2f() {

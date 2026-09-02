@@ -3,10 +3,10 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
+    use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::ctr::Ctr;
     use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
-    use crate::parser::params::TextForgeParamTypes;
 
     #[test]
     fn params_accepts_valid_range() {

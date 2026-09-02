@@ -1,9 +1,16 @@
-use std::{ fs::OpenOptions, io::{ BufRead, BufReader }, path::Path };
+use std::{
+    fs::OpenOptions,
+    io::{BufRead, BufReader},
+    path::Path,
+};
 
 use crate::{
-    globals::{ table::{ QuerySource, QueryTarget, TOKEN_TABLE, TargetValue } },
-    parser::{ resolve_var::TokenWrapper, params::TextForgeParamTypes },
-    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_file_path },
+    globals::table::{QuerySource, QueryTarget, TOKEN_TABLE, TargetValue},
+    parser::{params::TextForgeParamTypes, resolve_var::TokenWrapper},
+    utils::{
+        errors::{TextForgeError, TextForgeErrorCode},
+        validations::check_file_path,
+    },
 };
 
 pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, TextForgeError> {
@@ -12,33 +19,24 @@ pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, TextForgeError
     if line.is_empty() || line.starts_with("//") {
         return Ok(TokenWrapper::default());
     }
-    let chunks = match
-        shell_words::split(
-            line
-                .trim_end()
-                .strip_suffix(";")
-                .ok_or_else(|| {
-                    TextForgeError::new(
-                        TextForgeErrorCode::TextParsingError(
-                            "An ATP Parsing error ocurred: Error splitting file line".into()
-                        ),
-                        "shell words split",
-                        token_string.to_string()
-                    )
-                })?
+    let chunks = match shell_words::split(line.trim_end().strip_suffix(";").ok_or_else(|| {
+        TextForgeError::new(
+            TextForgeErrorCode::TextParsingError(
+                "An ATP Parsing error ocurred: Error splitting file line".into(),
+            ),
+            "shell words split",
+            token_string.to_string(),
         )
-    {
+    })?) {
         Ok(x) => x,
         Err(_) => {
-            return Err(
-                TextForgeError::new(
-                    TextForgeErrorCode::TextParsingError(
-                        "An ATP Parsing error ocurred: Error splitting file line".into()
-                    ),
-                    "shell words split",
-                    token_string.to_string()
-                )
-            );
+            return Err(TextForgeError::new(
+                TextForgeErrorCode::TextParsingError(
+                    "An ATP Parsing error ocurred: Error splitting file line".into(),
+                ),
+                "shell words split",
+                token_string.to_string(),
+            ));
         }
     };
 
@@ -47,9 +45,10 @@ pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, TextForgeError
         QueryTarget::Token,
     ))?;
 
-    let token_param_types = match
-        TOKEN_TABLE.find((QuerySource::Identifier(chunks[0].clone().into()), QueryTarget::Syntax))?
-    {
+    let token_param_types = match TOKEN_TABLE.find((
+        QuerySource::Identifier(chunks[0].clone().into()),
+        QueryTarget::Syntax,
+    ))? {
         TargetValue::Syntax(p) => p,
         _ => unreachable!(" Invalid Query result"),
     };
@@ -58,10 +57,8 @@ pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, TextForgeError
         TargetValue::Token(token_ref) => {
             let token = token_ref.into_box();
 
-            let parsed_params = TextForgeParamTypes::from_expected(
-                token_param_types,
-                &chunks[1..]
-            )?;
+            let parsed_params =
+                TextForgeParamTypes::from_expected(token_param_types, &chunks[1..])?;
 
             let wrapper = TokenWrapper::new(token, Some(parsed_params));
 
@@ -78,15 +75,13 @@ pub fn read_from_file(path: &Path) -> Result<Vec<TokenWrapper>, TextForgeError> 
     let file = match OpenOptions::new().read(true).open(path) {
         Ok(x) => x,
         Err(_) => {
-            return Err(
-                TextForgeError::new(
-                    crate::utils::errors::TextForgeErrorCode::FileOpeningError(
-                        "Failed opening File".into()
-                    ),
-                    "",
-                    format!("{:?}", path)
-                )
-            );
+            return Err(TextForgeError::new(
+                crate::utils::errors::TextForgeErrorCode::FileOpeningError(
+                    "Failed opening File".into(),
+                ),
+                "",
+                format!("{:?}", path),
+            ));
         }
     };
 
@@ -102,15 +97,13 @@ pub fn read_from_file(path: &Path) -> Result<Vec<TokenWrapper>, TextForgeError> 
                 result.push(read_from_text(&l)?);
             }
             Err(_) => {
-                return Err(
-                    TextForgeError::new(
-                        crate::utils::errors::TextForgeErrorCode::FileReadingError(
-                            "Failed reading file line".into()
-                        ),
-                        "",
-                        ""
-                    )
-                );
+                return Err(TextForgeError::new(
+                    crate::utils::errors::TextForgeErrorCode::FileReadingError(
+                        "Failed reading file line".into(),
+                    ),
+                    "",
+                    "",
+                ));
             }
         }
     }

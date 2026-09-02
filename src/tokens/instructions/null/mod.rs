@@ -2,9 +2,9 @@ use std::borrow::Cow;
 
 use crate::{
     context::execution_context::GlobalExecutionContext,
-    tokens::InstructionMethods,
     parser::params::TextForgeParamTypes,
-    utils::{ errors::TextForgeError, validations::check_vec_len },
+    tokens::InstructionMethods,
+    utils::{errors::TextForgeError, validations::check_vec_len},
 };
 
 #[cfg(feature = "test_access")]
@@ -35,7 +35,7 @@ impl InstructionMethods for Null {
     fn transform(
         &self,
         input: &str,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         Ok(input.to_string())
     }

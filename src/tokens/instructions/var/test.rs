@@ -4,10 +4,10 @@ mod tests {
     use crate::context::execution_context::{
         GlobalContextMethods, GlobalExecutionContext, VarEntry, VarValues,
     };
+    use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::InstructionMethods;
     use crate::tokens::instructions::var::Var;
     use crate::utils::errors::TextForgeErrorCode;
-    use crate::parser::params::TextForgeParamTypes;
 
     // ============================
     // Contrato básico da instrução

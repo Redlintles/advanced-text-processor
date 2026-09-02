@@ -3,10 +3,10 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
+    use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::dls::Dls;
     use crate::utils::errors::TextForgeErrorCode;
-    use crate::parser::params::TextForgeParamTypes;
 
     #[test]
     fn params_sets_index() {

@@ -6,8 +6,8 @@ use std::borrow::Cow;
 use crate::context::execution_context::GlobalExecutionContext;
 use crate::tokens::InstructionMethods;
 
-use crate::utils::errors::TextForgeError;
 use crate::parser::params::TextForgeParamTypes;
+use crate::utils::errors::TextForgeError;
 use crate::utils::validations::check_vec_len;
 
 /// SPLC - Split Characters

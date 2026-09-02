@@ -3,9 +3,9 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
+    use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::{InstructionMethods, transforms::tlcc::Tlcc};
     use crate::utils::errors::TextForgeErrorCode;
-    use crate::parser::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_tlcc() {

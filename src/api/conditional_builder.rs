@@ -1,9 +1,6 @@
 use crate::{
-    api::TextForgeBuilderMethods,
-    parser::resolve_var::TokenWrapper,
-    tokens::InstructionMethods,
-    utils::{ errors::TextForgeError },
-    parser::{ params::TextForgeParamTypes },
+    api::TextForgeBuilderMethods, parser::params::TextForgeParamTypes,
+    parser::resolve_var::TokenWrapper, tokens::InstructionMethods, utils::errors::TextForgeError,
 };
 
 pub struct ConditionalBuilderEach {
