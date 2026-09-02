@@ -81,7 +81,7 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::params::TextForgeParamTypes;
+        use crate::parser::params::TextForgeParamTypes;
 
         #[test]
         fn get_opcode_is_0x10() {

@@ -6,7 +6,7 @@ mod tests {
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::ctc::Ctc;
     use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
-    use crate::utils::params::TextForgeParamTypes;
+    use crate::parser::params::TextForgeParamTypes;
 
     #[test]
     fn params_accepts_valid_range() {
@@ -139,7 +139,7 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::params::TextForgeParamTypes;
+        use crate::parser::params::TextForgeParamTypes;
 
         #[test]
         fn get_opcode_is_1b() {

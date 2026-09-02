@@ -5,7 +5,7 @@ mod tests {
     use crate::{
         context::execution_context::GlobalExecutionContext,
         tokens::{InstructionMethods, transforms::rmws::Rmws},
-        utils::params::TextForgeParamTypes,
+        parser::params::TextForgeParamTypes,
     };
 
     #[test]

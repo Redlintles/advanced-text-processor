@@ -9,7 +9,7 @@ use crate::{
     utils::{errors::TextForgeError, transforms::capitalize, validations::check_vec_len},
 };
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 /// Token `Clw` — Capitalize Last Word
 ///
 /// Capitalizes the last word of `input`
@@ -57,7 +57,7 @@ impl InstructionMethods for Clw {
         "clw;\n".into()
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        use crate::utils::params::TextForgeParamTypesJoin;
+        use crate::parser::params::TextForgeParamTypesJoin;
 
         check_vec_len(params, 0, "clw", params.join(""))?;
         Ok(())

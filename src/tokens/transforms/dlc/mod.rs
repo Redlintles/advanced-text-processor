@@ -9,7 +9,7 @@ use crate::{tokens::InstructionMethods, utils::validations::check_chunk_bound_in
 
 use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 /// Dlc - Delete Chunk
 ///
 /// Deletes an specific subslice of `input` delimited by `start_index` and `end_index`(inclusive)

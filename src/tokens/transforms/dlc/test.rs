@@ -6,7 +6,7 @@ mod tests {
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::dlc::Dlc;
     use crate::utils::errors::TextForgeErrorCode;
-    use crate::utils::params::TextForgeParamTypes;
+    use crate::parser::params::TextForgeParamTypes;
 
     #[test]
     fn params_sets_indices() {
@@ -112,7 +112,7 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::params::TextForgeParamTypes;
+        use crate::parser::params::TextForgeParamTypes;
 
         #[test]
         fn get_opcode_is_08() {

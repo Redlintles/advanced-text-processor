@@ -9,7 +9,7 @@ use crate::{
     utils::{errors::TextForgeError, validations::check_vec_len},
 };
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 /// TBS - Trim both sides
 ///
 /// Trim Both Sides of `input`, removing all spaces from both the beginning and the end

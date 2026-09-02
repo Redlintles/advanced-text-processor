@@ -9,7 +9,7 @@ use crate::{
     utils::{errors::TextForgeError, validations::check_vec_len},
 };
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 
 /// TLS - Trim left sides
 ///

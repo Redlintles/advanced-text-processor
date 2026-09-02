@@ -6,8 +6,9 @@
 mod common {
     use crate::{
         context::execution_context::GlobalExecutionContext,
-        tokens::{InstructionMethods, transforms::atb::Atb},
-        utils::{errors::TextForgeErrorCode, params::TextForgeParamTypes},
+        tokens::{ InstructionMethods, transforms::atb::Atb },
+        utils::{ errors::TextForgeErrorCode },
+        parser::{ params::TextForgeParamTypes },
     };
 
     #[test]
@@ -69,15 +70,12 @@ mod common {
         let mut t = Atb::default();
         let params = vec![
             TextForgeParamTypes::String("a".to_string()),
-            TextForgeParamTypes::String("b".to_string()),
+            TextForgeParamTypes::String("b".to_string())
         ];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
@@ -117,10 +115,7 @@ mod common {
         rebuilt.from_params(&vec![parsed_param]).unwrap();
 
         assert_eq!(rebuilt.text, "hello");
-        assert_eq!(
-            rebuilt.transform(" world", Some(&mut ctx)).unwrap(),
-            "hello world"
-        );
+        assert_eq!(rebuilt.transform(" world", Some(&mut ctx)).unwrap(), "hello world");
     }
 }
 
@@ -128,8 +123,9 @@ mod common {
 mod bytecode {
     use crate::{
         context::execution_context::GlobalExecutionContext,
-        tokens::{InstructionMethods, transforms::atb::Atb},
-        utils::{errors::TextForgeError, params::TextForgeParamTypes},
+        tokens::{ InstructionMethods, transforms::atb::Atb },
+        parser::{ params::TextForgeParamTypes },
+        utils::{ errors::{ TextForgeError } },
     };
 
     // Helper: encode a param in the exact format that TextForgeParamTypes::from_bytecode expects:
@@ -155,10 +151,7 @@ mod bytecode {
 
         match parsed {
             TextForgeParamTypes::String(s) => assert_eq!(s, "abc"),
-            other => panic!(
-                "Expected String, got type code {}",
-                other.get_param_type_code()
-            ),
+            other => panic!("Expected String, got type code {}", other.get_param_type_code()),
         }
     }
 
@@ -170,10 +163,7 @@ mod bytecode {
 
         match parsed {
             TextForgeParamTypes::Usize(x) => assert_eq!(x, 123),
-            other => panic!(
-                "Expected Usize, got type code {}",
-                other.get_param_type_code()
-            ),
+            other => panic!("Expected Usize, got type code {}", other.get_param_type_code()),
         }
     }
 

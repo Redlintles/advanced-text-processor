@@ -5,7 +5,7 @@ mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::tokens::{InstructionMethods, transforms::sslt::Sslt};
     use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
-    use crate::utils::params::TextForgeParamTypes;
+    use crate::parser::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_sslt() {

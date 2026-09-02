@@ -1,6 +1,6 @@
 use crate::{
     context::execution_context::GlobalExecutionContext,
-    globals::var::TokenWrapper,
+    parser::resolve_var::TokenWrapper,
     utils::errors::{ErrorManager, TextForgeError},
 };
 

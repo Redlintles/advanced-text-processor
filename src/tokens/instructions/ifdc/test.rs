@@ -3,7 +3,7 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
-    use crate::globals::var::TokenWrapper;
+    use crate::parser::resolve_var::TokenWrapper;
     use crate::tokens::InstructionMethods;
     use crate::tokens::instructions::ifdc::Ifdc;
     use crate::utils::errors::TextForgeErrorCode;
@@ -35,7 +35,7 @@ mod tests {
     #[cfg(feature = "bytecode")]
     mod bytecode_tests {
         use super::*;
-        use crate::utils::params::TextForgeParamTypes;
+        use crate::parser::params::TextForgeParamTypes;
 
         #[test]
         fn opcode_ok() {

@@ -15,7 +15,7 @@ use crate::watchers::{WatcherContext, WatcherList};
 
 use crate::api::builder::TextForgeBuilder;
 use crate::context::execution_context::{GlobalContextMethods, GlobalExecutionContext};
-use crate::globals::var::TokenWrapper;
+use crate::parser::resolve_var::TokenWrapper;
 use crate::text::reader::read_from_file;
 use crate::text::writer::write_to_file;
 use crate::utils::apply::apply_transform;
@@ -106,7 +106,7 @@ use crate::utils::errors::{
 ///
 /// ```rust
 /// use textforge::api::processor::{TextForgeProcessor, TextForgeProcessorMethods};
-/// use textforge::globals::var::TokenWrapper;
+/// use textforge::parser::resolve_var::TokenWrapper;
 /// use textforge::tokens::transforms::tbs;
 ///
 /// let mut processor = TextForgeProcessor::new();

@@ -15,7 +15,7 @@ use crate::{
     utils::errors::{TextForgeError, TextForgeErrorCode},
 };
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 /// RLW - Replace Last With
 ///
 /// Replace the `nth`` ocurrency of `pattern` in `input` with `text_to_replace`

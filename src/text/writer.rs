@@ -1,7 +1,7 @@
 use std::{fs::OpenOptions, io::Write, path::Path};
 
 use crate::{
-    globals::var::TokenWrapper,
+    parser::resolve_var::TokenWrapper,
     utils::{errors::TextForgeError, validations::check_file_path},
 };
 

@@ -1,6 +1,6 @@
 use crate::{
     api::{TextForgeBlockMethods, TextForgeBuilderMethods, TextForgeConditionalMethods},
-    globals::var::TokenWrapper,
+    parser::resolve_var::TokenWrapper,
     utils::errors::TextForgeError,
 };
 

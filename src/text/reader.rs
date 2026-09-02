@@ -1,12 +1,9 @@
 use std::{ fs::OpenOptions, io::{ BufRead, BufReader }, path::Path };
 
 use crate::{
-    globals::{ table::{ QuerySource, QueryTarget, TOKEN_TABLE, TargetValue }, var::TokenWrapper },
-    utils::{
-        errors::{ TextForgeError, TextForgeErrorCode },
-        params::TextForgeParamTypes,
-        validations::check_file_path,
-    },
+    globals::{ table::{ QuerySource, QueryTarget, TOKEN_TABLE, TargetValue } },
+    parser::{ resolve_var::TokenWrapper, params::TextForgeParamTypes },
+    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_file_path },
 };
 
 pub fn read_from_text(token_string: &str) -> Result<TokenWrapper, TextForgeError> {

@@ -3,7 +3,7 @@ use std::error::Error;
 use std::fmt::Display;
 
 // Colored formatting (presentation only)
-use colored::{Color, Colorize};
+use colored::{ Color, Colorize };
 
 #[derive(Default, Clone)]
 pub struct ErrorManager {
@@ -44,9 +44,7 @@ impl Display for TextForgeError {
 
 impl TextForgeError {
     pub fn new<I, T>(error_code: TextForgeErrorCode, instruction: I, input: T) -> Self
-    where
-        I: Into<Cow<'static, str>>,
-        T: Into<Cow<'static, str>>,
+        where I: Into<Cow<'static, str>>, T: Into<Cow<'static, str>>
     {
         TextForgeError {
             error_code,
@@ -92,7 +90,7 @@ impl ErrorManager {
     /// Keeps existing API: prints to stdout.
     /// Internally uses a writer so it can be unit-tested and buffered.
     pub fn print_errors(&self) {
-        use std::io::{self, BufWriter};
+        use std::io::{ self, BufWriter };
         let stdout = io::stdout();
         let mut w = BufWriter::new(stdout.lock());
         let _ = self.write_errors(&mut w);
@@ -165,6 +163,7 @@ pub enum TextForgeErrorCode {
     GenericError(Cow<'static, str>),
     NestedBlocksNotAllowedError(Cow<'static, str>),
     InvalidUtf8Error(Cow<'static, str>),
+    InvalidExprError(Cow<'static, str>),
 }
 
 impl Display for TextForgeErrorCode {
@@ -215,6 +214,7 @@ impl TextForgeErrorCode {
             Self::GenericError(_) => 27u16,
             Self::NestedBlocksNotAllowedError(_) => 28u16,
             Self::InvalidUtf8Error(_) => 29u16,
+            Self::InvalidExprError(_) => 30u16,
         }
     }
 
@@ -226,7 +226,8 @@ impl TextForgeErrorCode {
     /// Zero-allocation access to the inner message.
     pub fn message(&self) -> &Cow<'static, str> {
         match self {
-            Self::InvalidUtf8Error(x)
+            | Self::InvalidExprError(x)
+            | Self::InvalidUtf8Error(x)
             | Self::FileNotFound(x)
             | Self::IndexOutOfRange(x)
             | Self::InvalidIndex(x)
@@ -261,7 +262,8 @@ impl TextForgeErrorCode {
     fn severity_color(&self) -> Color {
         match self {
             // "Hard" errors
-            Self::InvalidUtf8Error(_)
+            | Self::InvalidExprError(_)
+            | Self::InvalidUtf8Error(_)
             | Self::ZeroDivisionError(_)
             | Self::IncompatibleTypeError(_)
             | Self::InvalidOperands(_)
@@ -276,7 +278,7 @@ impl TextForgeErrorCode {
             | Self::NestedBlocksNotAllowedError(_)
             | Self::TextParsingError(_) => Color::Red,
             // "Missing things" / lookup failures
-            Self::TryIntoFailError(_)
+            | Self::TryIntoFailError(_)
             | Self::FileNotFound(_)
             | Self::FileOpeningError(_)
             | Self::FileReadingError(_)
@@ -299,14 +301,10 @@ impl TextForgeErrorCode {
 pub fn token_array_not_found(identifier: &str) -> impl Fn() -> TextForgeError {
     let message = TextForgeError::new(
         TextForgeErrorCode::TokenArrayNotFound(
-            format!(
-                "Token array not found, is {} a valid identifier for this processor?",
-                identifier
-            )
-            .into(),
+            format!("Token array not found, is {} a valid identifier for this processor?", identifier).into()
         ),
         Cow::Borrowed("get identifier"),
-        Cow::Borrowed(""),
+        Cow::Borrowed("")
     );
     move || message.clone()
 }
@@ -333,7 +331,7 @@ mod tests {
         let err = TextForgeError::new(
             TextForgeErrorCode::ValidationError(Cow::Borrowed("bad params")),
             Cow::Borrowed("raw"),
-            Cow::Borrowed("banana"),
+            Cow::Borrowed("banana")
         );
 
         assert_eq!(err.instruction, Cow::Borrowed("raw"));
@@ -350,7 +348,7 @@ mod tests {
         let err = TextForgeError::new(
             TextForgeErrorCode::InvalidIndex(Cow::Borrowed("index inválido")),
             "dlc",
-            "banana",
+            "banana"
         );
 
         let s = format!("{err}");
@@ -367,10 +365,7 @@ mod tests {
         assert!(s.contains("banana"));
 
         // Bug clássico de formatação
-        assert!(
-            !s.contains("\n,Input"),
-            "Não deve existir '\\n,Input' no Display"
-        );
+        assert!(!s.contains("\n,Input"), "Não deve existir '\\n,Input' no Display");
     }
 
     // ============================================================
@@ -394,10 +389,7 @@ mod tests {
         assert!(s.contains("Código:"));
         assert!(s.contains("Mensagem:"));
         // FileNotFound => 1
-        assert!(
-            s.contains("1"),
-            "Display deve conter o código numérico esperado (1)"
-        );
+        assert!(s.contains("1"), "Display deve conter o código numérico esperado (1)");
         assert!(s.contains("missing file"));
     }
 
@@ -415,144 +407,60 @@ mod tests {
         assert_eq!(BytecodeNotFound(Cow::Borrowed("x")).get_error_code(), 7);
         assert_eq!(BlockNotFound(Cow::Borrowed("x")).get_error_code(), 8);
         assert_eq!(VariableNotFound(Cow::Borrowed("x")).get_error_code(), 9);
-        assert_eq!(
-            NonMutableVariableError(Cow::Borrowed("x")).get_error_code(),
-            10
-        );
+        assert_eq!(NonMutableVariableError(Cow::Borrowed("x")).get_error_code(), 10);
         assert_eq!(InvalidOperands(Cow::Borrowed("x")).get_error_code(), 11);
         assert_eq!(IndexOutOfRange(Cow::Borrowed("x")).get_error_code(), 12);
         assert_eq!(InvalidIndex(Cow::Borrowed("x")).get_error_code(), 13);
         assert_eq!(InvalidParameters(Cow::Borrowed("x")).get_error_code(), 14);
-        assert_eq!(
-            InvalidArgumentNumber(Cow::Borrowed("x")).get_error_code(),
-            15
-        );
-        assert_eq!(
-            BytecodeParamNotRecognized(Cow::Borrowed("x")).get_error_code(),
-            16
-        );
+        assert_eq!(InvalidArgumentNumber(Cow::Borrowed("x")).get_error_code(), 15);
+        assert_eq!(BytecodeParamNotRecognized(Cow::Borrowed("x")).get_error_code(), 16);
         assert_eq!(TextParsingError(Cow::Borrowed("x")).get_error_code(), 17);
-        assert_eq!(
-            BytecodeParsingError(Cow::Borrowed("x")).get_error_code(),
-            18
-        );
-        assert_eq!(
-            BytecodeParamParsingError(Cow::Borrowed("x")).get_error_code(),
-            19
-        );
+        assert_eq!(BytecodeParsingError(Cow::Borrowed("x")).get_error_code(), 18);
+        assert_eq!(BytecodeParamParsingError(Cow::Borrowed("x")).get_error_code(), 19);
         assert_eq!(ValidationError(Cow::Borrowed("x")).get_error_code(), 20);
         assert_eq!(ZeroDivisionError(Cow::Borrowed("x")).get_error_code(), 21);
         assert_eq!(TryIntoFailError(Cow::Borrowed("x")).get_error_code(), 22);
-        assert_eq!(
-            IncompatibleTypeError(Cow::Borrowed("x")).get_error_code(),
-            23
-        );
-        assert_eq!(
-            RequiredContextError(Cow::Borrowed("x")).get_error_code(),
-            24
-        );
+        assert_eq!(IncompatibleTypeError(Cow::Borrowed("x")).get_error_code(), 23);
+        assert_eq!(RequiredContextError(Cow::Borrowed("x")).get_error_code(), 24);
     }
 
     #[test]
     fn severity_color_red_for_hard_errors() {
         use TextForgeErrorCode::*;
 
-        assert_eq!(
-            ZeroDivisionError(Cow::Borrowed("x")).severity_color(),
-            Color::Red
-        );
-        assert_eq!(
-            InvalidOperands(Cow::Borrowed("x")).severity_color(),
-            Color::Red
-        );
-        assert_eq!(
-            ValidationError(Cow::Borrowed("x")).severity_color(),
-            Color::Red
-        );
-        assert_eq!(
-            InvalidParameters(Cow::Borrowed("x")).severity_color(),
-            Color::Red
-        );
-        assert_eq!(
-            InvalidArgumentNumber(Cow::Borrowed("x")).severity_color(),
-            Color::Red
-        );
-        assert_eq!(
-            BytecodeParsingError(Cow::Borrowed("x")).severity_color(),
-            Color::Red
-        );
-        assert_eq!(
-            BytecodeParamParsingError(Cow::Borrowed("x")).severity_color(),
-            Color::Red
-        );
-        assert_eq!(
-            TextParsingError(Cow::Borrowed("x")).severity_color(),
-            Color::Red
-        );
+        assert_eq!(ZeroDivisionError(Cow::Borrowed("x")).severity_color(), Color::Red);
+        assert_eq!(InvalidOperands(Cow::Borrowed("x")).severity_color(), Color::Red);
+        assert_eq!(ValidationError(Cow::Borrowed("x")).severity_color(), Color::Red);
+        assert_eq!(InvalidParameters(Cow::Borrowed("x")).severity_color(), Color::Red);
+        assert_eq!(InvalidArgumentNumber(Cow::Borrowed("x")).severity_color(), Color::Red);
+        assert_eq!(BytecodeParsingError(Cow::Borrowed("x")).severity_color(), Color::Red);
+        assert_eq!(BytecodeParamParsingError(Cow::Borrowed("x")).severity_color(), Color::Red);
+        assert_eq!(TextParsingError(Cow::Borrowed("x")).severity_color(), Color::Red);
     }
 
     #[test]
     fn severity_color_yellow_for_missing_things() {
         use TextForgeErrorCode::*;
 
-        assert_eq!(
-            FileNotFound(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
-        assert_eq!(
-            FileOpeningError(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
-        assert_eq!(
-            FileReadingError(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
-        assert_eq!(
-            FileWritingError(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
-        assert_eq!(
-            TokenNotFound(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
-        assert_eq!(
-            TokenArrayNotFound(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
-        assert_eq!(
-            BlockNotFound(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
-        assert_eq!(
-            VariableNotFound(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
-        assert_eq!(
-            NonMutableVariableError(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
-        assert_eq!(
-            BytecodeNotFound(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
-        assert_eq!(
-            BytecodeParamNotRecognized(Cow::Borrowed("x")).severity_color(),
-            Color::Yellow
-        );
+        assert_eq!(FileNotFound(Cow::Borrowed("x")).severity_color(), Color::Yellow);
+        assert_eq!(FileOpeningError(Cow::Borrowed("x")).severity_color(), Color::Yellow);
+        assert_eq!(FileReadingError(Cow::Borrowed("x")).severity_color(), Color::Yellow);
+        assert_eq!(FileWritingError(Cow::Borrowed("x")).severity_color(), Color::Yellow);
+        assert_eq!(TokenNotFound(Cow::Borrowed("x")).severity_color(), Color::Yellow);
+        assert_eq!(TokenArrayNotFound(Cow::Borrowed("x")).severity_color(), Color::Yellow);
+        assert_eq!(BlockNotFound(Cow::Borrowed("x")).severity_color(), Color::Yellow);
+        assert_eq!(VariableNotFound(Cow::Borrowed("x")).severity_color(), Color::Yellow);
+        assert_eq!(NonMutableVariableError(Cow::Borrowed("x")).severity_color(), Color::Yellow);
+        assert_eq!(BytecodeNotFound(Cow::Borrowed("x")).severity_color(), Color::Yellow);
+        assert_eq!(BytecodeParamNotRecognized(Cow::Borrowed("x")).severity_color(), Color::Yellow);
     }
 
     #[test]
     fn severity_color_magenta_for_indexish() {
         use TextForgeErrorCode::*;
 
-        assert_eq!(
-            InvalidIndex(Cow::Borrowed("x")).severity_color(),
-            Color::Magenta
-        );
-        assert_eq!(
-            IndexOutOfRange(Cow::Borrowed("x")).severity_color(),
-            Color::Magenta
-        );
+        assert_eq!(InvalidIndex(Cow::Borrowed("x")).severity_color(), Color::Magenta);
+        assert_eq!(IndexOutOfRange(Cow::Borrowed("x")).severity_color(), Color::Magenta);
     }
 
     #[test]
@@ -564,9 +472,7 @@ mod tests {
         let m1 = FileNotFound(Cow::Borrowed("a")).message().as_ref();
         let m2 = InvalidOperands(Cow::Borrowed("b")).message().as_ref();
         let m3 = IndexOutOfRange(Cow::Borrowed("c")).message().as_ref();
-        let m4 = BytecodeParamNotRecognized(Cow::Borrowed("d"))
-            .message()
-            .as_ref();
+        let m4 = BytecodeParamNotRecognized(Cow::Borrowed("d")).message().as_ref();
 
         assert_eq!(m1, "a");
         assert_eq!(m2, "b");
@@ -585,11 +491,9 @@ mod tests {
         let mut mgr = ErrorManager::default();
         assert!(!mgr.has_errors());
 
-        mgr.add_error(TextForgeError::new(
-            TextForgeErrorCode::TokenNotFound(Cow::Borrowed("x")),
-            "inst",
-            "in",
-        ));
+        mgr.add_error(
+            TextForgeError::new(TextForgeErrorCode::TokenNotFound(Cow::Borrowed("x")), "inst", "in")
+        );
 
         assert!(mgr.has_errors());
         assert_eq!(mgr.error_vec.len(), 1);
@@ -633,16 +537,20 @@ mod tests {
         disable_colors();
 
         let mut mgr = ErrorManager::default();
-        mgr.add_error(TextForgeError::new(
-            TextForgeErrorCode::TokenNotFound(Cow::Borrowed("first")),
-            "inst1",
-            "in1",
-        ));
-        mgr.add_error(TextForgeError::new(
-            TextForgeErrorCode::InvalidIndex(Cow::Borrowed("second")),
-            "inst2",
-            "in2",
-        ));
+        mgr.add_error(
+            TextForgeError::new(
+                TextForgeErrorCode::TokenNotFound(Cow::Borrowed("first")),
+                "inst1",
+                "in1"
+            )
+        );
+        mgr.add_error(
+            TextForgeError::new(
+                TextForgeErrorCode::InvalidIndex(Cow::Borrowed("second")),
+                "inst2",
+                "in2"
+            )
+        );
 
         let mut buf: Vec<u8> = vec![];
         mgr.write_errors(&mut buf).unwrap();
@@ -676,11 +584,13 @@ mod tests {
         mgr.will_log(false);
         mgr.will_panic(false);
 
-        mgr.handle_error(TextForgeError::new(
-            TextForgeErrorCode::ValidationError(Cow::Borrowed("oops")),
-            "inst",
-            "input",
-        ));
+        mgr.handle_error(
+            TextForgeError::new(
+                TextForgeErrorCode::ValidationError(Cow::Borrowed("oops")),
+                "inst",
+                "input"
+            )
+        );
 
         assert!(mgr.has_errors());
         assert_eq!(mgr.error_vec.len(), 1);
@@ -699,18 +609,17 @@ mod tests {
         let err = TextForgeError::new(
             TextForgeErrorCode::ZeroDivisionError(Cow::Borrowed("div0")),
             "div",
-            "10/0",
+            "10/0"
         );
 
-        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            mgr.handle_error(err);
-        }));
+        let result = std::panic::catch_unwind(
+            std::panic::AssertUnwindSafe(|| {
+                mgr.handle_error(err);
+            })
+        );
 
         assert!(result.is_err(), "deve panicar quando panic_with_error=true");
-        assert!(
-            mgr.has_errors(),
-            "deve ter armazenado o erro antes do panic"
-        );
+        assert!(mgr.has_errors(), "deve ter armazenado o erro antes do panic");
         assert_eq!(mgr.error_vec.len(), 1);
     }
 

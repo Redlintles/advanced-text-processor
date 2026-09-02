@@ -8,7 +8,7 @@ mod tests {
     use crate::tokens::instructions::mutv::Mutv;
     use crate::tokens::instructions::var::Var;
     use crate::utils::errors::TextForgeErrorCode;
-    use crate::utils::params::TextForgeParamTypes;
+    use crate::parser::params::TextForgeParamTypes;
 
     // ============================
     // Contrato básico da instrução

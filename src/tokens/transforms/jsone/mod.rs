@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::context::execution_context::GlobalExecutionContext;
 use crate::tokens::InstructionMethods;
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 
 use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 use crate::utils::validations::check_vec_len;

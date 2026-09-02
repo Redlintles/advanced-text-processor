@@ -280,7 +280,7 @@ mod tests {
         #[cfg(feature = "bytecode")]
         mod bytecode_tests {
             use super::check_vec_len;
-            use crate::utils::params::TextForgeParamTypes;
+            use crate::parser::params::TextForgeParamTypes;
 
             #[test]
             fn check_vec_len_ok_for_textforgeparamtypes_vec() {

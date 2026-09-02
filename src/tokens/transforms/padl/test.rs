@@ -6,7 +6,7 @@ mod tests {
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::padl::Padl;
     use crate::utils::errors::TextForgeErrorCode;
-    use crate::utils::params::TextForgeParamTypes;
+    use crate::parser::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_padl() {
@@ -114,7 +114,7 @@ mod tests {
     mod bytecode_tests {
         use super::*;
         use crate::utils::errors::TextForgeErrorCode;
-        use crate::utils::params::TextForgeParamTypes;
+        use crate::parser::params::TextForgeParamTypes;
 
         #[test]
         fn get_opcode_is_2f() {

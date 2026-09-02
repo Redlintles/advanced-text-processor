@@ -11,7 +11,7 @@ use crate::{
     utils::validations::check_chunk_bound_indexes,
 };
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 /// Token `Ctc` — Capitalize Chunk
 ///
 /// Capitalizes every word in a character slice of the input, defined by `start_index` and `end_index` (inclusive).
@@ -126,7 +126,7 @@ impl InstructionMethods for Ctc {
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
-        use crate::utils::params::TextForgeParamTypesJoin;
+        use crate::parser::params::TextForgeParamTypesJoin;
 
         check_vec_len(params, 2, "ctc", params.join(""))?;
 

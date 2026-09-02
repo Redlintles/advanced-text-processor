@@ -7,7 +7,7 @@ use crate::context::execution_context::GlobalExecutionContext;
 use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
 use crate::tokens::InstructionMethods;
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 use crate::utils::validations::{check_index_against_input, check_vec_len};
 
 /// Dlb - Delete Before

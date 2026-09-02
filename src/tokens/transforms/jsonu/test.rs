@@ -6,7 +6,7 @@ mod tests {
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::jsonu::Jsonu;
     use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
-    use crate::utils::params::TextForgeParamTypes;
+    use crate::parser::params::TextForgeParamTypes;
 
     #[test]
     fn get_string_repr_is_jsonu() {

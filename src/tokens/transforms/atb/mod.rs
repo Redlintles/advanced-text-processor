@@ -9,7 +9,7 @@ use crate::{
     utils::{errors::TextForgeError, validations::check_vec_len},
 };
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 
 /// Token `Atb` — Add to Beginning
 ///
@@ -66,7 +66,7 @@ impl InstructionMethods for Atb {
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
-        use crate::utils::params::TextForgeParamTypesJoin;
+        use crate::parser::params::TextForgeParamTypesJoin;
 
         check_vec_len(params, 1, "atb", params.join(""))?;
 

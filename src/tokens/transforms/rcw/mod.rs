@@ -9,7 +9,7 @@ use crate::context::execution_context::GlobalExecutionContext;
 use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
 use crate::tokens::InstructionMethods;
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
 
 /// RCW - Replace Count With

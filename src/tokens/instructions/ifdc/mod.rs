@@ -7,13 +7,13 @@ use std::borrow::Cow;
 use crate::to_bytecode;
 
 use crate::{
-    context::execution_context::GlobalExecutionContext, globals::var::TokenWrapper,
+    context::execution_context::GlobalExecutionContext, parser::resolve_var::TokenWrapper,
     tokens::InstructionMethods,
 };
 
 use crate::utils::errors::TextForgeError;
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 
 /// Ifdc - If Do Contains
 ///
@@ -24,7 +24,7 @@ use crate::utils::params::TextForgeParamTypes;
 /// ```rust
 /// use textforge::tokens::{InstructionMethods, instructions::ifdc::Ifdc, transforms::atb::Atb};
 /// use textforge::globals::var::{TokenWrapper, ValType};
-/// use textforge::utils::params::TextForgeParamTypes;
+/// use textforge::parser::params::TextForgeParamTypes;
 ///
 /// let token = Ifdc::new(
 ///     "xy",
@@ -88,7 +88,7 @@ impl InstructionMethods for Ifdc {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::{parse_args, utils::validations::check_vec_len};
 
-        use crate::utils::params::TextForgeParamTypesJoin;
+        use crate::parser::params::TextForgeParamTypesJoin;
 
         check_vec_len(params, 2, "ifdc", params.join(""))?;
 

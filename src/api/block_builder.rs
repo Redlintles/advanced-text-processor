@@ -1,8 +1,9 @@
 use crate::{
-    api::{TextForgeBuilderMethods, TextForgeConditionalMethods},
-    globals::var::TokenWrapper,
-    tokens::{InstructionMethods, instructions::blk::Blk},
-    utils::{errors::TextForgeError, params::TextForgeParamTypes},
+    api::{ TextForgeBuilderMethods, TextForgeConditionalMethods },
+    parser::resolve_var::TokenWrapper,
+    tokens::{ InstructionMethods, instructions::blk::Blk },
+    utils::{ errors::TextForgeError },
+    parser::{ params::TextForgeParamTypes },
 };
 
 pub struct BlockBuilder {
@@ -25,8 +26,10 @@ impl BlockBuilder {
 
 impl TextForgeBuilderMethods for BlockBuilder {
     fn push_token(&mut self, t: impl Into<TokenWrapper>) -> Result<(), TextForgeError> {
-        let param_vec: Vec<TextForgeParamTypes> =
-            vec![self.block_name.to_string().into(), t.into().into()];
+        let param_vec: Vec<TextForgeParamTypes> = vec![
+            self.block_name.to_string().into(),
+            t.into().into()
+        ];
 
         let mut new_block = Box::new(Blk::default());
         new_block.from_params(&param_vec)?;

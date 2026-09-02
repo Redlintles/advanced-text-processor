@@ -12,7 +12,7 @@ use crate::{
     },
 };
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 
 /// TLCC - To Lowercase Chunk
 ///
