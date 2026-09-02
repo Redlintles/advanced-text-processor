@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use crate::context::execution_context::GlobalExecutionContext;
 use crate::utils::errors::TextForgeError;
 
-use crate::utils::params::TextForgeParamTypes;
+use crate::parser::params::TextForgeParamTypes;
 
 pub mod instructions;
 pub mod transforms;
