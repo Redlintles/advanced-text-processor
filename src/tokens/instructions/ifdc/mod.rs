@@ -7,7 +7,8 @@ use std::borrow::Cow;
 use crate::to_bytecode;
 
 use crate::{
-    context::execution_context::GlobalExecutionContext, parser::resolve_var::TokenWrapper,
+    context::execution_context::GlobalExecutionContext,
+    parser::resolve_var::TokenWrapper,
     tokens::InstructionMethods,
 };
 
@@ -23,7 +24,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// ```rust
 /// use textforge::tokens::{InstructionMethods, instructions::ifdc::Ifdc, transforms::atb::Atb};
-/// use textforge::globals::var::{TokenWrapper, ValType};
+/// use textforge::parser::resolve_var::{TokenWrapper, ValType};
 /// use textforge::parser::params::TextForgeParamTypes;
 ///
 /// let token = Ifdc::new(
@@ -50,7 +51,7 @@ impl Ifdc {
             text: text.to_string(),
             params: vec![
                 TextForgeParamTypes::String(text.to_string()),
-                TextForgeParamTypes::Token(inner.clone()),
+                TextForgeParamTypes::Token(inner.clone())
             ],
             inner,
         }
@@ -72,7 +73,7 @@ impl InstructionMethods for Ifdc {
     fn transform(
         &self,
         input: &str,
-        context: Option<&mut GlobalExecutionContext>,
+        context: Option<&mut GlobalExecutionContext>
     ) -> Result<String, TextForgeError> {
         if input.contains(&self.text) {
             return self.inner.transform(input, context);
@@ -86,7 +87,7 @@ impl InstructionMethods for Ifdc {
         0x33
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
-        use crate::{parse_args, utils::validations::check_vec_len};
+        use crate::{ parse_args, utils::validations::check_vec_len };
 
         use crate::parser::params::TextForgeParamTypesJoin;
 
@@ -98,20 +99,17 @@ impl InstructionMethods for Ifdc {
 
         self.params = vec![
             TextForgeParamTypes::String(parse_args!(params, 0, String, "")),
-            TextForgeParamTypes::Token(parse_args!(params, 1, Token, "")),
+            TextForgeParamTypes::Token(parse_args!(params, 1, Token, ""))
         ];
 
         Ok(())
     }
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
-        let result = to_bytecode!(
-            self.get_opcode(),
-            [
-                TextForgeParamTypes::String(self.text.clone()),
-                TextForgeParamTypes::Token(self.inner.clone()),
-            ]
-        );
+        let result = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::String(self.text.clone()),
+            TextForgeParamTypes::Token(self.inner.clone()),
+        ]);
 
         Ok(result)
     }
