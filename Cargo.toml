@@ -42,6 +42,5 @@ test_access = [
 ]
 
 [[bin]]
-name = "atp"
+name = "txf"
 path = "src/main.rs"
-required-features = ["bytecode"]
