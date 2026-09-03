@@ -14,10 +14,7 @@ use crate::{
     parser::params::TextForgeParamTypes,
     tokens::InstructionMethods,
     utils::{
-        errors::{
-            TextForgeError,
-            TextForgeErrorCode::{ self, InvalidExprError, RequiredContextError },
-        },
+        errors::{ TextForgeError, TextForgeErrorCode::{ InvalidExprError, RequiredContextError } },
         validations::check_vec_len,
     },
 };
