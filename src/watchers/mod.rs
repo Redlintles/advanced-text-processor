@@ -1,36 +1,21 @@
-use std::{collections::HashMap, fs::OpenOptions, io::Write, path::Path};
+use std::{ collections::HashMap, fs::OpenOptions, io::Write, path::Path };
 
 use crate::{
-    utils::errors::{TextForgeError, TextForgeErrorCode},
+    utils::errors::{ TextForgeError, TextForgeErrorCode },
     watchers::ExecutionWindows::All,
 };
 use std::borrow::Cow;
 
 pub mod default_watchers;
 
-/// Snapshot do estado do pipeline no momento em que os watchers agendados
-/// pra uma instrução são executados.
-///
-/// `before` e `current` sempre representam o par (entrada, saída) da
-/// instrução que acabou de rodar. `after` é o resultado da **próxima**
-/// instrução do pipeline — por isso ele só é conhecido com um passo de
-/// atraso em relação a `before`/`current`, e é `None` quando a instrução
-/// observada é a última do pipeline (não existe "próxima").
-///
-/// Instâncias normalmente não são construídas manualmente fora de
-/// `process_all_with_watchers`; use [`WatcherContext::new`] em código de
-/// integração ou testes.
+use std::sync::Arc;
+
 #[derive(Clone, Debug)]
 pub struct WatcherContext {
-    /// Resultado da instrução observada por este contexto.
-    pub current: String,
-    /// Estado do texto imediatamente antes da instrução observada rodar.
-    pub before: String,
-    /// Resultado da instrução seguinte, se houver. `None` na última
-    /// instrução do pipeline.
-    pub after: Option<String>,
-    /// Representação textual (`to_textforge_line()`) da instrução observada.
-    pub instruction: String,
+    pub current: Arc<str>,
+    pub before: Arc<str>,
+    pub after: Option<Arc<str>>,
+    pub instruction: Arc<str>,
 }
 
 impl WatcherContext {
@@ -51,17 +36,15 @@ impl WatcherContext {
     /// assert_eq!(ctx.current, "banana!");
     /// assert_eq!(ctx.after, Some("BANANA!".to_string()));
     /// ```
-    pub fn new(
-        current: String,
-        before: String,
-        after: Option<String>,
-        instruction: String,
-    ) -> Self {
+
+    pub fn new<C, B, A, I>(current: C, before: B, after: Option<A>, instruction: I) -> Self
+        where C: Into<Arc<str>>, B: Into<Arc<str>>, A: Into<Arc<str>>, I: Into<Arc<str>>
+    {
         WatcherContext {
-            current,
-            before,
-            after,
-            instruction,
+            current: current.into(),
+            before: before.into(),
+            after: after.map(Into::into),
+            instruction: instruction.into(),
         }
     }
 }
@@ -164,16 +147,18 @@ impl WatcherList {
         &mut self,
         counter: u64,
         watcher_name: String,
-        return_value: String,
+        return_value: String
     ) -> Result<(), TextForgeError> {
         self.result.push(HashMap::new());
-        let iteration_result = self.result.get_mut(counter as usize).ok_or_else(|| {
-            TextForgeError::new(
-                TextForgeErrorCode::GenericError(Cow::from("Iteration result not found")),
-                Cow::from("add_to_result"),
-                Cow::from("vec.get"),
-            )
-        })?;
+        let iteration_result = self.result
+            .get_mut(counter as usize)
+            .ok_or_else(|| {
+                TextForgeError::new(
+                    TextForgeErrorCode::GenericError(Cow::from("Iteration result not found")),
+                    Cow::from("add_to_result"),
+                    Cow::from("vec.get")
+                )
+            })?;
 
         iteration_result.insert(watcher_name, return_value);
 
@@ -197,8 +182,7 @@ impl WatcherList {
     /// watchers.set_watcher("is_empty", |ctx: WatcherContext| ctx.current.is_empty().to_string());
     /// ```
     pub fn set_watcher<F>(&mut self, watcher_name: &'static str, watcher: F)
-    where
-        F: Fn(WatcherContext) -> String + 'static,
+        where F: Fn(WatcherContext) -> String + 'static
     {
         self.watchers.insert(watcher_name, Box::new(watcher));
     }
@@ -224,20 +208,21 @@ impl WatcherList {
     pub fn schedule_watcher(
         &mut self,
         watcher_name: &'static str,
-        when: ExecutionWindows,
+        when: ExecutionWindows
     ) -> Result<(), TextForgeError> {
         if self.watchers.contains_key(watcher_name) {
             self.schedule.insert(watcher_name, when);
             return Ok(());
         }
-        return Err(TextForgeError::new(
-            crate::utils::errors::TextForgeErrorCode::WatcherNotFoundError(Cow::from(format!(
-                "Watcher {} not found",
-                watcher_name
-            ))),
-            Cow::from("WatcherList.schedule_watcher"),
-            Cow::from(watcher_name.to_string()),
-        ));
+        return Err(
+            TextForgeError::new(
+                crate::utils::errors::TextForgeErrorCode::WatcherNotFoundError(
+                    Cow::from(format!("Watcher {} not found", watcher_name))
+                ),
+                Cow::from("WatcherList.schedule_watcher"),
+                Cow::from(watcher_name.to_string())
+            )
+        );
     }
 
     /// Executa todos os watchers agendados contra `input`, armazenando
@@ -270,24 +255,24 @@ impl WatcherList {
     /// # Ok::<(), textforge::utils::errors::TextForgeError>(())
     /// ```
     pub fn run_watchers(&mut self, input: WatcherContext) -> Result<(), TextForgeError> {
-        for (watcher_name, when) in self
-            .schedule
+        for (watcher_name, when) in self.schedule
             .iter()
             .map(|(k, v)| (*k, *v))
-            .collect::<Vec<_>>()
-        {
+            .collect::<Vec<_>>() {
             match when {
                 All => {
                     let return_value = {
-                        let watcher_fn = self.watchers.get(watcher_name).ok_or_else(|| {
-                            TextForgeError::new(
-                                crate::utils::errors::TextForgeErrorCode::IndexOutOfRange(
-                                    Cow::from("Watcher Not Found"),
-                                ),
-                                Cow::from(""),
-                                Cow::from(""),
-                            )
-                        })?;
+                        let watcher_fn = self.watchers
+                            .get(watcher_name)
+                            .ok_or_else(|| {
+                                TextForgeError::new(
+                                    crate::utils::errors::TextForgeErrorCode::IndexOutOfRange(
+                                        Cow::from("Watcher Not Found")
+                                    ),
+                                    Cow::from(""),
+                                    Cow::from("")
+                                )
+                            })?;
                         watcher_fn(input.clone())
                     };
 
@@ -332,15 +317,17 @@ impl WatcherList {
     /// # Ok::<(), textforge::utils::errors::TextForgeError>(())
     /// ```
     pub fn to_json(&self, filename: &Path) -> Result<(), TextForgeError> {
-        let json = serde_json::to_string_pretty(&self.result).map_err(|e| {
-            TextForgeError::new(
-                crate::utils::errors::TextForgeErrorCode::SerializationError(Cow::from(
-                    e.to_string(),
-                )),
-                Cow::from("WatcherList.to_json"),
-                Cow::from(filename.display().to_string()),
-            )
-        })?;
+        let json = serde_json
+            ::to_string_pretty(&self.result)
+            .map_err(|e| {
+                TextForgeError::new(
+                    crate::utils::errors::TextForgeErrorCode::SerializationError(
+                        Cow::from(e.to_string())
+                    ),
+                    Cow::from("WatcherList.to_json"),
+                    Cow::from(filename.display().to_string())
+                )
+            })?;
         let mut file = OpenOptions::new()
             .create(true)
             .write(true)
@@ -349,22 +336,24 @@ impl WatcherList {
             .map_err(|_| {
                 TextForgeError::new(
                     crate::utils::errors::TextForgeErrorCode::FileOpeningError(
-                        "Failed opening File".into(),
+                        "Failed opening File".into()
                     ),
                     "",
-                    format!("{:?}", filename),
+                    format!("{:?}", filename)
                 )
             })?;
 
-        file.write(json.as_bytes()).map_err(|_| {
-            TextForgeError::new(
-                crate::utils::errors::TextForgeErrorCode::FileWritingError(
-                    "Failed writing text to textforge file".into(),
-                ),
-                "",
-                "",
-            )
-        })?;
+        file
+            .write(json.as_bytes())
+            .map_err(|_| {
+                TextForgeError::new(
+                    crate::utils::errors::TextForgeErrorCode::FileWritingError(
+                        "Failed writing text to textforge file".into()
+                    ),
+                    "",
+                    ""
+                )
+            })?;
 
         Ok(())
     }
@@ -382,17 +371,17 @@ mod tests {
             current.to_string(),
             before.to_string(),
             after.map(|s| s.to_string()),
-            instruction.to_string(),
+            instruction.to_string()
         )
     }
 
     #[test]
     fn test_watcher_context_new_stores_fields_verbatim() {
         let c = ctx("a", "ab", Some("abc"), "add_to_end");
-        assert_eq!(c.before, "a");
-        assert_eq!(c.current, "ab");
-        assert_eq!(c.after, Some("abc".to_string()));
-        assert_eq!(c.instruction, "add_to_end");
+        assert_eq!(c.before.to_string(), "a");
+        assert_eq!(c.current.to_string(), "ab");
+        assert_eq!(c.after.unwrap().to_string(), "abc".to_string());
+        assert_eq!(c.instruction.to_string(), "add_to_end");
     }
 
     #[test]
@@ -400,8 +389,7 @@ mod tests {
         let mut wl = WatcherList::default();
         wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
         // Nunca agendado -> run_watchers não deve produzir nenhuma entrada
-        wl.run_watchers(ctx("", "banana", None, "add_to_end"))
-            .unwrap();
+        wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
         assert!(wl.result.get(0).is_none());
     }
 
@@ -425,8 +413,7 @@ mod tests {
         wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
         wl.schedule_watcher("len", ExecutionWindows::All).unwrap();
 
-        wl.run_watchers(ctx("", "banana", None, "add_to_end"))
-            .unwrap();
+        wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
 
         let step0 = wl.result.get(0).expect("step 0 deveria existir");
         assert_eq!(step0.get("len").unwrap(), "6");
@@ -440,8 +427,7 @@ mod tests {
 
         wl.run_watchers(ctx("", "a", None, "add_to_end")).unwrap();
         wl.run_watchers(ctx("a", "ab", None, "add_to_end")).unwrap();
-        wl.run_watchers(ctx("ab", "abc", None, "add_to_end"))
-            .unwrap();
+        wl.run_watchers(ctx("ab", "abc", None, "add_to_end")).unwrap();
 
         assert_eq!(wl.result.get(0).unwrap().get("len").unwrap(), "1");
         assert_eq!(wl.result.get(1).unwrap().get("len").unwrap(), "2");
@@ -452,15 +438,11 @@ mod tests {
     fn test_run_watchers_runs_multiple_scheduled_watchers_per_call() {
         let mut wl = WatcherList::default();
         wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
-        wl.set_watcher("is_empty", |c: WatcherContext| {
-            c.current.is_empty().to_string()
-        });
+        wl.set_watcher("is_empty", |c: WatcherContext| { c.current.is_empty().to_string() });
         wl.schedule_watcher("len", ExecutionWindows::All).unwrap();
-        wl.schedule_watcher("is_empty", ExecutionWindows::All)
-            .unwrap();
+        wl.schedule_watcher("is_empty", ExecutionWindows::All).unwrap();
 
-        wl.run_watchers(ctx("", "banana", None, "add_to_end"))
-            .unwrap();
+        wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
 
         let step0 = wl.result.get(0).unwrap();
         assert_eq!(step0.get("len").unwrap(), "6");
@@ -472,8 +454,7 @@ mod tests {
         let mut wl = WatcherList::default();
         wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
         wl.schedule_watcher("len", ExecutionWindows::All).unwrap();
-        wl.run_watchers(ctx("", "banana", None, "add_to_end"))
-            .unwrap();
+        wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
 
         wl.reset();
         assert!(wl.result.is_empty());
@@ -481,8 +462,7 @@ mod tests {
 
         // "len" continua registrado e agendado: run_watchers volta a produzir resultado
         // sem precisar chamar set_watcher/schedule_watcher de novo.
-        wl.run_watchers(ctx("", "abcd", None, "add_to_end"))
-            .unwrap();
+        wl.run_watchers(ctx("", "abcd", None, "add_to_end")).unwrap();
         assert_eq!(wl.result.get(0).unwrap().get("len").unwrap(), "4");
     }
 
@@ -499,10 +479,8 @@ mod tests {
         let mut wl = WatcherList::default();
         wl.set_watcher("len", |c: WatcherContext| c.current.len().to_string());
         wl.schedule_watcher("len", ExecutionWindows::All).unwrap();
-        wl.run_watchers(ctx("", "banana", None, "add_to_end"))
-            .unwrap();
-        wl.run_watchers(ctx("banana", "banana!", None, "add_to_end"))
-            .unwrap();
+        wl.run_watchers(ctx("", "banana", None, "add_to_end")).unwrap();
+        wl.run_watchers(ctx("banana", "banana!", None, "add_to_end")).unwrap();
 
         let file = NamedTempFile::new().unwrap();
         wl.to_json(file.path()).unwrap();

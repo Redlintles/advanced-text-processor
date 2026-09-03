@@ -94,14 +94,17 @@ pub fn unique_char_count(ctx: WatcherContext) -> String {
 
 #[cfg(all(test, feature = "test_access"))]
 mod tests {
+    use std::sync::Arc;
+
     use super::*;
 
+    // src/watchers/default_watchers.rs — helper de teste
     fn ctx(before: &str, current: &str, instruction: &str) -> WatcherContext {
         WatcherContext {
-            current: current.to_string(),
-            before: before.to_string(),
-            after: Some(current.to_string()),
-            instruction: instruction.to_string(),
+            current: Arc::from(current),
+            before: Arc::from(before),
+            after: Some(Arc::from(current)),
+            instruction: Arc::from(instruction),
         }
     }
 
