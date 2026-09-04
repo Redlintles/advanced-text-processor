@@ -1,15 +1,8 @@
-use std::{
-    borrow::Cow,
-    collections::HashMap,
-    sync::{Arc, LazyLock},
-};
+use std::{ borrow::Cow, collections::HashMap, sync::{ Arc, LazyLock } };
 
-use crate::{
-    tokens::InstructionMethods,
-    utils::errors::{TextForgeError, TextForgeErrorCode},
-};
+use crate::{ tokens::InstructionMethods, utils::errors::{ TextForgeError, TextForgeErrorCode } };
 
-use crate::tokens::{instructions::*, transforms::*};
+use crate::tokens::{ instructions::*, transforms::* };
 
 #[derive(Clone)]
 pub enum TokenRef {
@@ -67,13 +60,13 @@ pub struct TokenTable {
 impl TokenTable {
     pub fn find(
         &self,
-        (query_source, query_target): (QuerySource, QueryTarget),
+        (query_source, query_target): (QuerySource, QueryTarget)
     ) -> Result<TargetValue, TextForgeError> {
         let err = || {
             TextForgeError::new(
                 TextForgeErrorCode::TokenNotFound("Token Not Found in mapping".into()),
                 "TOKEN_TABLE.find()",
-                "query",
+                "query"
             )
         };
 
@@ -470,7 +463,7 @@ define_token_table! {
         ),
         (
             "mutv",
-            0x40,
+            0x3a,
             || TokenRef::Shared(Arc::new(mutv::Mutv::default())),
             [
                 SyntaxDef::req(SyntaxToken::String),
@@ -480,7 +473,7 @@ define_token_table! {
         ),
         (
             "eval",
-            0x41,
+            0x3b,
             || TokenRef::Shared(Arc::new(eval::Eval::default())),
             [
                 SyntaxDef::req(SyntaxToken::String),
@@ -490,7 +483,7 @@ define_token_table! {
         ),
         (
             "iter",
-            0x42,
+            0x3c,
             || TokenRef::Shared(Arc::new(iter::Iter::default())),
             [
                 SyntaxDef::req(SyntaxToken::Usize),
@@ -500,7 +493,7 @@ define_token_table! {
         ),
         (
             "rmp",
-            0x43,
+            0x3d,
             || TokenRef::Shared(Arc::new(rmp::Rmp::default())),
             [SyntaxDef::req(SyntaxToken::String)],
         ),
