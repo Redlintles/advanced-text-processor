@@ -1,10 +1,15 @@
-use clap::{ Arg, ArgAction, Command, value_parser };
-use std::{ borrow::Cow, fs::OpenOptions, io::{ self, Error, Read, Write }, path::PathBuf };
+use clap::{Arg, ArgAction, Command, value_parser};
+use std::{
+    borrow::Cow,
+    fs::OpenOptions,
+    io::{self, Error, Read, Write},
+    path::PathBuf,
+};
 use textforge::{
-    api::processor::{ TextForgeProcessor, TextForgeProcessorMethods },
+    api::processor::{TextForgeProcessor, TextForgeProcessorMethods},
     utils::{
-        cli::{ process_input_by_chunks, process_input_line_by_line, process_input_single_chunk },
-        errors::{ TextForgeError, TextForgeErrorCode },
+        cli::{process_input_by_chunks, process_input_line_by_line, process_input_single_chunk},
+        errors::{TextForgeError, TextForgeErrorCode},
         validations::check_file_path,
     },
 };
@@ -109,7 +114,7 @@ fn process_by_mode(
     id: &str,
     data: &str,
     debug: bool,
-    processor: &mut TextForgeProcessor
+    processor: &mut TextForgeProcessor,
 ) -> Result<String, TextForgeError> {
     match read_mode {
         ReadMode::All => process_input_single_chunk(processor, id, data, debug),
@@ -124,7 +129,7 @@ fn process_by_mode(
 /// vez de o binário inteiro deixar de compilar sem esse feature ligado.
 fn load_pipeline(
     mode: &str,
-    file: &PathBuf
+    file: &PathBuf,
 ) -> Result<(String, TextForgeProcessor), TextForgeError> {
     match mode {
         "b" => {
@@ -137,15 +142,13 @@ fn load_pipeline(
             }
             #[cfg(not(feature = "bytecode"))]
             {
-                Err(
-                    TextForgeError::new(
-                        TextForgeErrorCode::ValidationError(
-                            "Bytecode mode requires building txf with `--features bytecode`".into()
-                        ),
-                        Cow::from("main.load_pipeline"),
-                        Cow::from("mode=b")
-                    )
-                )
+                Err(TextForgeError::new(
+                    TextForgeErrorCode::ValidationError(
+                        "Bytecode mode requires building txf with `--features bytecode`".into(),
+                    ),
+                    Cow::from("main.load_pipeline"),
+                    Cow::from("mode=b"),
+                ))
             }
         }
         "t" => {
@@ -173,51 +176,41 @@ fn main() -> Result<(), TextForgeError> {
     let data: String = match input {
         Some(path) => {
             if !path.exists() {
-                return Err(
-                    TextForgeError::new(
-                        TextForgeErrorCode::FileNotFound("Input file does not exist".into()),
-                        Cow::from("main"),
-                        Cow::from(path.display().to_string())
-                    )
-                );
+                return Err(TextForgeError::new(
+                    TextForgeErrorCode::FileNotFound("Input file does not exist".into()),
+                    Cow::from("main"),
+                    Cow::from(path.display().to_string()),
+                ));
             }
 
-            let mut input_file = OpenOptions::new()
-                .read(true)
-                .open(path)
-                .map_err(|e| {
-                    TextForgeError::new(
-                        TextForgeErrorCode::FileOpeningError(Cow::from(e.to_string())),
-                        Cow::from("main"),
-                        Cow::from(path.display().to_string())
-                    )
-                })?;
+            let mut input_file = OpenOptions::new().read(true).open(path).map_err(|e| {
+                TextForgeError::new(
+                    TextForgeErrorCode::FileOpeningError(Cow::from(e.to_string())),
+                    Cow::from("main"),
+                    Cow::from(path.display().to_string()),
+                )
+            })?;
 
             let mut b = String::new();
-            input_file
-                .read_to_string(&mut b)
-                .map_err(|e| {
-                    TextForgeError::new(
-                        TextForgeErrorCode::FileReadingError(Cow::from(e.to_string())),
-                        Cow::from("main"),
-                        Cow::from(path.display().to_string())
-                    )
-                })?;
+            input_file.read_to_string(&mut b).map_err(|e| {
+                TextForgeError::new(
+                    TextForgeErrorCode::FileReadingError(Cow::from(e.to_string())),
+                    Cow::from("main"),
+                    Cow::from(path.display().to_string()),
+                )
+            })?;
 
             b
         }
         None => {
             let mut b = String::new();
-            io
-                ::stdin()
-                .read_to_string(&mut b)
-                .map_err(|e| {
-                    TextForgeError::new(
-                        TextForgeErrorCode::FileReadingError(Cow::from(e.to_string())),
-                        Cow::from("main"),
-                        Cow::from("<stdin>")
-                    )
-                })?;
+            io::stdin().read_to_string(&mut b).map_err(|e| {
+                TextForgeError::new(
+                    TextForgeErrorCode::FileReadingError(Cow::from(e.to_string())),
+                    Cow::from("main"),
+                    Cow::from("<stdin>"),
+                )
+            })?;
             b
         }
     };
@@ -236,19 +229,17 @@ fn main() -> Result<(), TextForgeError> {
                     TextForgeError::new(
                         TextForgeErrorCode::FileOpeningError(Cow::from(e.to_string())),
                         Cow::from("main"),
-                        Cow::from(p.display().to_string())
+                        Cow::from(p.display().to_string()),
                     )
                 })?;
 
-            f
-                .write_all(result.as_bytes())
-                .map_err(|e| {
-                    TextForgeError::new(
-                        TextForgeErrorCode::FileWritingError(Cow::from(e.to_string())),
-                        Cow::from("main"),
-                        Cow::from(p.display().to_string())
-                    )
-                })?;
+            f.write_all(result.as_bytes()).map_err(|e| {
+                TextForgeError::new(
+                    TextForgeErrorCode::FileWritingError(Cow::from(e.to_string())),
+                    Cow::from("main"),
+                    Cow::from(p.display().to_string()),
+                )
+            })?;
         }
         None => {
             println!("Resultado do processamento: {}", result);
@@ -262,14 +253,13 @@ fn main() -> Result<(), TextForgeError> {
 #[cfg(test)]
 mod textforge_tests {
     mod parser_tests {
-        use crate::{ ReadMode, build_cli };
-        use std::{ path::PathBuf, str::FromStr };
+        use crate::{ReadMode, build_cli};
+        use std::{path::PathBuf, str::FromStr};
 
         #[test]
         fn test_all_with_long_params() {
             let parser = build_cli();
-            let c =
-                "txf --file ./instructions.textforgebc --input ./example.txt --output output.txt --debug --mode b --read-mode line";
+            let c = "txf --file ./instructions.textforgebc --input ./example.txt --output output.txt --debug --mode b --read-mode line";
 
             let arg_vec = shell_words::split(c).unwrap();
 
@@ -282,7 +272,10 @@ mod textforge_tests {
             let read_mode = m.get_one::<ReadMode>("read_mode").unwrap();
             let debug = m.get_one::<bool>("debug").unwrap();
 
-            assert_eq!(*file, PathBuf::from_str("./instructions.textforgebc").unwrap());
+            assert_eq!(
+                *file,
+                PathBuf::from_str("./instructions.textforgebc").unwrap()
+            );
             assert_eq!(*input, PathBuf::from_str("./example.txt").unwrap());
             assert_eq!(*output, PathBuf::from_str("output.txt").unwrap());
             assert_eq!(*textforge_mode, "b".to_string());
@@ -306,7 +299,10 @@ mod textforge_tests {
             let read_mode = m.get_one::<ReadMode>("read_mode").unwrap();
             let debug = m.get_one::<bool>("debug").unwrap();
 
-            assert_eq!(*file, PathBuf::from_str("./instructions.textforgebc").unwrap());
+            assert_eq!(
+                *file,
+                PathBuf::from_str("./instructions.textforgebc").unwrap()
+            );
             assert_eq!(*input, PathBuf::from_str("./example.txt").unwrap());
             assert_eq!(*output, PathBuf::from_str("output.txt").unwrap());
             assert_eq!(*textforge_mode, "b".to_string());
