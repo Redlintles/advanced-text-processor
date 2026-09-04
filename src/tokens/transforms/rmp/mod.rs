@@ -1,0 +1,88 @@
+use std::borrow::Cow;
+
+use regex::Regex;
+
+use crate::{
+    context::execution_context::GlobalExecutionContext,
+    parse_args,
+    parser::params::TextForgeParamTypes,
+    tokens::InstructionMethods,
+    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_vec_len },
+};
+
+#[cfg(feature = "test_access")]
+pub mod test;
+
+/// Rmp - Does nothing
+#[derive(Clone, Debug)]
+pub struct Rmp {
+    pattern: Regex,
+    params: Vec<TextForgeParamTypes>,
+}
+
+impl Rmp {
+    pub fn new(pattern: &str) -> Result<Self, String> {
+        let pattern = Regex::new(pattern).map_err(|x| x.to_string())?;
+        Ok(Rmp {
+            params: vec![pattern.to_string().into()],
+            pattern,
+        })
+    }
+}
+
+impl Default for Rmp {
+    fn default() -> Self {
+        Rmp {
+            pattern: Regex::new("").unwrap(),
+            params: vec!["".to_string().into(), "".to_string().into()],
+        }
+    }
+}
+
+impl InstructionMethods for Rmp {
+    fn get_params(&self) -> &Vec<TextForgeParamTypes> {
+        &self.params
+    }
+    #[cfg(feature = "bytecode")]
+    fn get_opcode(&self) -> u32 {
+        0x36
+    }
+    fn get_string_repr(&self) -> &'static str {
+        "rmp"
+    }
+
+    fn to_textforge_line(&self) -> Cow<'static, str> {
+        Cow::from(format!("rmp {};\n", self.pattern))
+    }
+
+    fn transform(
+        &self,
+        input: &str,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<String, TextForgeError> {
+        let result = self.pattern.replace_all(input, "");
+        Ok(result.to_string())
+    }
+
+    fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
+        check_vec_len(params, 1, "rmp", "param parsing error, invalid vec len")?;
+        let pattern_payload = parse_args!(params, 0, String, "Pattern should be of string type");
+
+        self.pattern = Regex::new(&pattern_payload.clone()).map_err(|_| {
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
+                "sslt",
+                pattern_payload.clone()
+            )
+        })?;
+
+        self.params = vec![self.pattern.to_string().into()];
+        Ok(())
+    }
+    #[cfg(feature = "bytecode")]
+    fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
+        use crate::to_bytecode;
+        let result = to_bytecode!(self.get_opcode(), []);
+        Ok(result)
+    }
+}

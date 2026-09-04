@@ -36,7 +36,7 @@ impl InstructionMethods for Eval {
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
-        0x41
+        0x3b
     }
     fn get_string_repr(&self) -> &'static str {
         "eval"

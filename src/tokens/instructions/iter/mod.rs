@@ -30,7 +30,7 @@ impl InstructionMethods for Iter {
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
-        0x42
+        0x3c
     }
     fn get_string_repr(&self) -> &'static str {
         "iter"

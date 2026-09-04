@@ -464,7 +464,7 @@ define_token_table! {
         (
             "mutv",
             0x40,
-            || TokenRef::Shared(Arc::new(var::Var::default())),
+            || TokenRef::Shared(Arc::new(mutv::Mutv::default())),
             [
                 SyntaxDef::req(SyntaxToken::String),
                 SyntaxDef::req(SyntaxToken::Literal("=")),
@@ -474,7 +474,7 @@ define_token_table! {
         (
             "eval",
             0x41,
-            || TokenRef::Shared(Arc::new(var::Var::default())),
+            || TokenRef::Shared(Arc::new(eval::Eval::default())),
             [
                 SyntaxDef::req(SyntaxToken::String),
                 SyntaxDef::req(SyntaxToken::Literal("in")),
@@ -484,12 +484,18 @@ define_token_table! {
         (
             "iter",
             0x42,
-            || TokenRef::Shared(Arc::new(var::Var::default())),
+            || TokenRef::Shared(Arc::new(iter::Iter::default())),
             [
                 SyntaxDef::req(SyntaxToken::Usize),
                 SyntaxDef::req(SyntaxToken::Literal("times")),
                 SyntaxDef::req(SyntaxToken::Token),
             ],
+        ),
+        (
+            "rmp",
+            0x43,
+            || TokenRef::Shared(Arc::new(rmp::Rmp::default())),
+            [SyntaxDef::req(SyntaxToken::String)],
         ),
     ];
 }
