@@ -45,7 +45,7 @@ impl InstructionMethods for Rmp {
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {
-        0x36
+        0x3d
     }
     fn get_string_repr(&self) -> &'static str {
         "rmp"

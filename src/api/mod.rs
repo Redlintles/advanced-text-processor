@@ -1897,6 +1897,12 @@ pub trait TextForgeBuilderMethods: Sized {
         self.push_token(tok)?;
         Ok(self)
     }
+    fn remove_pattern(&mut self, pattern: impl Into<ValType>) -> Result<&mut Self, TextForgeError> {
+        let tok = TokenWrapper::new(Box::new(rmp::Rmp::default()), Some(vec![pattern.into()]));
+
+        self.push_token(tok)?;
+        Ok(self)
+    }
 }
 
 pub trait TextForgeConditionalMethods: TextForgeBuilderMethods {
