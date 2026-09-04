@@ -2,7 +2,6 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use std::io::Write;
 use std::path::Path;
-use std::sync::Arc;
 
 use colored::*;
 use memmap2::Mmap;

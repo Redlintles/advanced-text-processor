@@ -77,7 +77,7 @@ impl InstructionMethods for Iter {
             Token,
             "Second argument should be of type instruction"
         );
-        self.params = vec![self.times.clone().into(), self.inner.clone().into()];
+        self.params = vec![self.times.into(), self.inner.clone().into()];
 
         Ok(())
     }
