@@ -6,7 +6,6 @@ use std::path::Path;
 use colored::*;
 use memmap2::Mmap;
 use rayon::prelude::*;
-use std::sync::Arc;
 use uuid::Uuid;
 
 #[cfg(feature = "bytecode")]
