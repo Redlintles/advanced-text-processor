@@ -3,12 +3,37 @@ pub mod builder;
 pub mod conditional_builder;
 pub mod processor;
 
+use std::borrow::Cow;
+
 use crate::api::block_builder::BlockBuilder;
 use crate::api::conditional_builder::ConditionalBuilderEach;
+use crate::context::execution_context::{ GlobalContextMethods, GlobalExecutionContext };
 use crate::parser::params::TextForgeParamTypes;
 use crate::parser::resolve_var::{ TokenWrapper, ValType };
 use crate::tokens::{ InstructionMethods, instructions::*, transforms::* };
-use crate::utils::errors::TextForgeError;
+use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+
+use crate::utils::expr::{ build_eval_context, value_to_plain_string };
+
+/// Avalia uma expressão evalexpr contra as variáveis do contexto atual e
+/// devolve o resultado como texto plano — sem as aspas literais que o
+/// Display do evalexpr adiciona em Value::String. Usado pela instruction
+/// `eval` e pela interpolação `[[expr]]` em strings do pipeline.
+pub fn expr(expression: &str, context: &GlobalExecutionContext) -> Result<String, TextForgeError> {
+    let eval_ctx = build_eval_context(context.get_all_vars())?;
+
+    let result = evalexpr
+        ::eval_with_context(expression, &eval_ctx)
+        .map_err(|e|
+            TextForgeError::new(
+                TextForgeErrorCode::InvalidExprError(Cow::from(e.to_string())),
+                Cow::from("api::expr"),
+                Cow::from(expression.to_string())
+            )
+        )?;
+
+    Ok(value_to_plain_string(&result))
+}
 
 // Helper for referencing variables in code
 pub fn get_var(var_name: &str) -> ValType {

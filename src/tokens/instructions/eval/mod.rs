@@ -1,7 +1,6 @@
 use std::borrow::Cow;
-use std::collections::HashMap;
 
-use evalexpr::{ ContextWithMutableVariables, HashMapContext, Value, eval_with_context };
+use evalexpr::{ eval_with_context };
 
 use crate::{
     context::execution_context::{
@@ -15,75 +14,13 @@ use crate::{
     tokens::InstructionMethods,
     utils::{
         errors::{ TextForgeError, TextForgeErrorCode::{ InvalidExprError, RequiredContextError } },
+        expr::{ build_eval_context, value_to_plain_string },
         validations::check_vec_len,
     },
 };
 
 #[cfg(feature = "test_access")]
 pub mod test;
-
-/// Builds a snapshot evalexpr context from the current variable table, so
-/// expressions can reference stored variables by name.
-///
-/// Numeric conversion is a resolution-time concern only: everything in
-/// `GlobalExecutionContext` stays `VarValues::String`/`Usize` before and
-/// after `eval` runs — this function never mutates the context, it only
-/// reads from it to build a disposable `HashMapContext`. Each variable is
-/// tried as an `i64`; if it doesn't parse, it's passed to evalexpr as a
-/// plain string. Floats aren't attempted on purpose: ATP's smallest
-/// logical unit is a character, always represented as an integer, so
-/// float support isn't worth the extra ambiguity.
-///
-/// Token variables are skipped: they aren't representable as evalexpr
-/// values. Referencing one in an expression will surface as evalexpr's own
-/// "identifier not found" error, which is an acceptable failure mode here.
-fn build_eval_context(vars: &HashMap<String, VarEntry>) -> Result<HashMapContext, TextForgeError> {
-    let mut ctx = HashMapContext::new();
-
-    for (name, entry) in vars.iter() {
-        let value = match &entry.value {
-            VarValues::Usize(n) => Value::from_int(*n as i64),
-            VarValues::String(s) =>
-                match s.parse::<i64>() {
-                    Ok(i) => Value::from_int(i),
-                    Err(_) => Value::from(s.clone()),
-                }
-            VarValues::Token(_) => {
-                continue;
-            }
-        };
-
-        ctx
-            .set_value(name.clone(), value)
-            .map_err(|e| {
-                TextForgeError::new(
-                    InvalidExprError(Cow::from(e.to_string())),
-                    Cow::from("eval.build_eval_context"),
-                    Cow::from(name.clone())
-                )
-            })?;
-    }
-
-    Ok(ctx)
-}
-
-/// Converts an evalexpr result back into a plain string, without the
-/// formatting evalexpr's own `Display` impl adds (e.g. wrapping strings in
-/// literal quotes, since that impl is meant to print back valid expression
-/// syntax, not a clean value).
-fn value_to_plain_string(value: &Value) -> String {
-    match value {
-        Value::String(s) => s.clone(),
-        Value::Int(i) => i.to_string(),
-        Value::Float(f) => f.to_string(),
-        Value::Boolean(b) => b.to_string(),
-        Value::Tuple(t) => {
-            let parts: Vec<String> = t.iter().map(value_to_plain_string).collect();
-            format!("({})", parts.join(", "))
-        }
-        Value::Empty => String::new(),
-    }
-}
 
 /// Eval - Parses logical and
 #[derive(Clone, Default)]
