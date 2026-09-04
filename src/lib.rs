@@ -8,8 +8,6 @@ mod macros;
 mod parser;
 #[cfg(not(feature = "test_access"))]
 mod text;
-#[cfg(not(feature = "test_access"))]
-mod utils;
 
 #[cfg(feature = "test_access")]
 pub mod context;
@@ -17,9 +15,6 @@ pub mod context;
 pub mod globals;
 #[cfg(feature = "test_access")]
 pub mod macros;
-
-#[cfg(feature = "test_access")]
-pub mod utils;
 
 #[cfg(feature = "test_access")]
 pub mod text;
@@ -31,6 +26,7 @@ pub mod parser;
 
 pub mod api;
 pub mod tokens;
+pub mod utils;
 
 // Bytecode
 #[cfg(feature = "bytecode")]
