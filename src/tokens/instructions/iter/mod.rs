@@ -2,15 +2,12 @@ use std::borrow::Cow;
 
 use crate::{
     context::execution_context::{
-        GlobalContextMethods,
-        GlobalExecutionContext,
-        VarEntry,
-        VarValues,
+        GlobalContextMethods, GlobalExecutionContext, VarEntry, VarValues,
     },
     parse_args,
-    parser::{ params::TextForgeParamTypes, resolve_var::TokenWrapper },
+    parser::{params::TextForgeParamTypes, resolve_var::TokenWrapper},
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, validations::check_vec_len },
+    utils::{errors::TextForgeError, validations::check_vec_len},
 };
 
 #[cfg(feature = "test_access")]
@@ -37,22 +34,29 @@ impl InstructionMethods for Iter {
     }
 
     fn to_textforge_line(&self) -> Cow<'static, str> {
-        Cow::from(format!("iter {} times {}", self.times, self.inner.to_textforge_line()))
+        Cow::from(format!(
+            "iter {} times {}",
+            self.times,
+            self.inner.to_textforge_line()
+        ))
     }
 
     fn transform(
         &self,
         input: &str,
-        context: Option<&mut GlobalExecutionContext>
+        context: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, TextForgeError> {
         let context = context.unwrap();
 
         let mut result = input.to_string();
 
-        context.add_var("__COUNTER__", VarEntry {
-            mutable: true,
-            value: VarValues::Usize(0),
-        })?;
+        context.add_var(
+            "__COUNTER__",
+            VarEntry {
+                mutable: true,
+                value: VarValues::Usize(0),
+            },
+        )?;
         for i in 0..self.times {
             result = self.inner.apply_token(&result, context)?;
             let var_mut = context.get_mut_var("__COUNTER__")?;
@@ -67,8 +71,13 @@ impl InstructionMethods for Iter {
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(params, 2, "iter", "param parsing error, invalid vec len")?;
         self.times = parse_args!(params, 0, Usize, "First argument should be of type usize");
-        self.inner = parse_args!(params, 1, Token, "Second argument should be of type instruction");
-        self.params = vec![self.times.clone().into(), self.inner.clone().into()];
+        self.inner = parse_args!(
+            params,
+            1,
+            Token,
+            "Second argument should be of type instruction"
+        );
+        self.params = vec![self.times.into(), self.inner.clone().into()];
 
         Ok(())
     }
