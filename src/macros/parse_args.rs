@@ -71,7 +71,7 @@ macro_rules! parse_args {
         }
     }};
     ($param:expr, Token) => {{
-        use crate::parser::params::TextForgeParamTypes;
+        use $crate::parser::params::TextForgeParamTypes;
         use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
         match $param {
             TextForgeParamTypes::Token(payload) => payload.clone(),
