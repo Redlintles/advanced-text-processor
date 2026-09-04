@@ -1,10 +1,10 @@
 use crate::{
-    context::execution_context::{ GlobalContextMethods, GlobalExecutionContext, VarValues },
+    context::execution_context::{GlobalContextMethods, GlobalExecutionContext, VarValues},
     parse_args,
     parser::params::TextForgeParamTypes,
     tokens::InstructionMethods,
     utils::{
-        errors::{ TextForgeError, TextForgeErrorCode::RequiredContextError },
+        errors::{TextForgeError, TextForgeErrorCode::RequiredContextError},
         validations::check_vec_len,
     },
 };
@@ -26,7 +26,7 @@ impl Default for Mutv {
             val_value: TextForgeParamTypes::String("".to_string()),
             params: vec![
                 TextForgeParamTypes::String("x".to_string()),
-                TextForgeParamTypes::String("".to_string())
+                TextForgeParamTypes::String("".to_string()),
             ],
         }
     }
@@ -51,13 +51,13 @@ impl InstructionMethods for Mutv {
     fn transform(
         &self,
         input: &str,
-        context: Option<&mut GlobalExecutionContext>
+        context: Option<&mut GlobalExecutionContext>,
     ) -> Result<String, crate::utils::errors::TextForgeError> {
         let context = context.ok_or_else(|| {
             TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("mutv"),
-                std::borrow::Cow::Borrowed("")
+                std::borrow::Cow::Borrowed(""),
             )
         })?;
         let value = match &self.val_value {
@@ -74,7 +74,7 @@ impl InstructionMethods for Mutv {
 
     fn from_params(
         &mut self,
-        params: &Vec<crate::parser::params::TextForgeParamTypes>
+        params: &Vec<crate::parser::params::TextForgeParamTypes>,
     ) -> Result<(), crate::utils::errors::TextForgeError> {
         check_vec_len(params, 2, "mutv", "param parsing error, invalid vec len")?;
 
@@ -89,10 +89,13 @@ impl InstructionMethods for Mutv {
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
 
-        let result = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.val_name.clone()),
-            self.val_value.clone(),
-        ]);
+        let result = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::String(self.val_name.clone()),
+                self.val_value.clone(),
+            ]
+        );
         Ok(result)
     }
 }
