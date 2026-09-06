@@ -2,10 +2,7 @@
 #[cfg(test)]
 mod tests {
     use crate::context::execution_context::{
-        GlobalContextMethods,
-        GlobalExecutionContext,
-        VarEntry,
-        VarValues,
+        GlobalContextMethods, GlobalExecutionContext, VarEntry, VarValues,
     };
     use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::InstructionMethods;
@@ -28,7 +25,7 @@ mod tests {
         let mut t = Mutv::default();
         let params = vec![
             TextForgeParamTypes::String("n".to_string()),
-            TextForgeParamTypes::String("5".to_string())
+            TextForgeParamTypes::String("5".to_string()),
         ];
 
         assert!(t.from_params(&params).is_ok());
@@ -43,7 +40,7 @@ mod tests {
         let mut t = Mutv::default();
         let params = vec![
             TextForgeParamTypes::String("y".to_string()),
-            TextForgeParamTypes::VarRef("x".to_string())
+            TextForgeParamTypes::VarRef("x".to_string()),
         ];
 
         assert!(t.from_params(&params).is_ok());
@@ -55,7 +52,10 @@ mod tests {
         let params = vec![TextForgeParamTypes::String("n".to_string())];
 
         let err = t.from_params(&params).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -63,11 +63,14 @@ mod tests {
         let mut t = Mutv::default();
         let params = vec![
             TextForgeParamTypes::Usize(1),
-            TextForgeParamTypes::String("5".to_string())
+            TextForgeParamTypes::String("5".to_string()),
         ];
 
         let err = t.from_params(&params).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidParameters(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidParameters(_)
+        ));
     }
 
     #[test]
@@ -75,18 +78,20 @@ mod tests {
         let t = Mutv::default();
         let params = t.get_params();
 
-        assert!(matches!(params.get(1), Some(TextForgeParamTypes::String(_))));
+        assert!(matches!(
+            params.get(1),
+            Some(TextForgeParamTypes::String(_))
+        ));
     }
 
     #[test]
     fn to_textforge_line_is_reparseable() {
         let mut t = Mutv::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("n".to_string()),
-                TextForgeParamTypes::String("5".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("n".to_string()),
+            TextForgeParamTypes::String("5".to_string()),
+        ])
+        .unwrap();
 
         assert_eq!(t.to_textforge_line().as_ref(), "mutv n = 5;\n");
     }
@@ -98,20 +103,25 @@ mod tests {
     #[test]
     fn transform_updates_existing_mutable_variable() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("n", VarEntry {
-            value: VarValues::String("old".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "n",
+            VarEntry {
+                value: VarValues::String("old".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Mutv::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("n".to_string()),
-                TextForgeParamTypes::String("new".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("n".to_string()),
+            TextForgeParamTypes::String("new".to_string()),
+        ])
+        .unwrap();
 
-        let result = t.transform("input inalterado".into(), Some(&mut ctx)).unwrap();
+        let result = t
+            .transform("input inalterado".into(), Some(&mut ctx))
+            .unwrap();
         assert_eq!(result.to_string(), "input inalterado");
 
         let n = ctx.get_var("n").unwrap();
@@ -125,15 +135,21 @@ mod tests {
         // get_mut_var só valida mutabilidade, não tipo: nada em `mutv` impede
         // trocar VarValues::String por VarValues::Usize na mesma entrada.
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("n", VarEntry {
-            value: VarValues::String("old".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "n",
+            VarEntry {
+                value: VarValues::String("old".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Mutv::default();
-        t.from_params(
-            &vec![TextForgeParamTypes::String("n".to_string()), TextForgeParamTypes::Usize(42)]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("n".to_string()),
+            TextForgeParamTypes::Usize(42),
+        ])
+        .unwrap();
 
         t.transform("input".into(), Some(&mut ctx)).unwrap();
 
@@ -144,24 +160,32 @@ mod tests {
     #[test]
     fn transform_aliases_new_value_from_existing_variable_via_varref() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("source", VarEntry {
-            value: VarValues::String("hi".to_string()),
-            mutable: false,
-        }).unwrap();
-        ctx.add_var("target", VarEntry {
-            value: VarValues::String("old".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "source",
+            VarEntry {
+                value: VarValues::String("hi".to_string()),
+                mutable: false,
+            },
+        )
+        .unwrap();
+        ctx.add_var(
+            "target",
+            VarEntry {
+                value: VarValues::String("old".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Mutv::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("target".to_string()),
-                TextForgeParamTypes::VarRef("source".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("target".to_string()),
+            TextForgeParamTypes::VarRef("source".to_string()),
+        ])
+        .unwrap();
 
-        t.transform("qualquer coisa".into(), Some(&mut ctx)).unwrap();
+        t.transform("qualquer coisa".into(), Some(&mut ctx))
+            .unwrap();
 
         let target = ctx.get_var("target").unwrap();
         assert!(matches!(&target.value, VarValues::String(s) if s == "hi"));
@@ -170,50 +194,60 @@ mod tests {
     #[test]
     fn transform_fails_without_context() {
         let mut t = Mutv::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("n".to_string()),
-                TextForgeParamTypes::String("5".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("n".to_string()),
+            TextForgeParamTypes::String("5".to_string()),
+        ])
+        .unwrap();
 
         let err = t.transform("input".into(), None).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::RequiredContextError(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::RequiredContextError(_)
+        ));
     }
 
     #[test]
     fn transform_fails_when_variable_does_not_exist() {
         let mut ctx = GlobalExecutionContext::new();
         let mut t = Mutv::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("nao_existe".to_string()),
-                TextForgeParamTypes::String("5".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("nao_existe".to_string()),
+            TextForgeParamTypes::String("5".to_string()),
+        ])
+        .unwrap();
 
         let err = t.transform("input".into(), Some(&mut ctx)).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::VariableNotFound(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::VariableNotFound(_)
+        ));
     }
 
     #[test]
     fn transform_fails_when_variable_is_not_mutable() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("n", VarEntry {
-            value: VarValues::String("old".to_string()),
-            mutable: false,
-        }).unwrap();
+        ctx.add_var(
+            "n",
+            VarEntry {
+                value: VarValues::String("old".to_string()),
+                mutable: false,
+            },
+        )
+        .unwrap();
 
         let mut t = Mutv::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("n".to_string()),
-                TextForgeParamTypes::String("new".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("n".to_string()),
+            TextForgeParamTypes::String("new".to_string()),
+        ])
+        .unwrap();
 
         let err = t.transform("input".into(), Some(&mut ctx)).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::NonMutableVariableError(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::NonMutableVariableError(_)
+        ));
 
         // e o valor original não deve ter sido tocado
         let n = ctx.get_var("n").unwrap();
@@ -223,21 +257,27 @@ mod tests {
     #[test]
     fn transform_fails_when_varref_source_is_missing() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var("n", VarEntry {
-            value: VarValues::String("old".to_string()),
-            mutable: true,
-        }).unwrap();
+        ctx.add_var(
+            "n",
+            VarEntry {
+                value: VarValues::String("old".to_string()),
+                mutable: true,
+            },
+        )
+        .unwrap();
 
         let mut t = Mutv::default();
-        t.from_params(
-            &vec![
-                TextForgeParamTypes::String("n".to_string()),
-                TextForgeParamTypes::VarRef("inexistente".to_string())
-            ]
-        ).unwrap();
+        t.from_params(&vec![
+            TextForgeParamTypes::String("n".to_string()),
+            TextForgeParamTypes::VarRef("inexistente".to_string()),
+        ])
+        .unwrap();
 
         let err = t.transform("input".into(), Some(&mut ctx)).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::VariableNotFound(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::VariableNotFound(_)
+        ));
     }
 
     // ============================
@@ -250,23 +290,19 @@ mod tests {
 
         let mut declare = Var::default();
         declare
-            .from_params(
-                &vec![
-                    TextForgeParamTypes::String("counter".to_string()),
-                    TextForgeParamTypes::Usize(0)
-                ]
-            )
+            .from_params(&vec![
+                TextForgeParamTypes::String("counter".to_string()),
+                TextForgeParamTypes::Usize(0),
+            ])
             .unwrap();
         declare.transform("input".into(), Some(&mut ctx)).unwrap();
 
         let mut mutate = Mutv::default();
         mutate
-            .from_params(
-                &vec![
-                    TextForgeParamTypes::String("counter".to_string()),
-                    TextForgeParamTypes::Usize(1)
-                ]
-            )
+            .from_params(&vec![
+                TextForgeParamTypes::String("counter".to_string()),
+                TextForgeParamTypes::Usize(1),
+            ])
             .unwrap();
         mutate.transform("input".into(), Some(&mut ctx)).unwrap();
 
@@ -284,26 +320,27 @@ mod tests {
 
         let mut declare = Val::default();
         declare
-            .from_params(
-                &vec![
-                    TextForgeParamTypes::String("n".to_string()),
-                    TextForgeParamTypes::String("5".to_string())
-                ]
-            )
+            .from_params(&vec![
+                TextForgeParamTypes::String("n".to_string()),
+                TextForgeParamTypes::String("5".to_string()),
+            ])
             .unwrap();
         declare.transform("input".into(), Some(&mut ctx)).unwrap();
 
         let mut mutate = Mutv::default();
         mutate
-            .from_params(
-                &vec![
-                    TextForgeParamTypes::String("n".to_string()),
-                    TextForgeParamTypes::String("6".to_string())
-                ]
-            )
+            .from_params(&vec![
+                TextForgeParamTypes::String("n".to_string()),
+                TextForgeParamTypes::String("6".to_string()),
+            ])
             .unwrap();
 
-        let err = mutate.transform("input".into(), Some(&mut ctx)).unwrap_err();
-        assert!(matches!(err.error_code, TextForgeErrorCode::NonMutableVariableError(_)));
+        let err = mutate
+            .transform("input".into(), Some(&mut ctx))
+            .unwrap_err();
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::NonMutableVariableError(_)
+        ));
     }
 }

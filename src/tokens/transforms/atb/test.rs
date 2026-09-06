@@ -7,7 +7,7 @@ mod common {
     use crate::{
         context::execution_context::GlobalExecutionContext,
         parser::params::TextForgeParamTypes,
-        tokens::{ InstructionMethods, transforms::atb::Atb },
+        tokens::{InstructionMethods, transforms::atb::Atb},
         utils::errors::TextForgeErrorCode,
     };
 
@@ -21,7 +21,12 @@ mod common {
     fn transform_prepends_text() {
         let mut ctx = GlobalExecutionContext::new();
         let t = Atb::new("foo");
-        assert_eq!(t.transform(" bar".into(), Some(&mut ctx)).unwrap().to_string(), "foo bar");
+        assert_eq!(
+            t.transform(" bar".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "foo bar"
+        );
     }
 
     #[test]
@@ -29,7 +34,10 @@ mod common {
         let mut ctx = GlobalExecutionContext::new();
 
         let t = Atb::new("foo");
-        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "foo");
+        assert_eq!(
+            t.transform("".into(), Some(&mut ctx)).unwrap().to_string(),
+            "foo"
+        );
     }
 
     #[test]
@@ -37,7 +45,12 @@ mod common {
         let mut ctx = GlobalExecutionContext::new();
 
         let t = Atb::new("");
-        assert_eq!(t.transform("bar".into(), Some(&mut ctx)).unwrap().to_string(), "bar");
+        assert_eq!(
+            t.transform("bar".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "bar"
+        );
     }
 
     #[test]
@@ -62,7 +75,12 @@ mod common {
         t.from_params(&params).unwrap();
         assert_eq!(t.text, "foo");
 
-        assert_eq!(t.transform(" bar".into(), Some(&mut ctx)).unwrap().to_string(), "foo bar");
+        assert_eq!(
+            t.transform(" bar".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "foo bar"
+        );
     }
 
     #[test]
@@ -70,12 +88,15 @@ mod common {
         let mut t = Atb::default();
         let params = vec![
             TextForgeParamTypes::String("a".to_string()),
-            TextForgeParamTypes::String("b".to_string())
+            TextForgeParamTypes::String("b".to_string()),
         ];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -116,7 +137,10 @@ mod common {
 
         assert_eq!(rebuilt.text, "hello");
         assert_eq!(
-            rebuilt.transform(" world".into(), Some(&mut ctx)).unwrap().to_string(),
+            rebuilt
+                .transform(" world".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "hello world"
         );
     }
@@ -127,7 +151,7 @@ mod bytecode {
     use crate::{
         context::execution_context::GlobalExecutionContext,
         parser::params::TextForgeParamTypes,
-        tokens::{ InstructionMethods, transforms::atb::Atb },
+        tokens::{InstructionMethods, transforms::atb::Atb},
         utils::errors::TextForgeError,
     };
 
@@ -154,7 +178,10 @@ mod bytecode {
 
         match parsed {
             TextForgeParamTypes::String(s) => assert_eq!(s, "abc"),
-            other => panic!("Expected String, got type code {}", other.get_param_type_code()),
+            other => panic!(
+                "Expected String, got type code {}",
+                other.get_param_type_code()
+            ),
         }
     }
 
@@ -166,7 +193,10 @@ mod bytecode {
 
         match parsed {
             TextForgeParamTypes::Usize(x) => assert_eq!(x, 123),
-            other => panic!("Expected Usize, got type code {}", other.get_param_type_code()),
+            other => panic!(
+                "Expected Usize, got type code {}",
+                other.get_param_type_code()
+            ),
         }
     }
 

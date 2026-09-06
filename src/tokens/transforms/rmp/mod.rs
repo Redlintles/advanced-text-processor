@@ -7,7 +7,10 @@ use crate::{
     parse_args,
     parser::params::TextForgeParamTypes,
     tokens::InstructionMethods,
-    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_vec_len },
+    utils::{
+        errors::{TextForgeError, TextForgeErrorCode},
+        validations::check_vec_len,
+    },
 };
 
 #[cfg(feature = "test_access")]
@@ -58,18 +61,16 @@ impl InstructionMethods for Rmp {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         match input {
-            Cow::Borrowed(v) => { Ok(self.pattern.replace_all(v, "")) }
+            Cow::Borrowed(v) => Ok(self.pattern.replace_all(v, "")),
 
-            Cow::Owned(v) => {
-                match self.pattern.replace_all(&v, "") {
-                    Cow::Borrowed(_) => { Ok(Cow::Owned(v)) }
+            Cow::Owned(v) => match self.pattern.replace_all(&v, "") {
+                Cow::Borrowed(_) => Ok(Cow::Owned(v)),
 
-                    Cow::Owned(result) => { Ok(Cow::Owned(result)) }
-                }
-            }
+                Cow::Owned(result) => Ok(Cow::Owned(result)),
+            },
         }
     }
 
@@ -81,7 +82,7 @@ impl InstructionMethods for Rmp {
             TextForgeError::new(
                 TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
-                pattern_payload.clone()
+                pattern_payload.clone(),
             )
         })?;
 

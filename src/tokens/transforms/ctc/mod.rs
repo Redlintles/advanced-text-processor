@@ -7,8 +7,7 @@ use crate::context::execution_context::GlobalExecutionContext;
 use crate::utils::errors::TextForgeError;
 use crate::utils::validations::check_vec_len;
 use crate::{
-    tokens::InstructionMethods,
-    utils::transforms::capitalize,
+    tokens::InstructionMethods, utils::transforms::capitalize,
     utils::validations::check_chunk_bound_indexes,
 };
 
@@ -59,7 +58,7 @@ impl InstructionMethods for Ctc {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         let len = input.chars().count();
 
@@ -144,10 +143,13 @@ impl InstructionMethods for Ctc {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::Usize(self.start_index),
-            TextForgeParamTypes::Usize(self.end_index),
-        ]);
+        let result = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::Usize(self.start_index),
+                TextForgeParamTypes::Usize(self.end_index),
+            ]
+        );
         Ok(result)
     }
 }

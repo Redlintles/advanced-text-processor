@@ -4,7 +4,7 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::parser::params::TextForgeParamTypes;
-    use crate::tokens::{ InstructionMethods, transforms::rev::Rev };
+    use crate::tokens::{InstructionMethods, transforms::rev::Rev};
     use crate::utils::errors::TextForgeErrorCode;
 
     #[test]
@@ -24,7 +24,12 @@ mod tests {
         let t = Rev::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foobar".into(), Some(&mut ctx)).unwrap().to_string(), "raboof");
+        assert_eq!(
+            t.transform("foobar".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "raboof"
+        );
     }
 
     #[test]
@@ -32,7 +37,10 @@ mod tests {
         let t = Rev::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(
+            t.transform("".into(), Some(&mut ctx)).unwrap().to_string(),
+            ""
+        );
     }
 
     #[test]
@@ -40,7 +48,10 @@ mod tests {
         let t = Rev::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("x".into(), Some(&mut ctx)).unwrap().to_string(), "x");
+        assert_eq!(
+            t.transform("x".into(), Some(&mut ctx)).unwrap().to_string(),
+            "x"
+        );
     }
 
     #[test]
@@ -49,7 +60,12 @@ mod tests {
         let t = Rev::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("áβç".into(), Some(&mut ctx)).unwrap().to_string(), "çβá");
+        assert_eq!(
+            t.transform("áβç".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "çβá"
+        );
     }
 
     #[test]
@@ -66,7 +82,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

@@ -6,7 +6,7 @@ mod tests {
     use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::jsonu::Jsonu;
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
     #[test]
     fn get_string_repr_is_jsonu() {
@@ -27,7 +27,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("\"{banana: '10'}\"".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("\"{banana: '10'}\"".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             expected_output
         );
     }
@@ -41,7 +43,12 @@ mod tests {
         let expected = "a \"quote\" and a \\ slash\nline2\tend\r".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
+        assert_eq!(
+            t.transform(input.into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            expected
+        );
     }
 
     #[test]
@@ -49,7 +56,12 @@ mod tests {
         let t = Jsonu::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("\"\"".into(), Some(&mut ctx)).unwrap().to_string(), "".to_string());
+        assert_eq!(
+            t.transform("\"\"".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "".to_string()
+        );
     }
 
     #[test]
@@ -60,7 +72,12 @@ mod tests {
         let expected = "maçã 🍎".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
+        assert_eq!(
+            t.transform(input.into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            expected
+        );
     }
 
     #[test]
@@ -73,13 +90,11 @@ mod tests {
 
         let got = t.transform(input.into(), Some(&mut ctx));
 
-        let expected = Err(
-            TextForgeError::new(
-                TextForgeErrorCode::TextParsingError("Failed to deserialize to JSON".into()),
-                "serde_json::from_str",
-                input.to_string()
-            )
-        );
+        let expected = Err(TextForgeError::new(
+            TextForgeErrorCode::TextParsingError("Failed to deserialize to JSON".into()),
+            "serde_json::from_str",
+            input.to_string(),
+        ));
 
         assert_eq!(got, expected);
     }
@@ -99,7 +114,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]

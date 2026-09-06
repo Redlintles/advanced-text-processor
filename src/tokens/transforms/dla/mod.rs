@@ -6,9 +6,9 @@ use std::borrow::Cow;
 use crate::context::execution_context::GlobalExecutionContext;
 use crate::parser::params::TextForgeParamTypes;
 use crate::tokens::InstructionMethods;
-use crate::utils::validations::{ check_index_against_input, check_vec_len };
+use crate::utils::validations::{check_index_against_input, check_vec_len};
 
-use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
 /// Dla - Delete After
 /// Delete all characters after `index` in the specified `input`
@@ -51,30 +51,23 @@ impl InstructionMethods for Dla {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         check_index_against_input(self.index, &input)?;
 
         let mut s = String::from(input.as_ref());
-        if
-            let Some(byte_index) = s
-                .char_indices()
-                .nth(self.index + 1)
-                .map(|(i, _)| i)
-        {
+        if let Some(byte_index) = s.char_indices().nth(self.index + 1).map(|(i, _)| i) {
             s.drain(byte_index..);
             return Ok(s.into());
         }
 
-        Err(
-            TextForgeError::new(
-                TextForgeErrorCode::IndexOutOfRange(
-                    "Index is out of range for the desired string".into()
-                ),
-                self.to_textforge_line(),
-                input.as_ref().to_string()
-            )
-        )
+        Err(TextForgeError::new(
+            TextForgeErrorCode::IndexOutOfRange(
+                "Index is out of range for the desired string".into(),
+            ),
+            self.to_textforge_line(),
+            input.as_ref().to_string(),
+        ))
     }
 
     fn get_string_repr(&self) -> &'static str {
@@ -96,9 +89,8 @@ impl InstructionMethods for Dla {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::Usize(self.index),
-        ]);
+        let result: Vec<u8> =
+            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index),]);
         Ok(result)
     }
 }

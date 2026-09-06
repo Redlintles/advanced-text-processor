@@ -6,7 +6,10 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_vec_len },
+    utils::{
+        errors::{TextForgeError, TextForgeErrorCode},
+        validations::check_vec_len,
+    },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -44,7 +47,7 @@ impl InstructionMethods for Urld {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         // Validação de percent encoding
         let bytes = input.as_bytes();
@@ -53,20 +56,15 @@ impl InstructionMethods for Urld {
         let mut i = 0;
         while i < len {
             if bytes[i] == b'%' {
-                if
-                    i + 2 >= len ||
-                    !bytes[i + 1].is_ascii_hexdigit() ||
-                    !bytes[i + 2].is_ascii_hexdigit()
+                if i + 2 >= len
+                    || !bytes[i + 1].is_ascii_hexdigit()
+                    || !bytes[i + 2].is_ascii_hexdigit()
                 {
-                    return Err(
-                        TextForgeError::new(
-                            TextForgeErrorCode::TextParsingError(
-                                "Failed parsing URL string".into()
-                            ),
-                            "urld",
-                            input.to_string()
-                        )
-                    );
+                    return Err(TextForgeError::new(
+                        TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
+                        "urld",
+                        input.to_string(),
+                    ));
                 }
                 i += 3;
                 continue;
@@ -74,15 +72,13 @@ impl InstructionMethods for Urld {
             i += 1;
         }
 
-        let result = urlencoding
-            ::decode(input.as_ref())
-            .map_err(|_| {
-                TextForgeError::new(
-                    TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
-                    "urld",
-                    input.to_string()
-                )
-            })?;
+        let result = urlencoding::decode(input.as_ref()).map_err(|_| {
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
+                "urld",
+                input.to_string(),
+            )
+        })?;
 
         match result {
             Cow::Borrowed(_) => Ok(input),

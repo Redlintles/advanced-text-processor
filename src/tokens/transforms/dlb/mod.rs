@@ -4,11 +4,11 @@ pub mod test;
 use std::borrow::Cow;
 
 use crate::context::execution_context::GlobalExecutionContext;
-use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
 use crate::parser::params::TextForgeParamTypes;
 use crate::tokens::InstructionMethods;
-use crate::utils::validations::{ check_index_against_input, check_vec_len };
+use crate::utils::validations::{check_index_against_input, check_vec_len};
 
 /// Dlb - Delete Before
 /// Delete all characters before `index` in the specified `input`
@@ -51,35 +51,29 @@ impl InstructionMethods for Dlb {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         let mut s = String::from(input.as_ref());
 
         check_index_against_input(self.index, input.as_ref())?;
 
-        if
-            let Some(byte_index) = s
-                .char_indices()
-                .nth(self.index)
-                .map(|(i, _)| i)
-        {
+        if let Some(byte_index) = s.char_indices().nth(self.index).map(|(i, _)| i) {
             s.drain(0..byte_index);
             return Ok(s.into());
         }
 
-        Err(
-            TextForgeError::new(
-                TextForgeErrorCode::IndexOutOfRange(
-                    format!(
-                        "Supported indexes 0-{}, entered index {}",
-                        input.chars().count().saturating_sub(1),
-                        self.index
-                    ).into()
-                ),
-                self.to_textforge_line(),
-                input.to_string()
-            )
-        )
+        Err(TextForgeError::new(
+            TextForgeErrorCode::IndexOutOfRange(
+                format!(
+                    "Supported indexes 0-{}, entered index {}",
+                    input.chars().count().saturating_sub(1),
+                    self.index
+                )
+                .into(),
+            ),
+            self.to_textforge_line(),
+            input.to_string(),
+        ))
     }
     fn get_string_repr(&self) -> &'static str {
         "dlb"
@@ -101,9 +95,8 @@ impl InstructionMethods for Dlb {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::Usize(self.index),
-        ]);
+        let result: Vec<u8> =
+            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index),]);
         Ok(result)
     }
 }

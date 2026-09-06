@@ -41,7 +41,7 @@ impl InstructionMethods for Tls {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         if input.is_empty() {
             return Ok(input);

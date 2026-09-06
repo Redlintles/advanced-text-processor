@@ -6,7 +6,7 @@ mod tests {
     use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::ate::Ate;
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
     #[test]
     fn params_sets_text() {
@@ -31,7 +31,12 @@ mod tests {
         let t = Ate::new(" bar");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo".into(), Some(&mut ctx)).unwrap().to_string(), "foo bar");
+        assert_eq!(
+            t.transform("foo".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "foo bar"
+        );
     }
 
     #[test]
@@ -39,7 +44,12 @@ mod tests {
         let t = Ate::new("");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo".into(), Some(&mut ctx)).unwrap().to_string(), "foo");
+        assert_eq!(
+            t.transform("foo".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "foo"
+        );
     }
 
     #[test]
@@ -47,7 +57,10 @@ mod tests {
         let t = Ate::new("bar");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "bar".to_string());
+        assert_eq!(
+            t.transform("".into(), Some(&mut ctx)).unwrap().to_string(),
+            "bar".to_string()
+        );
     }
 
     #[test]
@@ -55,12 +68,15 @@ mod tests {
         let mut t = Ate::default();
         let params = vec![
             TextForgeParamTypes::String("a".to_string()),
-            TextForgeParamTypes::String("b".to_string())
+            TextForgeParamTypes::String("b".to_string()),
         ];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -79,13 +95,11 @@ mod tests {
 
         let got = t.from_params(&params);
 
-        let expected = Err(
-            TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Text should be of string type".into()),
-                "",
-                ""
-            )
-        );
+        let expected = Err(TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Text should be of string type".into()),
+            "",
+            "",
+        ));
 
         assert_eq!(got, expected);
     }

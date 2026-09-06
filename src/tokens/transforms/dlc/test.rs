@@ -34,7 +34,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("bananalaranjacheiadecanja".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("bananalaranjacheiadecanja".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "blaranjacheiadecanja"
         );
     }
@@ -44,7 +46,12 @@ mod tests {
         let t = Dlc::new(0, 100).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            ""
+        );
     }
 
     #[test]
@@ -52,7 +59,12 @@ mod tests {
         let t = Dlc::new(1, 2).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ábcd".into(), Some(&mut ctx)).unwrap().to_string(), "ád");
+        assert_eq!(
+            t.transform("ábcd".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "ád"
+        );
     }
 
     #[test]
@@ -71,7 +83,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -89,18 +104,16 @@ mod tests {
         let mut t = Dlc::default();
         let params = vec![
             TextForgeParamTypes::String("x".to_string()),
-            TextForgeParamTypes::Usize(2)
+            TextForgeParamTypes::Usize(2),
         ];
 
         let got = t.from_params(&params);
 
-        let expected = Err(
-            crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
-                "",
-                ""
-            )
-        );
+        let expected = Err(crate::utils::errors::TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
+            "",
+            "",
+        ));
 
         assert_eq!(got, expected);
     }

@@ -25,7 +25,12 @@ mod tests {
         let t = Dlf::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "anana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "anana"
+        );
     }
 
     #[test]
@@ -33,7 +38,10 @@ mod tests {
         let t = Dlf::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(
+            t.transform("".into(), Some(&mut ctx)).unwrap().to_string(),
+            ""
+        );
     }
 
     #[test]
@@ -41,7 +49,10 @@ mod tests {
         let t = Dlf::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(
+            t.transform("a".into(), Some(&mut ctx)).unwrap().to_string(),
+            ""
+        );
     }
 
     #[test]
@@ -49,7 +60,12 @@ mod tests {
         let t = Dlf::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ábc".into(), Some(&mut ctx)).unwrap().to_string(), "bc");
+        assert_eq!(
+            t.transform("ábc".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "bc"
+        );
     }
 
     #[test]
@@ -57,7 +73,12 @@ mod tests {
         let t = Dlf::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("💥boom".into(), Some(&mut ctx)).unwrap().to_string(), "boom");
+        assert_eq!(
+            t.transform("💥boom".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "boom"
+        );
     }
 
     #[test]
@@ -75,7 +96,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
     // ============================
     // Bytecode-only tests (separados)

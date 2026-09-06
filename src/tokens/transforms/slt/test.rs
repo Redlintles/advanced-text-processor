@@ -4,8 +4,8 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::parser::params::TextForgeParamTypes;
-    use crate::tokens::{ InstructionMethods, transforms::slt::Slt };
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::tokens::{InstructionMethods, transforms::slt::Slt};
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
     #[test]
     fn get_string_repr_is_slt() {
@@ -25,7 +25,12 @@ mod tests {
         let t = Slt::new(1, 3).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "ana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "ana"
+        );
     }
 
     #[test]
@@ -35,7 +40,12 @@ mod tests {
         let t = Slt::new(1, 4).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banàna".into(), Some(&mut ctx)).unwrap().to_string(), "anàn");
+        assert_eq!(
+            t.transform("banàna".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "anàn"
+        );
     }
 
     #[test]
@@ -43,7 +53,12 @@ mod tests {
         let t = Slt::new(1, 9999).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "anana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "anana"
+        );
     }
 
     #[test]
@@ -70,7 +85,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

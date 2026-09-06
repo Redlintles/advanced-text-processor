@@ -26,7 +26,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("<div>banana</div>".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("<div>banana</div>".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "&lt;div&gt;banana&lt;&#x2F;div&gt;"
         );
     }
@@ -37,7 +39,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform(r#"<a href="x&y">"#.into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform(r#"<a href="x&y">"#.into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "&lt;a href=&quot;x&amp;y&quot;&gt;"
         );
     }
@@ -47,7 +51,12 @@ mod tests {
         let t = Htmle::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "banana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "banana"
+        );
     }
 
     #[test]
@@ -56,7 +65,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("maçã & pão".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("maçã & pão".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "maçã &amp; pão"
         );
     }
@@ -76,7 +87,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

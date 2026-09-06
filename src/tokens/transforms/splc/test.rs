@@ -4,7 +4,7 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::parser::params::TextForgeParamTypes;
-    use crate::tokens::{ InstructionMethods, transforms::splc::Splc };
+    use crate::tokens::{InstructionMethods, transforms::splc::Splc};
     use crate::utils::errors::TextForgeErrorCode;
 
     #[test]
@@ -25,7 +25,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "b a n a n a"
         );
     }
@@ -35,7 +37,12 @@ mod tests {
         let t = Splc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a b".into(), Some(&mut ctx)).unwrap().to_string(), "a   b");
+        assert_eq!(
+            t.transform("a b".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "a   b"
+        );
         // explicação: chars = ['a',' ','b'] => "a" + " " + " " + " " + "b" => "a␠␠␠b"
     }
 
@@ -44,7 +51,12 @@ mod tests {
         let t = Splc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("áβ🍌".into(), Some(&mut ctx)).unwrap().to_string(), "á β 🍌");
+        assert_eq!(
+            t.transform("áβ🍌".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "á β 🍌"
+        );
     }
 
     #[test]
@@ -52,7 +64,10 @@ mod tests {
         let t = Splc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(
+            t.transform("".into(), Some(&mut ctx)).unwrap().to_string(),
+            ""
+        );
     }
 
     #[test]
@@ -69,7 +84,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

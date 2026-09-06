@@ -25,7 +25,12 @@ mod tests {
         let t = Clw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo bar".into(), Some(&mut ctx)).unwrap().to_string(), "foo Bar");
+        assert_eq!(
+            t.transform("foo bar".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "foo Bar"
+        );
     }
 
     #[test]
@@ -33,7 +38,10 @@ mod tests {
         let t = Clw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(
+            t.transform("".into(), Some(&mut ctx)).unwrap().to_string(),
+            ""
+        );
     }
 
     #[test]
@@ -41,7 +49,12 @@ mod tests {
         let t = Clw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("hello".into(), Some(&mut ctx)).unwrap().to_string(), "Hello");
+        assert_eq!(
+            t.transform("hello".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "Hello"
+        );
     }
 
     #[test]
@@ -50,7 +63,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("foo bar baz".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("foo bar baz".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "foo bar Baz"
         );
     }
@@ -63,7 +78,12 @@ mod tests {
         let t = Clw::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("foo ".into(), Some(&mut ctx)).unwrap().to_string(), "foo ");
+        assert_eq!(
+            t.transform("foo ".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "foo "
+        );
     }
 
     #[test]
@@ -81,7 +101,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

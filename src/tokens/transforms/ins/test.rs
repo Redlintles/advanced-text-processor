@@ -21,7 +21,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "banlaranjaana"
         );
     }
@@ -32,7 +34,12 @@ mod tests {
         let t = Ins::new(0, "X");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "bXanana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "bXanana"
+        );
     }
 
     #[test]
@@ -42,7 +49,12 @@ mod tests {
         let t = Ins::new(5, "X");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "bananaX");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "bananaX"
+        );
     }
 
     #[test]
@@ -52,7 +64,12 @@ mod tests {
         let t = Ins::new(6, "X"); // chars_count("banana") = 6
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "bananaX");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "bananaX"
+        );
     }
 
     #[test]
@@ -62,7 +79,12 @@ mod tests {
         let t = Ins::new(0, "X");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ábc".into(), Some(&mut ctx)).unwrap().to_string(), "áXbc");
+        assert_eq!(
+            t.transform("ábc".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "áXbc"
+        );
     }
 
     #[test]
@@ -89,7 +111,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -97,7 +122,7 @@ mod tests {
         let mut t = Ins::default();
         let params = vec![
             TextForgeParamTypes::Usize(3),
-            TextForgeParamTypes::String("laranja".to_string())
+            TextForgeParamTypes::String("laranja".to_string()),
         ];
 
         assert_eq!(t.from_params(&params), Ok(()));
@@ -109,19 +134,17 @@ mod tests {
         let mut t = Ins::default();
         let params = vec![
             TextForgeParamTypes::String("x".to_string()),
-            TextForgeParamTypes::Usize(3)
+            TextForgeParamTypes::Usize(3),
         ];
 
         let got = t.from_params(&params);
 
         // primeiro parse_args! falha com "Index should be of usize type"
-        let expected = Err(
-            crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
-                "",
-                ""
-            )
-        );
+        let expected = Err(crate::utils::errors::TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
+            "",
+            "",
+        ));
 
         assert_eq!(got, expected);
     }

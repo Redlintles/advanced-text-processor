@@ -4,8 +4,8 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::parser::params::TextForgeParamTypes;
-    use crate::tokens::{ InstructionMethods, transforms::sslt::Sslt };
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::tokens::{InstructionMethods, transforms::sslt::Sslt};
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
     #[test]
     fn get_string_repr_is_sslt() {
@@ -26,8 +26,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t
-                .transform("foobar_foo_bar_bar_foo_barfoo".into(), Some(&mut ctx))
+            t.transform("foobar_foo_bar_bar_foo_barfoo".into(), Some(&mut ctx))
                 .unwrap()
                 .to_string(),
             "foo"
@@ -40,7 +39,12 @@ mod tests {
         let t = Sslt::new("_", 1).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a__b".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(
+            t.transform("a__b".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            ""
+        );
     }
 
     #[test]
@@ -50,15 +54,11 @@ mod tests {
 
         let got = t.transform("a_b".into(), Some(&mut ctx));
 
-        let expected = Err(
-            TextForgeError::new(
-                TextForgeErrorCode::IndexOutOfRange(
-                    "Index does not exist in the splitted vec".into()
-                ),
-                t.to_textforge_line(),
-                "a_b".to_string()
-            )
-        );
+        let expected = Err(TextForgeError::new(
+            TextForgeErrorCode::IndexOutOfRange("Index does not exist in the splitted vec".into()),
+            t.to_textforge_line(),
+            "a_b".to_string(),
+        ));
 
         assert_eq!(got, expected);
     }
@@ -67,7 +67,7 @@ mod tests {
         let mut t = Sslt::default();
         let params = vec![
             TextForgeParamTypes::String("_".to_string()),
-            TextForgeParamTypes::Usize(1)
+            TextForgeParamTypes::Usize(1),
         ];
 
         assert_eq!(t.from_params(&params), Ok(()));
@@ -82,7 +82,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

@@ -1,12 +1,12 @@
 use std::borrow::Cow;
 
 use crate::{
-    context::execution_context::{ GlobalContextMethods, GlobalExecutionContext },
+    context::execution_context::{GlobalContextMethods, GlobalExecutionContext},
     parse_args,
     parser::params::TextForgeParamTypes,
     tokens::InstructionMethods,
     utils::{
-        errors::{ TextForgeError, TextForgeErrorCode::RequiredContextError },
+        errors::{TextForgeError, TextForgeErrorCode::RequiredContextError},
         validations::check_vec_len,
     },
 };
@@ -47,13 +47,13 @@ impl InstructionMethods for Cblk {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        context: Option<&mut GlobalExecutionContext>
+        context: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         let context = context.ok_or_else(|| {
             TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("val"),
-                std::borrow::Cow::Borrowed("")
+                std::borrow::Cow::Borrowed(""),
             )
         })?;
         let mut result = input;
@@ -64,14 +64,19 @@ impl InstructionMethods for Cblk {
         }
 
         context.put_block(&self.block_name, tokens);
-        Ok(result.into())
+        Ok(result)
     }
 
     fn from_params(
         &mut self,
-        params: &Vec<crate::parser::params::TextForgeParamTypes>
+        params: &Vec<crate::parser::params::TextForgeParamTypes>,
     ) -> Result<(), crate::utils::errors::TextForgeError> {
-        check_vec_len(params, 1, "call block", "param parsing error, invalid vec len")?;
+        check_vec_len(
+            params,
+            1,
+            "call block",
+            "param parsing error, invalid vec len",
+        )?;
 
         self.block_name = parse_args!(params, 0, String, "Block name should be of string type");
         self.params = vec![self.block_name.to_string().into()];
@@ -80,9 +85,10 @@ impl InstructionMethods for Cblk {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.block_name.to_string()),
-        ]);
+        let result = to_bytecode!(
+            self.get_opcode(),
+            [TextForgeParamTypes::String(self.block_name.to_string()),]
+        );
 
         Ok(result)
     }

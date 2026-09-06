@@ -4,7 +4,7 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::parser::params::TextForgeParamTypes;
-    use crate::tokens::{ InstructionMethods, transforms::tls::Tls };
+    use crate::tokens::{InstructionMethods, transforms::tls::Tls};
     use crate::utils::errors::TextForgeErrorCode;
 
     #[test]
@@ -25,7 +25,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("   banana   ".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("   banana   ".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "banana   "
         );
     }
@@ -36,7 +38,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("\t\n\r   banana".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("\t\n\r   banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "banana"
         );
     }
@@ -46,7 +50,12 @@ mod tests {
         let t = Tls::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "banana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "banana"
+        );
     }
 
     #[test]
@@ -54,7 +63,12 @@ mod tests {
         let t = Tls::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("     ".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(
+            t.transform("     ".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            ""
+        );
     }
 
     #[test]
@@ -62,7 +76,10 @@ mod tests {
         let t = Tls::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(
+            t.transform("".into(), Some(&mut ctx)).unwrap().to_string(),
+            ""
+        );
     }
 
     #[test]
@@ -79,7 +96,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================
