@@ -64,7 +64,7 @@ impl InstructionMethods for Cblk {
         }
 
         context.put_block(&self.block_name, tokens);
-        Ok(result.into())
+        Ok(result)
     }
 
     fn from_params(

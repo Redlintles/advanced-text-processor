@@ -78,7 +78,7 @@ impl InstructionMethods for Ifdc {
             return self.inner.transform(input, context);
         }
 
-        Ok(input.into())
+        Ok(input)
     }
 
     #[cfg(feature = "bytecode")]

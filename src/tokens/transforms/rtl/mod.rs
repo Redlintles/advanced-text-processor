@@ -8,7 +8,7 @@ use crate::parser::params::TextForgeParamTypes;
 use crate::tokens::InstructionMethods;
 use crate::utils::validations::check_vec_len;
 
-use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+use crate::utils::errors::TextForgeError;
 
 /// RTL - Rotate Left
 ///

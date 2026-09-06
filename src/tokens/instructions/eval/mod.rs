@@ -93,7 +93,7 @@ impl InstructionMethods for Eval {
             }
         }
 
-        Ok(input.into())
+        Ok(input)
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

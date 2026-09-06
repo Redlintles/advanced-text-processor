@@ -7,7 +7,7 @@ use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
     utils::{
-        errors::{TextForgeError, TextForgeErrorCode},
+        errors::TextForgeError,
         validations::check_vec_len,
     },
 };

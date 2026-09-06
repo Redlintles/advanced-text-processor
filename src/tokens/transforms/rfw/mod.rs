@@ -81,7 +81,7 @@ impl InstructionMethods for Rfw {
         _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         match input {
-            Cow::Borrowed(v) => Ok(self.pattern.replace(v, &self.text_to_replace).into()),
+            Cow::Borrowed(v) => Ok(self.pattern.replace(v, &self.text_to_replace)),
             Cow::Owned(v) => match self.pattern.replace(&v, &self.text_to_replace) {
                 Cow::Borrowed(_) => Ok(Cow::Owned(v)),
                 Cow::Owned(result) => Ok(Cow::Owned(result)),

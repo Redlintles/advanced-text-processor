@@ -743,7 +743,7 @@ impl TextForgeProcessorMethods for TextForgeProcessor {
         id: &str,
         input: Cow<'a, str>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
-        let mut result = Cow::from(input);
+        let mut result = input;
 
         let tokens = self
             .transforms
