@@ -8,7 +8,10 @@ use regex::Regex;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_vec_len },
+    utils::{
+        errors::{TextForgeError, TextForgeErrorCode},
+        validations::check_vec_len,
+    },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -45,7 +48,10 @@ impl Rfw {
         let pattern = Regex::new(pattern).map_err(|x| x.to_string())?;
         Ok(Rfw {
             text_to_replace: text_to_replace.to_string(),
-            params: vec![pattern.to_string().into(), text_to_replace.to_string().into()],
+            params: vec![
+                pattern.to_string().into(),
+                text_to_replace.to_string().into(),
+            ],
             pattern,
         })
     }
@@ -72,16 +78,14 @@ impl InstructionMethods for Rfw {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         match input {
-            Cow::Borrowed(v) => { Ok(self.pattern.replace(v, &self.text_to_replace).into()) }
-            Cow::Owned(v) => {
-                match self.pattern.replace(&v, &self.text_to_replace) {
-                    Cow::Borrowed(_) => Ok(Cow::Owned(v)),
-                    Cow::Owned(result) => Ok(Cow::Owned(result)),
-                }
-            }
+            Cow::Borrowed(v) => Ok(self.pattern.replace(v, &self.text_to_replace).into()),
+            Cow::Owned(v) => match self.pattern.replace(&v, &self.text_to_replace) {
+                Cow::Borrowed(_) => Ok(Cow::Owned(v)),
+                Cow::Owned(result) => Ok(Cow::Owned(result)),
+            },
         }
     }
 
@@ -99,7 +103,7 @@ impl InstructionMethods for Rfw {
             TextForgeError::new(
                 TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
-                pattern_payload.clone()
+                pattern_payload.clone(),
             )
         })?;
 
@@ -112,7 +116,7 @@ impl InstructionMethods for Rfw {
 
         self.params = vec![
             self.pattern.to_string().into(),
-            self.text_to_replace.to_string().into()
+            self.text_to_replace.to_string().into(),
         ];
 
         Ok(())
@@ -124,10 +128,13 @@ impl InstructionMethods for Rfw {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.pattern.to_string()),
-            TextForgeParamTypes::String(self.text_to_replace.clone()),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::String(self.pattern.to_string()),
+                TextForgeParamTypes::String(self.text_to_replace.clone()),
+            ]
+        );
         Ok(result)
     }
 }

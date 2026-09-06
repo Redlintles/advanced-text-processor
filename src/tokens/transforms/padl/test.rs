@@ -25,7 +25,12 @@ mod tests {
         let t = Padl::new("xy", 3);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "banana"); // len 6 >= 3
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "banana"
+        ); // len 6 >= 3
     }
 
     #[test]
@@ -35,7 +40,12 @@ mod tests {
         let t = Padl::new("xy", 7);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "xbanana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "xbanana"
+        );
     }
 
     #[test]
@@ -45,14 +55,22 @@ mod tests {
         let t = Padl::new("xy", 10);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "xyxybanana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "xyxybanana"
+        );
     }
 
     #[test]
     fn from_params_accepts_text_then_max_len() {
         let mut t = Padl::default();
 
-        let params = vec![TextForgeParamTypes::String("xy".into()), TextForgeParamTypes::Usize(7)];
+        let params = vec![
+            TextForgeParamTypes::String("xy".into()),
+            TextForgeParamTypes::Usize(7),
+        ];
 
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.text, "xy".to_string());
@@ -67,7 +85,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -77,21 +98,17 @@ mod tests {
         // invertido propositalmente
         let params = vec![
             TextForgeParamTypes::Usize(7),
-            TextForgeParamTypes::String("xy".to_string())
+            TextForgeParamTypes::String("xy".to_string()),
         ];
 
         let got = t.from_params(&params);
 
         // parse_args! retorna InvalidParameters com a msg do callsite
-        let expected = Err(
-            crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters(
-                    "Text_to_insert should be of String type".into()
-                ),
-                "",
-                ""
-            )
-        );
+        let expected = Err(crate::utils::errors::TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Text_to_insert should be of String type".into()),
+            "",
+            "",
+        ));
 
         assert_eq!(got, expected);
     }
@@ -174,20 +191,18 @@ mod tests {
 
             let params_as_emitted_by_to_bytecode_today = vec![
                 TextForgeParamTypes::Usize(7),
-                TextForgeParamTypes::String("xy".to_string())
+                TextForgeParamTypes::String("xy".to_string()),
             ];
 
             let got = t.from_params(&params_as_emitted_by_to_bytecode_today);
 
-            let expected = Err(
-                crate::utils::errors::TextForgeError::new(
-                    TextForgeErrorCode::InvalidParameters(
-                        "Text_to_insert should be of String type".into()
-                    ),
-                    "",
-                    ""
-                )
-            );
+            let expected = Err(crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters(
+                    "Text_to_insert should be of String type".into(),
+                ),
+                "",
+                "",
+            ));
 
             assert_eq!(got, expected);
         }

@@ -6,7 +6,7 @@ mod tests {
     use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::dla::Dla;
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
     #[test]
     fn params_sets_index() {
@@ -33,7 +33,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja vermelha azul".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("banana laranja vermelha azul".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "bana"
         );
     }
@@ -43,7 +45,12 @@ mod tests {
         let t = Dla::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("after".into(), Some(&mut ctx)).unwrap().to_string(), "a");
+        assert_eq!(
+            t.transform("after".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "a"
+        );
     }
 
     #[test]
@@ -53,7 +60,12 @@ mod tests {
         let t = Dla::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ábcdef".into(), Some(&mut ctx)).unwrap().to_string(), "áb");
+        assert_eq!(
+            t.transform("ábcdef".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "áb"
+        );
     }
 
     #[test]
@@ -76,15 +88,13 @@ mod tests {
 
         let got = t.transform(input.into(), Some(&mut ctx));
 
-        let expected = Err(
-            TextForgeError::new(
-                TextForgeErrorCode::IndexOutOfRange(
-                    "Index is out of range for the desired string".into()
-                ),
-                t.to_textforge_line(),
-                input.to_string()
-            )
-        );
+        let expected = Err(TextForgeError::new(
+            TextForgeErrorCode::IndexOutOfRange(
+                "Index is out of range for the desired string".into(),
+            ),
+            t.to_textforge_line(),
+            input.to_string(),
+        ));
 
         assert_eq!(got, expected);
     }
@@ -96,7 +106,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -115,13 +128,11 @@ mod tests {
 
         let got = t.from_params(&params);
 
-        let expected = Err(
-            crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
-                "",
-                ""
-            )
-        );
+        let expected = Err(crate::utils::errors::TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
+            "",
+            "",
+        ));
 
         assert_eq!(got, expected);
     }

@@ -8,7 +8,7 @@ use html_escape::encode_safe;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, validations::check_vec_len },
+    utils::{errors::TextForgeError, validations::check_vec_len},
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -47,12 +47,12 @@ impl InstructionMethods for Htmle {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         match input {
-            Cow::Borrowed(s) => { Ok(encode_safe(s)) }
+            Cow::Borrowed(s) => Ok(encode_safe(s)),
 
-            Cow::Owned(s) => { Ok(Cow::Owned(encode_safe(&s).into_owned())) }
+            Cow::Owned(s) => Ok(Cow::Owned(encode_safe(&s).into_owned())),
         }
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

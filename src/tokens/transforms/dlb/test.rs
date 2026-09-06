@@ -33,7 +33,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja vermelha azul".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("banana laranja vermelha azul".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "ana laranja vermelha azul"
         );
     }
@@ -44,7 +46,12 @@ mod tests {
         let t = Dlb::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("abcdef".into(), Some(&mut ctx)).unwrap().to_string(), "abcdef");
+        assert_eq!(
+            t.transform("abcdef".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "abcdef"
+        );
     }
 
     #[test]
@@ -54,7 +61,12 @@ mod tests {
         let t = Dlb::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ábcdef".into(), Some(&mut ctx)).unwrap().to_string(), "bcdef");
+        assert_eq!(
+            t.transform("ábcdef".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "bcdef"
+        );
     }
 
     #[test]
@@ -74,7 +86,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -93,13 +108,11 @@ mod tests {
 
         let got = t.from_params(&params);
 
-        let expected = Err(
-            crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
-                "",
-                ""
-            )
-        );
+        let expected = Err(crate::utils::errors::TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
+            "",
+            "",
+        ));
 
         assert_eq!(got, expected);
     }

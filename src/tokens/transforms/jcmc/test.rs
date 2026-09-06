@@ -26,8 +26,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t
-                .transform("banana laranja cheia de canja".into(), Some(&mut ctx))
+            t.transform("banana laranja cheia de canja".into(), Some(&mut ctx))
                 .unwrap()
                 .to_string(),
             "bananaLaranjaCheiaDeCanja"
@@ -39,7 +38,12 @@ mod tests {
         let t = Jcmc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "banana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "banana"
+        );
     }
 
     #[test]
@@ -49,10 +53,12 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t
-                .transform("  banana   laranja \n cheia\tde   canja  ".into(), Some(&mut ctx))
-                .unwrap()
-                .to_string(),
+            t.transform(
+                "  banana   laranja \n cheia\tde   canja  ".into(),
+                Some(&mut ctx)
+            )
+            .unwrap()
+            .to_string(),
             "bananaLaranjaCheiaDeCanja"
         );
     }
@@ -62,7 +68,10 @@ mod tests {
         let t = Jcmc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(
+            t.transform("".into(), Some(&mut ctx)).unwrap().to_string(),
+            ""
+        );
     }
 
     #[test]
@@ -73,7 +82,9 @@ mod tests {
         // depende do capitalize() do seu projeto, mas normalmente:
         // "maçã" -> "Maçã"
         assert_eq!(
-            t.transform("maçã com canela".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("maçã com canela".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "maçãComCanela"
         );
     }
@@ -93,7 +104,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, transforms::extend_string, validations::check_vec_len },
+    utils::{errors::TextForgeError, transforms::extend_string, validations::check_vec_len},
 };
 
 use crate::parse_args;
@@ -60,7 +60,7 @@ impl InstructionMethods for Padl {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         let character_count = input.chars().count();
 
@@ -88,10 +88,13 @@ impl InstructionMethods for Padl {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.text.clone()),
-            TextForgeParamTypes::Usize(self.max_len),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::String(self.text.clone()),
+                TextForgeParamTypes::Usize(self.max_len),
+            ]
+        );
         Ok(result)
     }
 }

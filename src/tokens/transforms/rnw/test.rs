@@ -43,7 +43,12 @@ mod tests {
         let t = Rnw::new("a", "b", 2).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa".into(), Some(&mut ctx)).unwrap().to_string(), "aabaa");
+        assert_eq!(
+            t.transform("aaaaa".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "aabaa"
+        );
     }
 
     #[test]
@@ -51,7 +56,12 @@ mod tests {
         let t = Rnw::new("a", "b", 0).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa".into(), Some(&mut ctx)).unwrap().to_string(), "baaaa");
+        assert_eq!(
+            t.transform("aaaaa".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "baaaa"
+        );
     }
 
     #[test]
@@ -59,7 +69,12 @@ mod tests {
         let t = Rnw::new("a", "b", 999).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa".into(), Some(&mut ctx)).unwrap().to_string(), "aaaaa");
+        assert_eq!(
+            t.transform("aaaaa".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "aaaaa"
+        );
     }
 
     #[test]
@@ -67,7 +82,12 @@ mod tests {
         let t = Rnw::new("z", "b", 0).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa".into(), Some(&mut ctx)).unwrap().to_string(), "aaaaa");
+        assert_eq!(
+            t.transform("aaaaa".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "aaaaa"
+        );
     }
 
     #[test]
@@ -77,7 +97,12 @@ mod tests {
         let t = Rnw::new("aa", "X", 1).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaaa".into(), Some(&mut ctx)).unwrap().to_string(), "aaXaa");
+        assert_eq!(
+            t.transform("aaaaaa".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "aaXaa"
+        );
     }
 
     #[test]
@@ -87,7 +112,9 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("maçã maçã".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("maçã maçã".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "maçã maçA"
         );
     }
@@ -103,7 +130,10 @@ mod tests {
         let t = Rnw::new("", "X", 0).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        let out = t.transform("ab".into(), Some(&mut ctx)).unwrap().to_string();
+        let out = t
+            .transform("ab".into(), Some(&mut ctx))
+            .unwrap()
+            .to_string();
         assert!(out.starts_with('X'));
     }
 
@@ -114,7 +144,7 @@ mod tests {
         let params = vec![
             TextForgeParamTypes::String("a+".to_string()),
             TextForgeParamTypes::String("b".to_string()),
-            TextForgeParamTypes::Usize(2)
+            TextForgeParamTypes::Usize(2),
         ];
 
         assert_eq!(t.from_params(&params), Ok(()));
@@ -129,12 +159,15 @@ mod tests {
 
         let params = vec![
             TextForgeParamTypes::String("a+".to_string()),
-            TextForgeParamTypes::String("b".to_string())
+            TextForgeParamTypes::String("b".to_string()),
         ];
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]
@@ -144,18 +177,16 @@ mod tests {
         let params = vec![
             TextForgeParamTypes::Usize(7), // deveria ser String(pattern)
             TextForgeParamTypes::String("b".to_string()),
-            TextForgeParamTypes::Usize(2)
+            TextForgeParamTypes::Usize(2),
         ];
 
         let got = t.from_params(&params);
 
-        let expected = Err(
-            crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Pattern should be of string type".into()),
-                "",
-                ""
-            )
-        );
+        let expected = Err(crate::utils::errors::TextForgeError::new(
+            TextForgeErrorCode::InvalidParameters("Pattern should be of string type".into()),
+            "",
+            "",
+        ));
 
         assert_eq!(got, expected);
     }
@@ -167,18 +198,16 @@ mod tests {
         let params = vec![
             TextForgeParamTypes::String("(".to_string()),
             TextForgeParamTypes::String("b".to_string()),
-            TextForgeParamTypes::Usize(2)
+            TextForgeParamTypes::Usize(2),
         ];
 
         let got = t.from_params(&params);
 
-        let expected = Err(
-            crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
-                "sslt",
-                "(".to_string()
-            )
-        );
+        let expected = Err(crate::utils::errors::TextForgeError::new(
+            TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
+            "sslt",
+            "(".to_string(),
+        ));
 
         assert_eq!(got, expected);
     }

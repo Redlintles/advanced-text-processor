@@ -6,7 +6,10 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, validations::{ check_index_against_input, check_vec_len } },
+    utils::{
+        errors::TextForgeError,
+        validations::{check_index_against_input, check_vec_len},
+    },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -55,13 +58,17 @@ impl InstructionMethods for Tucs {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         check_index_against_input(self.index, input.as_ref())?;
         let result: String = input
             .char_indices()
             .map(|(i, c)| {
-                if i == self.index { c.to_uppercase().to_string() } else { c.to_string() }
+                if i == self.index {
+                    c.to_uppercase().to_string()
+                } else {
+                    c.to_string()
+                }
             })
             .collect();
         Ok(result.into())
@@ -84,9 +91,8 @@ impl InstructionMethods for Tucs {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::Usize(self.index),
-        ]);
+        let result: Vec<u8> =
+            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index),]);
         Ok(result)
     }
 }

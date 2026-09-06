@@ -41,7 +41,7 @@ impl InstructionMethods for Rev {
         &self,
         input: Cow<'a, str>,
         _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<Cow<'a,str>, TextForgeError> {
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         Ok(input.chars().rev().collect())
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

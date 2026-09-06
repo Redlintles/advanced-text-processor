@@ -23,7 +23,10 @@ mod tests {
         let token = Ifdc::new("xy", TokenWrapper::default());
 
         let a = token.transform("abcxydef".into(), Some(&mut ctx));
-        assert!(a.is_ok(), "contains -> inner executed (at least does not fail)");
+        assert!(
+            a.is_ok(),
+            "contains -> inner executed (at least does not fail)"
+        );
 
         let b = token.transform("banana".into(), Some(&mut ctx)).unwrap();
         assert_eq!(b, "banana".to_string(), "does nothing when not contains");
@@ -43,13 +46,15 @@ mod tests {
         #[test]
         fn from_params_rejects_wrong_len() {
             let mut t = Ifdc::default();
-            let params: Vec<TextForgeParamTypes> = vec![
-                TextForgeParamTypes::String("xy".to_string())
-            ];
+            let params: Vec<TextForgeParamTypes> =
+                vec![TextForgeParamTypes::String("xy".to_string())];
 
             let err = t.from_params(&params).unwrap_err();
 
-            assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+            assert!(matches!(
+                err.error_code,
+                TextForgeErrorCode::InvalidArgumentNumber(_)
+            ));
         }
 
         #[test]
@@ -58,7 +63,7 @@ mod tests {
             let params: Vec<TextForgeParamTypes> = vec![
                 TextForgeParamTypes::String("xy".to_string()),
                 // depende de como você representa tokens no bytecode:
-                TextForgeParamTypes::Token(TokenWrapper::default())
+                TextForgeParamTypes::Token(TokenWrapper::default()),
             ];
 
             assert_eq!(t.from_params(&params), Ok(()));

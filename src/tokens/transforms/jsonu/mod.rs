@@ -8,7 +8,7 @@ use crate::tokens::InstructionMethods;
 
 use crate::parser::params::TextForgeParamTypes;
 
-use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 use crate::utils::validations::check_vec_len;
 
 /// Jsonu - Json Unescape
@@ -47,17 +47,15 @@ impl InstructionMethods for Jsonu {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
-        let result = serde_json
-            ::from_str::<String>(input.as_ref())
-            .map_err(|_| {
-                TextForgeError::new(
-                    TextForgeErrorCode::TextParsingError("Failed to deserialize to JSON".into()),
-                    "serde_json::from_str",
-                    input.to_string()
-                )
-            })?;
+        let result = serde_json::from_str::<String>(input.as_ref()).map_err(|_| {
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed to deserialize to JSON".into()),
+                "serde_json::from_str",
+                input.to_string(),
+            )
+        })?;
         Ok(result.into())
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

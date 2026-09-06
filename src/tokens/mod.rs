@@ -22,7 +22,7 @@ pub trait InstructionMethods: InstructionMethodsClone + Send + Sync {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        context: Option<&mut GlobalExecutionContext>
+        context: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError>;
 
     /// get_string_repr
@@ -45,7 +45,10 @@ pub trait InstructionMethodsClone {
     fn clone_box(&self) -> Box<dyn InstructionMethods>;
 }
 
-impl<T> InstructionMethodsClone for T where T: 'static + InstructionMethods + Clone {
+impl<T> InstructionMethodsClone for T
+where
+    T: 'static + InstructionMethods + Clone,
+{
     fn clone_box(&self) -> Box<dyn InstructionMethods> {
         Box::new(self.clone())
     }

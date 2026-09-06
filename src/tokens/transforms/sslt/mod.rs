@@ -10,7 +10,7 @@ use crate::parser::params::TextForgeParamTypes;
 use crate::tokens::InstructionMethods;
 use crate::utils::validations::check_vec_len;
 
-use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
 /// SSLT - Split Select
 ///
@@ -37,7 +37,11 @@ pub struct Sslt {
 impl Sslt {
     pub fn new(pattern: &str, index: usize) -> Result<Self, TextForgeError> {
         let pattern = Regex::new(pattern).map_err(|e| {
-            TextForgeError::new(TextForgeErrorCode::TextParsingError(e.to_string().into()), "", "")
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError(e.to_string().into()),
+                "",
+                "",
+            )
         })?;
         Ok(Sslt {
             index,
@@ -67,18 +71,19 @@ impl InstructionMethods for Sslt {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
-        let result = self.pattern
+        let result = self
+            .pattern
             .split(input.as_ref())
             .nth(self.index)
             .ok_or_else(|| {
                 TextForgeError::new(
                     TextForgeErrorCode::IndexOutOfRange(
-                        "Index does not exist in the splitted vec".into()
+                        "Index does not exist in the splitted vec".into(),
                     ),
                     self.to_textforge_line(),
-                    input.to_string()
+                    input.to_string(),
                 )
             })?
             .to_string();
@@ -100,7 +105,7 @@ impl InstructionMethods for Sslt {
             TextForgeError::new(
                 TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "sslt",
-                pattern_payload.clone()
+                pattern_payload.clone(),
             )
         })?;
 
@@ -117,10 +122,13 @@ impl InstructionMethods for Sslt {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::String(self.pattern.to_string()),
-            TextForgeParamTypes::Usize(self.index),
-        ]);
+        let result: Vec<u8> = to_bytecode!(
+            self.get_opcode(),
+            [
+                TextForgeParamTypes::String(self.pattern.to_string()),
+                TextForgeParamTypes::Usize(self.index),
+            ]
+        );
         Ok(result)
     }
 }

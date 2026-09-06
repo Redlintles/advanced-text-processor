@@ -4,7 +4,7 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::parser::params::TextForgeParamTypes;
-    use crate::tokens::{ InstructionMethods, transforms::tucs::Tucs };
+    use crate::tokens::{InstructionMethods, transforms::tucs::Tucs};
     use crate::utils::errors::TextForgeErrorCode;
 
     #[test]
@@ -24,7 +24,12 @@ mod tests {
         let t = Tucs::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "bAnana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "bAnana"
+        );
     }
 
     #[test]
@@ -43,7 +48,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     // ============================

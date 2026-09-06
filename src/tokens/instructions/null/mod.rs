@@ -4,7 +4,7 @@ use crate::{
     context::execution_context::GlobalExecutionContext,
     parser::params::TextForgeParamTypes,
     tokens::InstructionMethods,
-    utils::{ errors::TextForgeError, validations::check_vec_len },
+    utils::{errors::TextForgeError, validations::check_vec_len},
 };
 
 #[cfg(feature = "test_access")]
@@ -35,7 +35,7 @@ impl InstructionMethods for Null {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         Ok(input)
     }
