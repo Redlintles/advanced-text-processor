@@ -1,14 +1,19 @@
-use std::{borrow::Cow, collections::HashMap};
+use std::{ borrow::Cow, collections::HashMap };
 
-use evalexpr::{ContextWithMutableVariables, HashMapContext, Value};
+use evalexpr::{ ContextWithMutableVariables, HashMapContext, Value };
 
 use crate::{
-    api::expr,
-    context::execution_context::{GlobalContextMethods, GlobalExecutionContext},
-    context::execution_context::{VarEntry, VarValues},
+    context::execution_context::{
+        GlobalContextMethods,
+        GlobalExecutionContext,
+        VarEntry,
+        VarValues,
+    },
     parser::params::TextForgeParamTypes,
-    utils::errors::{TextForgeError, TextForgeErrorCode::InvalidExprError},
-    utils::regexes::INTERP_RE,
+    utils::{
+        errors::{ TextForgeError, TextForgeErrorCode::{ self, InvalidExprError } },
+        regexes::INTERP_RE,
+    },
 };
 
 /// Builds a snapshot evalexpr context from the current variable table, so
@@ -27,29 +32,32 @@ use crate::{
 /// values. Referencing one in an expression will surface as evalexpr's own
 /// "identifier not found" error, which is an acceptable failure mode here.
 pub fn build_eval_context(
-    vars: &HashMap<String, VarEntry>,
+    vars: &HashMap<String, VarEntry>
 ) -> Result<HashMapContext, TextForgeError> {
     let mut ctx = HashMapContext::new();
 
     for (name, entry) in vars.iter() {
         let value = match &entry.value {
             VarValues::Usize(n) => Value::from_int(*n as i64),
-            VarValues::String(s) => match s.parse::<i64>() {
-                Ok(i) => Value::from_int(i),
-                Err(_) => Value::from(s.clone()),
-            },
+            VarValues::String(s) =>
+                match s.parse::<i64>() {
+                    Ok(i) => Value::from_int(i),
+                    Err(_) => Value::from(s.clone()),
+                }
             VarValues::Token(_) => {
                 continue;
             }
         };
 
-        ctx.set_value(name.clone(), value).map_err(|e| {
-            TextForgeError::new(
-                InvalidExprError(Cow::from(e.to_string())),
-                Cow::from("eval.build_eval_context"),
-                Cow::from(name.clone()),
-            )
-        })?;
+        ctx
+            .set_value(name.clone(), value)
+            .map_err(|e| {
+                TextForgeError::new(
+                    InvalidExprError(Cow::from(e.to_string())),
+                    Cow::from("eval.build_eval_context"),
+                    Cow::from(name.clone())
+                )
+            })?;
     }
 
     Ok(ctx)
@@ -93,14 +101,15 @@ pub fn value_to_plain_string(value: &Value) -> String {
 ///   coincidência — evita loop em variáveis que se referenciam entre si.
 pub fn interpolate(
     input: &str,
-    context: &GlobalExecutionContext,
+    context: &GlobalExecutionContext
 ) -> Result<String, TextForgeError> {
     // Fast path: nenhum dos quatro delimitadores aparece de forma nenhuma
     // (completa, solta ou escapada) — nada a fazer.
-    if !input.contains("{{")
-        && !input.contains("}}")
-        && !input.contains("[[")
-        && !input.contains("]]")
+    if
+        !input.contains("{{") &&
+        !input.contains("}}") &&
+        !input.contains("[[") &&
+        !input.contains("]]")
     {
         return Ok(input.to_string());
     }
@@ -132,4 +141,23 @@ pub fn interpolate(
 
     out.push_str(&input[last_end..]);
     Ok(out)
+}
+/// Avalia uma expressão evalexpr contra as variáveis do contexto atual e
+/// devolve o resultado como texto plano — sem as aspas literais que o
+/// Display do evalexpr adiciona em Value::String. Usado pela instruction
+/// `eval` e pela interpolação `[[expr]]` em strings do pipeline.
+pub fn expr(expression: &str, context: &GlobalExecutionContext) -> Result<String, TextForgeError> {
+    let eval_ctx = build_eval_context(context.get_all_vars())?;
+
+    let result = evalexpr
+        ::eval_with_context(expression, &eval_ctx)
+        .map_err(|e| {
+            TextForgeError::new(
+                TextForgeErrorCode::InvalidExprError(Cow::from(e.to_string())),
+                Cow::from("api::expr"),
+                Cow::from(expression.to_string())
+            )
+        })?;
+
+    Ok(value_to_plain_string(&result))
 }
