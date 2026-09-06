@@ -4,8 +4,8 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::parser::params::TextForgeParamTypes;
-    use crate::tokens::{ InstructionMethods, transforms::rtr::Rtr };
-    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+    use crate::tokens::{InstructionMethods, transforms::rtr::Rtr};
+    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
 
     #[test]
     fn get_string_repr_is_rtr() {
@@ -24,7 +24,12 @@ mod tests {
         let t = Rtr::new(2);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "nabana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "nabana"
+        );
     }
 
     #[test]
@@ -32,7 +37,12 @@ mod tests {
         let t = Rtr::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "banana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "banana"
+        );
     }
 
     #[test]
@@ -40,7 +50,12 @@ mod tests {
         let t = Rtr::new(6);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "banana");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "banana"
+        );
     }
 
     #[test]
@@ -48,7 +63,12 @@ mod tests {
         let t = Rtr::new(7); // 7 % 6 = 1
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "abanan");
+        assert_eq!(
+            t.transform("banana".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "abanan"
+        );
     }
 
     #[test]
@@ -56,7 +76,10 @@ mod tests {
         let t = Rtr::new(999);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("x".into(), Some(&mut ctx)).unwrap().to_string(), "x");
+        assert_eq!(
+            t.transform("x".into(), Some(&mut ctx)).unwrap().to_string(),
+            "x"
+        );
     }
 
     #[test]
@@ -65,7 +88,12 @@ mod tests {
         let t = Rtr::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("áβç".into(), Some(&mut ctx)).unwrap().to_string(), "çáβ");
+        assert_eq!(
+            t.transform("áβç".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "çáβ"
+        );
     }
 
     #[test]
@@ -96,7 +124,10 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
+        assert!(matches!(
+            err.error_code,
+            TextForgeErrorCode::InvalidArgumentNumber(_)
+        ));
     }
 
     #[test]

@@ -89,9 +89,11 @@ impl InstructionMethods for Rcw {
             return Ok(input);
         }
         match input {
-            Cow::Borrowed(v) => Ok(self
-                .pattern
-                .replacen(v.as_ref(), self.count, &self.text_to_replace)),
+            Cow::Borrowed(v) => {
+                Ok(self
+                    .pattern
+                    .replacen(v.as_ref(), self.count, &self.text_to_replace))
+            }
 
             Cow::Owned(v) => {
                 match self
