@@ -62,7 +62,7 @@ mod tests {
         let t = Jpsc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("*".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]

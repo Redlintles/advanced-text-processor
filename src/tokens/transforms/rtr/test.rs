@@ -75,15 +75,7 @@ mod tests {
 
         let got = t.transform("".into(), Some(&mut ctx));
 
-        let expected = Err(
-            TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Input is empty".into()),
-                t.to_textforge_line(),
-                "\" \""
-            )
-        );
-
-        assert_eq!(got, expected);
+        assert_eq!(got, Ok("".into()));
     }
 
     #[test]

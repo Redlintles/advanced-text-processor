@@ -24,7 +24,7 @@ use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 ///
 /// let token = Sslt::new("_", 1).unwrap();
 ///
-/// assert_eq!(token.transform("foobar_foo_bar_bar_foo_barfoo", None), Ok("foo".to_string()));
+/// assert_eq!(token.transform("foobar_foo_bar_bar_foo_barfoo".into(),None).unwrap().to_string(), "foo");
 ///
 /// ```
 #[derive(Clone)]

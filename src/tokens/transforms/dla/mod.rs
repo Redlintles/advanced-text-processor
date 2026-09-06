@@ -22,7 +22,7 @@ use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 ///
 /// let token = Dla::new(3);
 ///
-/// assert_eq!(token.transform("banana laranja vermelha azul", None), Ok("bana".to_string()))
+/// assert_eq!(token.transform("banana laranja vermelha azul".into(),None).unwrap().to_string(), "bana")
 ///
 /// ```
 #[derive(Clone, Default)]

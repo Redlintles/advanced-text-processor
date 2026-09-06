@@ -25,7 +25,7 @@ use crate::utils::validations::check_vec_len;
 ///
 /// let expected_output = "{banana: '10'}".to_string();
 ///
-/// assert_eq!(token.transform("\"{banana: '10'}\"", None), Ok(expected_output));
+/// assert_eq!(token.transform("\"{banana: '10'}\"".into(),None).unwrap().to_string(), expected_output);
 /// ```
 
 #[derive(Clone, Default)]

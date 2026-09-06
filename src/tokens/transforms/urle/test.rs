@@ -61,7 +61,7 @@ mod tests {
         let t = Urle::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(r"[a-z\sA-Z0-9]*".into(), Some(&mut ctx)).unwrap().to_string(), "");
+        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]

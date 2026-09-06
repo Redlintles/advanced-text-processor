@@ -25,7 +25,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Padr::new("xy", 7);
 ///
-/// assert_eq!(token.transform("banana", None), Ok("bananax".to_string()));
+/// assert_eq!(token.transform("banana".into(),None).unwrap().to_string(), "bananax");
 /// ```
 #[derive(Clone, Default)]
 pub struct Padr {

@@ -20,7 +20,7 @@ use crate::parser::params::TextForgeParamTypes;
 /// use textforge::tokens::{InstructionMethods, transforms::ate::Ate};
 ///
 /// let token = Ate::new(" bar");
-/// assert_eq!(token.transform("foo", None), Ok("foo bar".to_string()));
+/// assert_eq!(token.transform("foo".into(),None).unwrap().to_string(), "foo bar");
 /// ```
 
 #[derive(Clone, Default)]

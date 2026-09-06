@@ -25,7 +25,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Htmlu::default();
 ///
-/// assert_eq!(token.transform("&lt;div&gt;banana&lt;/div&gt;", None), Ok("<div>banana</div>".to_string()));
+/// assert_eq!(token.transform("&lt;div&gt;banana&lt;/div&gt;".into(),None).unwrap().to_string(), "<div>banana</div>");
 /// ```
 #[derive(Clone, Default)]
 pub struct Htmlu {

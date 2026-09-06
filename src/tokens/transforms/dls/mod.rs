@@ -24,7 +24,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Dls::new(3);
 ///
-/// assert_eq!(token.transform("banana", None), Ok("banna".to_string()));
+/// assert_eq!(token.transform("banana".into(),None).unwrap().to_string(), "banna");
 /// ```
 #[derive(Clone, Default)]
 pub struct Dls {

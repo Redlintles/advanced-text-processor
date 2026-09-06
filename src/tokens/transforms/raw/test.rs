@@ -78,7 +78,7 @@ mod tests {
         assert_eq!(t.pattern.as_str(), "a+");
         assert_eq!(t.text_to_replace, "b".to_string());
         assert_eq!(
-            t.transform(r"[a-z\sA-Z0-9]*".into(), Some(&mut ctx)).unwrap().to_string(),
+            t.transform("aaaa".into(), Some(&mut ctx)).unwrap().to_string(),
             "b".to_string()
         );
     }

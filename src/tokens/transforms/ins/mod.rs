@@ -21,7 +21,7 @@ use crate::{ tokens::InstructionMethods, utils::errors::{ TextForgeError, TextFo
 ///
 /// let token = Ins::new(2,"laranja");
 ///
-/// assert_eq!(token.transform("banana", None), Ok("banlaranjaana".to_string()));
+/// assert_eq!(token.transform("banana".into(),None).unwrap().to_string(), "banlaranjaana");
 /// ```
 #[derive(Clone, Default)]
 pub struct Ins {

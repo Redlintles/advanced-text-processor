@@ -34,8 +34,8 @@ use crate::parser::params::TextForgeParamTypes;
 ///         None
 ///     )
 /// );
-/// assert_eq!(token.transform("larryxy", None), Ok("laranjalarryxy".to_string())); // Adds laranja to the beginning
-/// assert_eq!(token.transform("banana", None), Ok("banana".to_string())); // Does nothing
+/// assert_eq!(token.transform("larryxy".into(), None).unwrap().to_string(), "laranjalarryxy"); // Adds laranja to the beginning
+/// assert_eq!(token.transform("banana".into(), None).unwrap().to_string(), "banana"); // Does nothing
 ///
 /// ```
 #[derive(Clone, Default)]

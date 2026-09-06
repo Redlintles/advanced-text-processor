@@ -22,7 +22,7 @@ use crate::utils::errors::TextForgeError;
 ///
 /// let token = Slt::new(1,9999).unwrap();
 ///
-/// assert_eq!(token.transform("banàna", None), Ok("anàna".to_string()));
+/// assert_eq!(token.transform("banàna".into(),None).unwrap().to_string(), "anàna");
 ///
 ///
 /// ```

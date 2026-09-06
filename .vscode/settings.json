@@ -16,8 +16,12 @@
     },
 
     "TextForge - Transform into Cow": {
-      "find": "t\\.transform\\((\"?[^,]*\"?),",
-      "replace": "t.transform($1.into(),"
+      "find": "\\.transform\\((\"?[^,]*\"?),",
+      "replace": ".transform($1.into(),"
+    },
+    "TextForge - Transform into Cow unwrap": {
+      "find": "\\.transform\\((\"?[^,]*\"?),\\s?None\\)",
+      "replace": ".transform($1.into(),None).unwrap().to_string()"
     }
   },
 
@@ -26,6 +30,7 @@
       "rules": [
         "TextForge - Remove Ok to_string",
         "TextForge - Transform into Cow",
+        "TextForge - Transform into Cow unwrap",
         "TextForge - Remove Ok"
       ]
     }

@@ -8,7 +8,7 @@ use crate::parser::params::TextForgeParamTypes;
 use crate::tokens::InstructionMethods;
 use crate::utils::validations::check_vec_len;
 
-use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
+use crate::utils::errors::{ TextForgeError };
 
 /// RTL - Rotate Left
 ///
@@ -21,7 +21,7 @@ use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 ///
 /// let token = Rtl::new(3);
 ///
-/// assert_eq!(token.transform("banana", None), Ok("anaban".to_string()));
+/// assert_eq!(token.transform("banana".into(),None).unwrap().to_string(), "anaban");
 ///
 /// ```
 #[derive(Clone, Default)]

@@ -30,9 +30,8 @@ pub mod test;
 /// let token = Emj::new("laranja", ",").unwrap();
 ///
 /// assert_eq!(
-///     token.transform("banana laranja banana laranja", None),
-///     Ok("laranja,laranja".to_string())
-/// );
+///     token.transform("banana laranja banana laranja".into(),None).unwrap().to_string(),
+///     "laranja,laranja");
 /// ```
 #[derive(Clone, Debug)]
 pub struct Emj {

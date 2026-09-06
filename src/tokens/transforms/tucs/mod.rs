@@ -22,7 +22,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Tucs::new(1);
 ///
-/// assert_eq!(token.transform("banana", None), Ok("bAnana".to_string()));
+/// assert_eq!(token.transform("banana".into(),None).unwrap().to_string(), "bAnana");
 ///
 /// ```
 

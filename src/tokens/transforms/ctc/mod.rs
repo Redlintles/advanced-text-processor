@@ -29,7 +29,7 @@ use crate::parser::params::TextForgeParamTypes;
 /// use textforge::tokens::{InstructionMethods, transforms::ctc::Ctc};
 ///
 /// let token = Ctc::new(1, 5).unwrap();
-/// assert_eq!(token.transform("bananabananosa", None), Ok("bAnanabananosa".to_string()));
+/// assert_eq!(token.transform("bananabananosa".into(),None).unwrap().to_string(), "bAnanabananosa");
 /// ```
 #[derive(Clone, Default)]
 pub struct Ctc {

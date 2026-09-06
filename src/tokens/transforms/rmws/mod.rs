@@ -22,7 +22,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Rmws::default();
 ///
-/// assert_eq!(token.transform("banana laranja cheia de canja", None), Ok("bananalaranjacheiadecanja".to_string()));
+/// assert_eq!(token.transform("banana laranja cheia de canja".into(),None).unwrap().to_string(), "bananalaranjacheiadecanja");
 /// ```
 ///
 #[derive(Clone, Default)]

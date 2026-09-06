@@ -22,7 +22,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Tlcc::new(1,4).unwrap();
 ///
-/// assert_eq!(token.transform("BANANA", None), Ok("BananA".to_string()));
+/// assert_eq!(token.transform("BANANA".into(),None).unwrap().to_string(), "BananA");
 /// ```
 ///
 #[derive(Clone, Default)]

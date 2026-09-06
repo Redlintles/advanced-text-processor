@@ -22,7 +22,7 @@ use crate::utils::validations::{ check_index_against_input, check_vec_len };
 ///
 /// let token = Dlb::new(3);
 ///
-/// assert_eq!(token.transform("banana laranja vermelha azul", None), Ok("ana laranja vermelha azul".to_string()))
+/// assert_eq!(token.transform("banana laranja vermelha azul".into(),None).unwrap().to_string(), "ana laranja vermelha azul")
 ///
 /// ```
 #[derive(Clone, Default)]

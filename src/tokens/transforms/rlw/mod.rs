@@ -30,7 +30,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Rlw::new(&"a", "b").unwrap();
 ///
-/// assert_eq!(token.transform("aaaaa", None), Ok("aaaab".to_string()));
+/// assert_eq!(token.transform("aaaaa".into(),None).unwrap().to_string(), "aaaab");
 /// ```
 ///
 #[derive(Clone, Debug)]

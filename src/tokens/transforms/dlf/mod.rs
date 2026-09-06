@@ -21,7 +21,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Dlf::default();
 ///
-/// assert_eq!(token.transform("banana", None), Ok("anana".to_string()));
+/// assert_eq!(token.transform("banana".into(),None).unwrap().to_string(), "anana");
 /// ```
 ///
 #[derive(Clone, Default)]

@@ -7,7 +7,7 @@ use crate::context::execution_context::GlobalExecutionContext;
 use crate::parser::params::TextForgeParamTypes;
 
 use crate::utils::validations::check_vec_len;
-use crate::{tokens::InstructionMethods, utils::errors::TextForgeError};
+use crate::{ tokens::InstructionMethods, utils::errors::TextForgeError };
 
 /// Rev - Reverse
 ///
@@ -19,7 +19,7 @@ use crate::{tokens::InstructionMethods, utils::errors::TextForgeError};
 /// use textforge::tokens::{InstructionMethods, transforms::rev::Rev};
 ///
 /// let token = Rev::default();
-/// assert_eq!(token.transform("foobar", None), Ok("raboof".to_string()));
+/// assert_eq!(token.transform("foobar".into(),None).unwrap().to_string(), "raboof");
 /// ``````
 #[derive(Clone, Default)]
 pub struct Rev {
@@ -40,8 +40,8 @@ impl InstructionMethods for Rev {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<Cow<'a,str>, TextForgeError> {
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         Ok(input.chars().rev().collect())
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

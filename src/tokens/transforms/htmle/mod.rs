@@ -25,7 +25,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Htmle::default();
 ///
-/// assert_eq!(token.transform("<div>banana</div>", None), Ok("&lt;div&gt;banana&lt;&#x2F;div&gt;".to_string()));
+/// assert_eq!(token.transform("<div>banana</div>".into(),None).unwrap().to_string(), "&lt;div&gt;banana&lt;&#x2F;div&gt;");
 /// ```
 
 #[derive(Clone, Default)]

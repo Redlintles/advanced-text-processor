@@ -25,7 +25,7 @@ use crate::parser::params::TextForgeParamTypes;
 /// use textforge::tokens::{InstructionMethods, transforms::atb::Atb};
 ///
 /// let token = Atb::new("foo");
-/// assert_eq!(token.transform(" bar", None), Ok("foo bar".to_string()));
+/// assert_eq!(token.transform(" bar".into(), None).unwrap().to_string(), "foo bar");
 /// ```
 #[derive(Clone, Default)]
 pub struct Atb {

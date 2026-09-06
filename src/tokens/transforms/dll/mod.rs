@@ -22,7 +22,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Dll::default();
 ///
-/// assert_eq!(token.transform("banana", None), Ok("banan".to_string()));
+/// assert_eq!(token.transform("banana".into(),None).unwrap().to_string(), "banan");
 /// ```
 ///
 #[derive(Clone, Default)]

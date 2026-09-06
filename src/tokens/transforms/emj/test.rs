@@ -110,7 +110,7 @@ mod tests {
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.pattern.as_str(), r"\d+");
         assert_eq!(t.separator, "-".to_string());
-        assert_eq!(t.transform("a12".into(), Some(&mut ctx)).unwrap().to_string(), "1-2");
+        assert_eq!(t.transform("a1b2c3".into(), Some(&mut ctx)).unwrap().to_string(), "1-2-3");
     }
 
     #[test]

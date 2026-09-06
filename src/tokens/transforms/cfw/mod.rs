@@ -20,7 +20,7 @@ use crate::parser::params::TextForgeParamTypes;
 /// use textforge::tokens::{InstructionMethods, transforms::cfw::Cfw};
 ///
 /// let token = Cfw::default();
-/// assert_eq!(token.transform("foo bar", None), Ok("Foo bar".to_string()));
+/// assert_eq!(token.transform("foo bar".into(),None).unwrap().to_string(), "Foo bar");
 /// ```
 #[derive(Clone, Default)]
 pub struct Cfw {

@@ -22,7 +22,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Jcmc::default();
 ///
-/// assert_eq!(token.transform("banana laranja cheia de canja", None), Ok("bananaLaranjaCheiaDeCanja".to_string()));
+/// assert_eq!(token.transform("banana laranja cheia de canja".into(),None).unwrap().to_string(), "bananaLaranjaCheiaDeCanja");
 /// ```
 ///
 #[derive(Clone, Default)]

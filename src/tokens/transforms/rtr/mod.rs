@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_vec_len },
+    utils::{ errors::{ TextForgeError }, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -21,7 +21,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Rtr::new(2);
 ///
-/// assert_eq!(token.transform("banana", None), Ok("nabana".to_string()));
+/// assert_eq!(token.transform("banana".into(),None).unwrap().to_string(), "nabana");
 ///
 /// ```
 #[derive(Clone, Default)]

@@ -21,7 +21,7 @@ use crate::parser::params::TextForgeParamTypes;
 ///
 /// let token = Tbs::default();
 ///
-/// assert_eq!(token.transform("   banana   ", None), Ok("banana".to_string()));
+/// assert_eq!(token.transform("   banana   ".into(),None).unwrap().to_string(), "banana");
 /// ```
 ///
 #[derive(Clone, Default)]

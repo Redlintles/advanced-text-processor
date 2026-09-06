@@ -20,7 +20,7 @@ use crate::{
 ///
 /// let token = Tucw::new(1);
 ///
-/// assert_eq!(token.transform("banana laranja cheia de canja", None), Ok("banana LARANJA cheia de canja".to_string()));
+/// assert_eq!(token.transform("banana laranja cheia de canja".into(),None).unwrap().to_string(), "banana LARANJA cheia de canja");
 ///
 /// ```
 #[derive(Clone, Default)]

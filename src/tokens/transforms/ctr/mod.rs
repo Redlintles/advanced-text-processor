@@ -29,7 +29,7 @@ use crate::{
 /// ```rust
 /// use textforge::tokens::{InstructionMethods,transforms::ctr::Ctr};
 /// let token = Ctr::new(1,5).unwrap();
-/// assert_eq!(token.transform("foo bar mar", None), Ok("foo Bar Mar".to_string()));
+/// assert_eq!(token.transform("foo bar mar".into(),None).unwrap().to_string(), "foo Bar Mar");
 /// ```
 ///
 #[derive(Clone, Default)]

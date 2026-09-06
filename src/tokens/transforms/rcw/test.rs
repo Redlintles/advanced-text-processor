@@ -55,10 +55,7 @@ mod tests {
         let t = Rcw::new("a", "b", 99).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform(r"[a-z\sA-Z0-9]*".into(), Some(&mut ctx)).unwrap().to_string(),
-            "bb"
-        );
+        assert_eq!(t.transform("aa".into(), Some(&mut ctx)).unwrap().to_string(), "bb");
     }
 
     #[test]

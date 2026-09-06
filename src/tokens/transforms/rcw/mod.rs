@@ -30,7 +30,7 @@ use crate::utils::validations::check_vec_len;
 ///
 /// let token = Rcw::new(&"a", "b", 3).unwrap();
 ///
-/// assert_eq!(token.transform("aaaaa", None), Ok("bbbaa".to_string()));
+/// assert_eq!(token.transform("aaaaa".into(), None).unwrap().to_string(), "bbbaa");
 /// ```
 ///
 #[derive(Clone, Debug)]
