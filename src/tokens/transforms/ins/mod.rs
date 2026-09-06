@@ -7,10 +7,7 @@ use crate::context::execution_context::GlobalExecutionContext;
 use crate::parser::params::TextForgeParamTypes;
 
 use crate::utils::validations::check_vec_len;
-use crate::{
-    tokens::InstructionMethods,
-    utils::errors::{TextForgeError, TextForgeErrorCode},
-};
+use crate::{ tokens::InstructionMethods, utils::errors::{ TextForgeError, TextForgeErrorCode } };
 /// Ins - Insert
 ///
 /// Inserts `text` after `index` position in `input`
@@ -53,11 +50,11 @@ impl InstructionMethods for Ins {
         format!("ins {} {};\n", self.index, self.text_to_insert).into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         if self.index > input.chars().count() {
             return Err(
                 TextForgeError::new(
@@ -83,7 +80,7 @@ impl InstructionMethods for Ins {
 
         let result = format!("{}{}{}", before, self.text_to_insert, after);
 
-        Ok(result)
+        Ok(result.into())
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         use crate::parse_args;
@@ -91,8 +88,12 @@ impl InstructionMethods for Ins {
         check_vec_len(params, 2, "ins", "")?;
 
         self.index = parse_args!(params, 0, Usize, "Index should be of usize type");
-        self.text_to_insert =
-            parse_args!(params, 1, String, "Text_to_insert should be of String type");
+        self.text_to_insert = parse_args!(
+            params,
+            1,
+            String,
+            "Text_to_insert should be of String type"
+        );
 
         self.params = vec![self.index.into(), self.text_to_insert.to_string().into()];
 
@@ -105,13 +106,10 @@ impl InstructionMethods for Ins {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(
-            self.get_opcode(),
-            [
-                TextForgeParamTypes::Usize(self.index),
-                TextForgeParamTypes::String(self.text_to_insert.clone()),
-            ]
-        );
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::Usize(self.index),
+            TextForgeParamTypes::String(self.text_to_insert.clone()),
+        ]);
         Ok(result)
     }
 }

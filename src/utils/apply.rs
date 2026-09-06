@@ -1,15 +1,17 @@
+use std::borrow::Cow;
+
 use crate::{
     context::execution_context::GlobalExecutionContext,
     parser::resolve_var::TokenWrapper,
-    utils::errors::{ErrorManager, TextForgeError},
+    utils::errors::{ ErrorManager, TextForgeError },
 };
 
-pub fn apply_transform(
+pub fn apply_transform<'a>(
     token: &TokenWrapper,
-    input: &str,
+    input: Cow<'a, str>,
     error_manager: &mut ErrorManager,
-    context: &mut GlobalExecutionContext,
-) -> Result<String, TextForgeError> {
+    context: &mut GlobalExecutionContext
+) -> Result<Cow<'a, str>, TextForgeError> {
     match token.apply_token(input, &mut *context) {
         Ok(x) => Ok(x),
         Err(e) => {

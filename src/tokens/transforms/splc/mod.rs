@@ -40,16 +40,19 @@ impl InstructionMethods for Splc {
         "splc;\n".into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        Ok(input
-            .chars()
-            .map(|c| c.to_string())
-            .collect::<Vec<_>>()
-            .join(" "))
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        Ok(
+            input
+                .chars()
+                .map(|c| c.to_string())
+                .collect::<Vec<_>>()
+                .join(" ")
+                .into()
+        )
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(params, 0, "rmws", "")?;

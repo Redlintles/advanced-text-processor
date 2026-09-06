@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, validations::check_vec_len},
+    utils::{ errors::TextForgeError, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -48,12 +48,12 @@ impl InstructionMethods for Rpt {
         format!("rpt {};\n", self.times).into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        Ok(input.repeat(self.times))
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        Ok(input.repeat(self.times).into())
     }
 
     fn get_string_repr(&self) -> &'static str {
@@ -76,8 +76,9 @@ impl InstructionMethods for Rpt {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> =
-            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.times)]);
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::Usize(self.times),
+        ]);
         Ok(result)
     }
 }

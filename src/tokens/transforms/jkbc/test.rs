@@ -26,8 +26,11 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja cheia de canja", Some(&mut ctx)),
-            Ok("banana-laranja-cheia-de-canja".to_string())
+            t
+                .transform("banana laranja cheia de canja".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "banana-laranja-cheia-de-canja"
         );
     }
 
@@ -36,10 +39,7 @@ mod tests {
         let t = Jkbc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("BaNaNa", Some(&mut ctx)),
-            Ok("banana".to_string())
-        );
+        assert_eq!(t.transform("BaNaNa".into(), Some(&mut ctx)).unwrap().to_string(), "banana");
     }
 
     #[test]
@@ -48,8 +48,11 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("  Banana   LARANJA \n Cheia\tDe   Canja  ", Some(&mut ctx)),
-            Ok("banana-laranja-cheia-de-canja".to_string())
+            t
+                .transform("  Banana   LARANJA \n Cheia\tDe   Canja  ".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "banana-laranja-cheia-de-canja"
         );
     }
 
@@ -58,7 +61,7 @@ mod tests {
         let t = Jkbc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
+        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]
@@ -68,8 +71,8 @@ mod tests {
 
         // unicode + lowercasing (Rust faz lowercase unicode-aware)
         assert_eq!(
-            t.transform("MAÇÃ COM CANELA", Some(&mut ctx)),
-            Ok("maçã-com-canela".to_string())
+            t.transform("MAÇÃ COM CANELA".into(), Some(&mut ctx)).unwrap().to_string(),
+            "maçã-com-canela"
         );
     }
 
@@ -88,10 +91,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

@@ -38,10 +38,7 @@ mod tests {
         let t = Rlw::new("a", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("aaaaa", Some(&mut ctx)),
-            Ok("aaaab".to_string())
-        );
+        assert_eq!(t.transform("aaaaa".into(), Some(&mut ctx)).unwrap().to_string(), "aaaab");
     }
 
     #[test]
@@ -49,10 +46,7 @@ mod tests {
         let t = Rlw::new("z", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("aaaaa", Some(&mut ctx)),
-            Ok("aaaaa".to_string())
-        );
+        assert_eq!(t.transform("aaaaa".into(), Some(&mut ctx)).unwrap().to_string(), "aaaaa");
     }
 
     #[test]
@@ -61,7 +55,7 @@ mod tests {
         let t = Rlw::new("a+", "b").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("aaaaa", Some(&mut ctx)), Ok("b".to_string()));
+        assert_eq!(t.transform(r"[a-z\sA-Z0-9]*".into(), Some(&mut ctx)).unwrap().to_string(), "b");
     }
 
     #[test]
@@ -70,8 +64,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("a1 b22 c333", Some(&mut ctx)),
-            Ok("a1 b22 cX".to_string())
+            t.transform("a1 b22 c333".into(), Some(&mut ctx)).unwrap().to_string(),
+            "a1 b22 cX"
         );
     }
 
@@ -82,8 +76,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("maçã maçã", Some(&mut ctx)),
-            Ok("maçã maçA".to_string())
+            t.transform("maçã maçã".into(), Some(&mut ctx)).unwrap().to_string(),
+            "maçã maçA"
         );
     }
 
@@ -107,7 +101,7 @@ mod tests {
 
             let params = vec![
                 TextForgeParamTypes::String("a+".to_string()),
-                TextForgeParamTypes::String("b".to_string()),
+                TextForgeParamTypes::String("b".to_string())
             ];
 
             assert_eq!(t.from_params(&params), Ok(()));
@@ -123,10 +117,7 @@ mod tests {
 
             let err = t.from_params(&params).unwrap_err();
 
-            assert!(matches!(
-                err.error_code,
-                TextForgeErrorCode::InvalidArgumentNumber(_)
-            ));
+            assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
         }
 
         #[test]
@@ -135,16 +126,20 @@ mod tests {
 
             let params = vec![
                 TextForgeParamTypes::Usize(7), // deveria ser String (pattern)
-                TextForgeParamTypes::String("b".to_string()),
+                TextForgeParamTypes::String("b".to_string())
             ];
 
             let got = t.from_params(&params);
 
-            let expected = Err(crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Pattern should be of string type".into()),
-                "",
-                "",
-            ));
+            let expected = Err(
+                crate::utils::errors::TextForgeError::new(
+                    TextForgeErrorCode::InvalidParameters(
+                        "Pattern should be of string type".into()
+                    ),
+                    "",
+                    ""
+                )
+            );
 
             assert_eq!(got, expected);
         }
@@ -155,16 +150,18 @@ mod tests {
 
             let params = vec![
                 TextForgeParamTypes::String("(".to_string()),
-                TextForgeParamTypes::String("b".to_string()),
+                TextForgeParamTypes::String("b".to_string())
             ];
 
             let got = t.from_params(&params);
 
-            let expected = Err(crate::utils::errors::TextForgeError::new(
-                TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
-                "sslt",
-                "(".to_string(),
-            ));
+            let expected = Err(
+                crate::utils::errors::TextForgeError::new(
+                    TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
+                    "sslt",
+                    "(".to_string()
+                )
+            );
 
             assert_eq!(got, expected);
         }

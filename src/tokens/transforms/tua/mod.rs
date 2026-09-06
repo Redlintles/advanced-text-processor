@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, validations::check_vec_len},
+    utils::{ errors::TextForgeError, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -27,12 +27,15 @@ impl InstructionMethods for Tua {
     fn to_textforge_line(&self) -> Cow<'static, str> {
         "tua;\n".into()
     }
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        Ok(input.to_uppercase())
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        if input.is_empty() {
+            return Ok(input);
+        }
+        Ok(input.to_uppercase().into())
     }
     #[cfg(feature = "bytecode")]
     fn get_opcode(&self) -> u32 {

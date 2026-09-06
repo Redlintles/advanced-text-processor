@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::context::execution_context::GlobalExecutionContext;
 use crate::parser::params::TextForgeParamTypes;
 use crate::utils::validations::check_vec_len;
-use crate::{tokens::InstructionMethods, utils::validations::check_chunk_bound_indexes};
+use crate::{ tokens::InstructionMethods, utils::validations::check_chunk_bound_indexes };
 
 use crate::utils::errors::TextForgeError;
 
@@ -51,11 +51,11 @@ impl InstructionMethods for Slt {
     fn get_string_repr(&self) -> &'static str {
         "slt"
     }
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         let len = input.chars().count();
         let mut end = self.end_index;
 
@@ -63,7 +63,7 @@ impl InstructionMethods for Slt {
             end = len - 1;
         }
 
-        check_chunk_bound_indexes(self.start_index, end, Some(input))?;
+        check_chunk_bound_indexes(self.start_index, end, Some(input.as_ref()))?;
 
         let start_byte = input
             .char_indices()
@@ -78,7 +78,8 @@ impl InstructionMethods for Slt {
             .map(|(i, _)| i)
             .unwrap_or(input.len());
 
-        Ok(input[start_byte..end_byte_exclusive].to_string())
+        let result = input[start_byte..end_byte_exclusive].to_string();
+        Ok(result.into())
     }
 
     fn to_textforge_line(&self) -> Cow<'static, str> {
@@ -102,13 +103,10 @@ impl InstructionMethods for Slt {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(
-            self.get_opcode(),
-            [
-                TextForgeParamTypes::Usize(self.start_index),
-                TextForgeParamTypes::Usize(self.end_index),
-            ]
-        );
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::Usize(self.start_index),
+            TextForgeParamTypes::Usize(self.end_index),
+        ]);
         Ok(result)
     }
 }

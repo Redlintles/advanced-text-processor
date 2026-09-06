@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, validations::check_vec_len},
+    utils::{ errors::TextForgeError, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -38,12 +38,15 @@ impl InstructionMethods for Trs {
         "trs;\n".into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        Ok(String::from(input.trim_end()))
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        if input.is_empty() {
+            return Ok(input);
+        }
+        Ok(String::from(input.trim_end()).into())
     }
 
     fn get_string_repr(&self) -> &'static str {

@@ -26,8 +26,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja", Some(&mut ctx)),
-            Ok("banana%20laranja".to_string())
+            t.transform("banana laranja".into(), Some(&mut ctx)).unwrap().to_string(),
+            "banana%20laranja"
         );
     }
 
@@ -40,7 +40,7 @@ mod tests {
         let expected = "a%3Fb%3Dc%26d%2Fe%3Af".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
     }
 
     #[test]
@@ -53,7 +53,7 @@ mod tests {
         let expected = "a%2Bb%20c".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
     }
 
     #[test]
@@ -61,7 +61,7 @@ mod tests {
         let t = Urle::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
+        assert_eq!(t.transform(r"[a-z\sA-Z0-9]*".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]
@@ -73,7 +73,7 @@ mod tests {
         let expected = "ma%C3%A7%C3%A3%20%F0%9F%8D%8E".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
     }
 
     #[test]
@@ -91,10 +91,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

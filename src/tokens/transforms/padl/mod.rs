@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, transforms::extend_string, validations::check_vec_len},
+    utils::{ errors::TextForgeError, transforms::extend_string, validations::check_vec_len },
 };
 
 use crate::parse_args;
@@ -57,20 +57,20 @@ impl InstructionMethods for Padl {
     fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("padl {} {};\n", self.text, self.max_len).into()
     }
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         let character_count = input.chars().count();
 
         if character_count >= self.max_len {
-            return Ok(input.to_string());
+            return Ok(input);
         }
         let ml = self.max_len - character_count;
         let s = extend_string(&self.text, ml);
 
-        Ok(format!("{}{}", s, input))
+        Ok(format!("{}{}", s, input).into())
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(params, 2, "padl", "")?;
@@ -88,13 +88,10 @@ impl InstructionMethods for Padl {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(
-            self.get_opcode(),
-            [
-                TextForgeParamTypes::String(self.text.clone()),
-                TextForgeParamTypes::Usize(self.max_len),
-            ]
-        );
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::String(self.text.clone()),
+            TextForgeParamTypes::Usize(self.max_len),
+        ]);
         Ok(result)
     }
 }

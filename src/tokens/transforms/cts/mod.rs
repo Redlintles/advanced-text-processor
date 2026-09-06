@@ -6,10 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{
-        transforms::capitalize,
-        validations::{check_index_against_input, check_vec_len},
-    },
+    utils::{ transforms::capitalize, validations::{ check_index_against_input, check_vec_len } },
 };
 
 use crate::utils::errors::TextForgeError;
@@ -55,25 +52,25 @@ impl InstructionMethods for Cts {
     fn get_string_repr(&self) -> &'static str {
         "cts"
     }
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        check_index_against_input(self.index, input)?;
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        check_index_against_input(self.index, &input)?;
         let v = input.split_whitespace().collect::<Vec<_>>();
 
-        Ok(v.iter()
-            .enumerate()
-            .map(|(index, word)| {
-                if index == self.index {
-                    capitalize(word)
-                } else {
-                    word.to_string()
-                }
-            })
-            .collect::<Vec<_>>()
-            .join(" "))
+        Ok(
+            v
+                .iter()
+                .enumerate()
+                .map(|(index, word)| {
+                    if index == self.index { capitalize(word) } else { word.to_string() }
+                })
+                .collect::<Vec<_>>()
+                .join(" ")
+                .into()
+        )
     }
 
     fn to_textforge_line(&self) -> Cow<'static, str> {
@@ -96,8 +93,9 @@ impl InstructionMethods for Cts {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> =
-            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::Usize(self.index),
+        ]);
         Ok(result)
     }
 }

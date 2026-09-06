@@ -6,10 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{
-        errors::TextForgeError,
-        validations::{check_index_against_input, check_vec_len},
-    },
+    utils::{ errors::TextForgeError, validations::{ check_index_against_input, check_vec_len } },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -55,26 +52,22 @@ impl InstructionMethods for Tlcs {
     fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("tlcs {};\n", self.index).into()
     }
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        check_index_against_input(self.index, input)?;
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        check_index_against_input(self.index, input.as_ref())?;
 
         let result: String = input
             .chars()
             .enumerate()
             .map(|(i, c)| {
-                if i == self.index {
-                    c.to_lowercase().to_string()
-                } else {
-                    c.to_string()
-                }
+                if i == self.index { c.to_lowercase().to_string() } else { c.to_string() }
             })
             .collect();
 
-        Ok(result)
+        Ok(result.into())
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
@@ -94,8 +87,9 @@ impl InstructionMethods for Tlcs {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> =
-            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::Usize(self.index),
+        ]);
         Ok(result)
     }
 }

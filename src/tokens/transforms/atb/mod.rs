@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, validations::check_vec_len},
+    utils::{ errors::TextForgeError, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -50,14 +50,14 @@ impl InstructionMethods for Atb {
         format!("atb {};\n", self.text).into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        let mut s = String::from(&self.text);
-        s.push_str(input);
-        Ok(s)
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        let mut s = self.text.clone();
+        s.push_str(&input);
+        Ok(s.into())
     }
 
     fn get_string_repr(&self) -> &'static str {
@@ -85,10 +85,9 @@ impl InstructionMethods for Atb {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(
-            self.get_opcode(),
-            [TextForgeParamTypes::String(self.text.clone()),]
-        );
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::String(self.text.clone()),
+        ]);
         Ok(result)
     }
 }

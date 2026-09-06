@@ -4,7 +4,7 @@ use crate::{
     context::execution_context::GlobalExecutionContext,
     parser::params::TextForgeParamTypes,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, validations::check_vec_len},
+    utils::{ errors::TextForgeError, validations::check_vec_len },
 };
 
 #[cfg(feature = "test_access")]
@@ -32,12 +32,12 @@ impl InstructionMethods for Null {
         Cow::from("null;\n".to_string())
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        Ok(input.to_string())
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        Ok(input)
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

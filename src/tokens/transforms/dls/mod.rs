@@ -6,10 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{
-        errors::TextForgeError,
-        validations::{check_index_against_input, check_vec_len},
-    },
+    utils::{ errors::TextForgeError, validations::{ check_index_against_input, check_vec_len } },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -55,17 +52,19 @@ impl InstructionMethods for Dls {
         format!("dls {};\n", self.index).into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        check_index_against_input(self.index, input)?;
-        Ok(input
-            .chars()
-            .enumerate()
-            .filter_map(|(i, c)| if self.index == i { None } else { Some(c) })
-            .collect())
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        check_index_against_input(self.index, &input)?;
+        Ok(
+            input
+                .chars()
+                .enumerate()
+                .filter_map(|(i, c)| if self.index == i { None } else { Some(c) })
+                .collect()
+        )
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
@@ -85,8 +84,9 @@ impl InstructionMethods for Dls {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> =
-            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.index)]);
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::Usize(self.index),
+        ]);
         Ok(result)
     }
 }

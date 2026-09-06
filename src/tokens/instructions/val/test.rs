@@ -1,14 +1,19 @@
 #[cfg(feature = "test_access")]
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
+
     use crate::context::execution_context::{
-        GlobalContextMethods, GlobalExecutionContext, VarEntry, VarValues,
+        GlobalContextMethods,
+        GlobalExecutionContext,
+        VarEntry,
+        VarValues,
     };
     use crate::parser::params::TextForgeParamTypes;
-    use crate::parser::resolve_var::{TokenWrapper, ValType};
+    use crate::parser::resolve_var::{ TokenWrapper, ValType };
     use crate::tokens::InstructionMethods;
     use crate::tokens::instructions::val::Val;
-    use crate::tokens::transforms::{rfw::Rfw, rpt::Rpt};
+    use crate::tokens::transforms::{ rfw::Rfw, rpt::Rpt };
     use crate::utils::errors::TextForgeErrorCode;
 
     // ============================
@@ -26,7 +31,7 @@ mod tests {
         let mut t = Val::default();
         let params = vec![
             TextForgeParamTypes::String("n".to_string()),
-            TextForgeParamTypes::String("5".to_string()),
+            TextForgeParamTypes::String("5".to_string())
         ];
 
         assert!(t.from_params(&params).is_ok());
@@ -41,7 +46,7 @@ mod tests {
         let mut t = Val::default();
         let params = vec![
             TextForgeParamTypes::String("y".to_string()),
-            TextForgeParamTypes::VarRef("x".to_string()),
+            TextForgeParamTypes::VarRef("x".to_string())
         ];
 
         assert!(t.from_params(&params).is_ok());
@@ -53,10 +58,7 @@ mod tests {
         let params = vec![TextForgeParamTypes::String("n".to_string())];
 
         let err = t.from_params(&params).unwrap_err();
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
@@ -64,14 +66,11 @@ mod tests {
         let mut t = Val::default();
         let params = vec![
             TextForgeParamTypes::Usize(1),
-            TextForgeParamTypes::String("5".to_string()),
+            TextForgeParamTypes::String("5".to_string())
         ];
 
         let err = t.from_params(&params).unwrap_err();
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidParameters(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidParameters(_)));
     }
 
     // ============================
@@ -107,11 +106,12 @@ mod tests {
         // não adiciona esse sufixo — serializar um pipeline com `val` e tentar reler
         // via read_from_text vai falhar. Documenta o formato esperado; falha hoje.
         let mut t = Val::default();
-        t.from_params(&vec![
-            TextForgeParamTypes::String("n".to_string()),
-            TextForgeParamTypes::String("5".to_string()),
-        ])
-        .unwrap();
+        t.from_params(
+            &vec![
+                TextForgeParamTypes::String("n".to_string()),
+                TextForgeParamTypes::String("5".to_string())
+            ]
+        ).unwrap();
 
         assert_eq!(t.to_textforge_line().as_ref(), "val n = 5;\n");
     }
@@ -123,20 +123,19 @@ mod tests {
     #[test]
     fn transform_declares_immutable_string_variable() {
         let mut t = Val::default();
-        t.from_params(&vec![
-            TextForgeParamTypes::String("n".to_string()),
-            TextForgeParamTypes::String("5".to_string()),
-        ])
-        .unwrap();
+        t.from_params(
+            &vec![
+                TextForgeParamTypes::String("n".to_string()),
+                TextForgeParamTypes::String("5".to_string())
+            ]
+        ).unwrap();
 
         let mut ctx = GlobalExecutionContext::new();
-        let result = t.transform("input inalterado", Some(&mut ctx));
+        let result = t.transform("input inalterado".into(), Some(&mut ctx)).unwrap();
 
-        assert_eq!(result, Ok("input inalterado".to_string()));
+        assert_eq!(result.to_string(), "input inalterado");
 
-        let var = ctx
-            .get_var("n")
-            .expect("variável 'n' deveria existir no contexto");
+        let var = ctx.get_var("n").expect("variável 'n' deveria existir no contexto");
         assert!(matches!(&var.value, VarValues::String(s) if s == "5"));
         assert!(!var.mutable, "val deve sempre declarar variável imutável");
     }
@@ -144,61 +143,52 @@ mod tests {
     #[test]
     fn transform_aliases_existing_variable_via_varref() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var(
-            "x",
-            VarEntry {
-                value: VarValues::String("hi".to_string()),
-                mutable: false,
-            },
-        )
-        .unwrap();
+        ctx.add_var("x", VarEntry {
+            value: VarValues::String("hi".to_string()),
+            mutable: false,
+        }).unwrap();
 
         let mut t = Val::default();
-        t.from_params(&vec![
-            TextForgeParamTypes::String("y".to_string()),
-            TextForgeParamTypes::VarRef("x".to_string()),
-        ])
-        .unwrap();
+        t.from_params(
+            &vec![
+                TextForgeParamTypes::String("y".to_string()),
+                TextForgeParamTypes::VarRef("x".to_string())
+            ]
+        ).unwrap();
 
-        t.transform("qualquer coisa", Some(&mut ctx)).unwrap();
+        t.transform("qualquer coisa".into(), Some(&mut ctx)).unwrap();
 
-        let y = ctx
-            .get_var("y")
-            .expect("'y' deveria ter sido criada a partir de 'x'");
+        let y = ctx.get_var("y").expect("'y' deveria ter sido criada a partir de 'x'");
         assert!(matches!(&y.value, VarValues::String(s) if s == "hi"));
     }
 
     #[test]
     fn transform_fails_without_context() {
         let mut t = Val::default();
-        t.from_params(&vec![
-            TextForgeParamTypes::String("n".to_string()),
-            TextForgeParamTypes::String("5".to_string()),
-        ])
-        .unwrap();
+        t.from_params(
+            &vec![
+                TextForgeParamTypes::String("n".to_string()),
+                TextForgeParamTypes::String("5".to_string())
+            ]
+        ).unwrap();
 
-        let err = t.transform("input", None).unwrap_err();
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::RequiredContextError(_)
-        ));
+        let err = t.transform("input".into(), None).unwrap_err();
+        assert!(matches!(err.error_code, TextForgeErrorCode::RequiredContextError(_)));
     }
 
     #[test]
     fn transform_fails_when_varref_source_is_missing() {
         let mut ctx = GlobalExecutionContext::new();
         let mut t = Val::default();
-        t.from_params(&vec![
-            TextForgeParamTypes::String("y".to_string()),
-            TextForgeParamTypes::VarRef("inexistente".to_string()),
-        ])
-        .unwrap();
+        t.from_params(
+            &vec![
+                TextForgeParamTypes::String("y".to_string()),
+                TextForgeParamTypes::VarRef("inexistente".to_string())
+            ]
+        ).unwrap();
 
-        let err = t.transform("input", Some(&mut ctx)).unwrap_err();
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::VariableNotFound(_)
-        ));
+        let err = t.transform("input".into(), Some(&mut ctx)).unwrap_err();
+        assert!(matches!(err.error_code, TextForgeErrorCode::VariableNotFound(_)));
     }
 
     // ============================
@@ -216,100 +206,82 @@ mod tests {
     #[test]
     fn resolve_variables_coerces_string_var_into_usize_slot() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var(
-            "n",
-            VarEntry {
-                value: VarValues::String("5".to_string()),
-                mutable: false,
-            },
-        )
-        .unwrap();
+        ctx.add_var("n", VarEntry {
+            value: VarValues::String("5".to_string()),
+            mutable: false,
+        }).unwrap();
 
         let wrapper = TokenWrapper::new(
             Box::new(Rpt::default()),
-            Some(vec![ValType::VarRef("n".to_string())]),
+            Some(vec![ValType::VarRef("n".to_string())])
         );
 
-        let result = wrapper.apply_token("ab", &mut ctx);
+        let result = wrapper.apply_token(Cow::from("ab"), &mut ctx).unwrap();
 
-        assert_eq!(result, Ok("ababababab".to_string()));
+        assert_eq!(result.to_string(), "ababababab");
     }
 
     #[test]
     fn resolve_variables_errors_when_string_var_is_not_numeric() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var(
-            "n",
-            VarEntry {
-                value: VarValues::String("abc".to_string()),
-                mutable: false,
-            },
-        )
-        .unwrap();
+        ctx.add_var("n", VarEntry {
+            value: VarValues::String("abc".to_string()),
+            mutable: false,
+        }).unwrap();
 
         let wrapper = TokenWrapper::new(
             Box::new(Rpt::default()),
-            Some(vec![ValType::VarRef("n".to_string())]),
+            Some(vec![ValType::VarRef("n".to_string())])
         );
 
-        let err = wrapper.apply_token("ab", &mut ctx).unwrap_err();
+        let err = wrapper.apply_token(Cow::from("ab"), &mut ctx).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::IncompatibleTypeError(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::IncompatibleTypeError(_)));
     }
 
     #[test]
     fn resolve_variables_coerces_usize_var_into_string_slot() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var(
-            "n",
-            VarEntry {
-                value: VarValues::Usize(7),
-                mutable: false,
-            },
-        )
-        .unwrap();
+        ctx.add_var("n", VarEntry {
+            value: VarValues::Usize(7),
+            mutable: false,
+        }).unwrap();
 
         let wrapper = TokenWrapper::new(
             Box::new(Rfw::default()),
-            Some(vec![
-                ValType::VarRef("n".to_string()),
-                ValType::Literal(TextForgeParamTypes::String("X".to_string())),
-            ]),
+            Some(
+                vec![
+                    ValType::VarRef("n".to_string()),
+                    ValType::Literal(TextForgeParamTypes::String("X".to_string()))
+                ]
+            )
         );
 
-        let result = wrapper.apply_token("say 7 twice 7", &mut ctx);
+        let result = wrapper.apply_token(Cow::from("say 7 twice 7"), &mut ctx).unwrap();
 
-        assert_eq!(result, Ok("say X twice 7".to_string()));
+        assert_eq!(result.to_string(), "say X twice 7".to_string());
     }
 
     #[test]
     fn resolve_variables_rejects_token_var_in_string_slot() {
         let mut ctx = GlobalExecutionContext::new();
-        ctx.add_var(
-            "tok",
-            VarEntry {
-                value: VarValues::Token(TokenWrapper::default()),
-                mutable: false,
-            },
-        )
-        .unwrap();
+        ctx.add_var("tok", VarEntry {
+            value: VarValues::Token(TokenWrapper::default()),
+            mutable: false,
+        }).unwrap();
 
         let wrapper = TokenWrapper::new(
             Box::new(Rfw::default()),
-            Some(vec![
-                ValType::VarRef("tok".to_string()),
-                ValType::Literal(TextForgeParamTypes::String("X".to_string())),
-            ]),
+            Some(
+                vec![
+                    ValType::VarRef("tok".to_string()),
+                    ValType::Literal(TextForgeParamTypes::String("X".to_string()))
+                ]
+            )
         );
 
-        let err = wrapper.apply_token("input", &mut ctx).unwrap_err();
+        let err = wrapper.apply_token(Cow::from("input"), &mut ctx).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::IncompatibleTypeError(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::IncompatibleTypeError(_)));
     }
 }

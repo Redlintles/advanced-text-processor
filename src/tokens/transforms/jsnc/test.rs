@@ -26,8 +26,11 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja cheia de canja", Some(&mut ctx)),
-            Ok("banana_laranja_cheia_de_canja".to_string())
+            t
+                .transform("banana laranja cheia de canja".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "banana_laranja_cheia_de_canja"
         );
     }
 
@@ -36,10 +39,7 @@ mod tests {
         let t = Jsnc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("Banana", Some(&mut ctx)),
-            Ok("banana".to_string())
-        );
+        assert_eq!(t.transform("Banana".into(), Some(&mut ctx)).unwrap().to_string(), "banana");
     }
 
     #[test]
@@ -48,8 +48,11 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("  banana   laranja \n cheia\tde   canja  ", Some(&mut ctx)),
-            Ok("banana_laranja_cheia_de_canja".to_string())
+            t
+                .transform("  banana   laranja \n cheia\tde   canja  ".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "banana_laranja_cheia_de_canja"
         );
     }
 
@@ -58,7 +61,7 @@ mod tests {
         let t = Jsnc::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
+        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]
@@ -67,8 +70,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("Maçã Com Canela", Some(&mut ctx)),
-            Ok("maçã_com_canela".to_string())
+            t.transform("Maçã Com Canela".into(), Some(&mut ctx)).unwrap().to_string(),
+            "maçã_com_canela"
         );
     }
 
@@ -87,10 +90,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

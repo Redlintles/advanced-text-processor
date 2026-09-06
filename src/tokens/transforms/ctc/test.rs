@@ -2,11 +2,13 @@
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
+
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::ctc::Ctc;
-    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 
     #[test]
     fn params_accepts_valid_range() {
@@ -34,8 +36,12 @@ mod tests {
 
         let t = Ctc::new(1, 5).unwrap();
         assert_eq!(
-            t.transform("bananabananosa", Some(&mut ctx)),
-            Ok("bAnanabananosa".to_string())
+            t
+                .transform("bananabananosa".into(), Some(&mut ctx))
+                .unwrap()
+
+                .to_string(),
+            "bAnanabananosa"
         );
     }
 
@@ -51,10 +57,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         let t = Ctc::new(3, 10).unwrap();
-        assert_eq!(
-            t.transform(input, Some(&mut ctx)),
-            Ok("xx Foo Bar yy".to_string())
-        );
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), "xx Foo Bar yy");
     }
 
     #[test]
@@ -63,7 +66,7 @@ mod tests {
         let t = Ctc::new(0, 999).unwrap(); // end enorme, deve clamp
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok("Hello".to_string()));
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), "Hello");
     }
 
     #[test]
@@ -75,10 +78,7 @@ mod tests {
         let t = Ctc::new(0, 3).unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform(input, Some(&mut ctx)),
-            Ok("Ábc def".to_string())
-        );
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), "Ábc def");
     }
 
     #[test]
@@ -87,7 +87,7 @@ mod tests {
         let t = Ctc::new(5, 6).unwrap(); // params() só valida relação, não input
         let mut ctx = GlobalExecutionContext::new();
 
-        let got: Result<String, TextForgeError> = t.transform(input, Some(&mut ctx));
+        let got: Result<Cow<'_, str>, TextForgeError> = t.transform(input.into(), Some(&mut ctx));
         assert!(got.is_err());
     }
 
@@ -98,10 +98,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
@@ -119,16 +116,18 @@ mod tests {
         let mut t = Ctc::default();
         let params = vec![
             TextForgeParamTypes::String("x".to_string()),
-            TextForgeParamTypes::Usize(5),
+            TextForgeParamTypes::Usize(5)
         ];
 
         let got = t.from_params(&params);
 
-        let expected = Err(crate::utils::errors::TextForgeError::new(
-            TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
-            "",
-            "",
-        ));
+        let expected = Err(
+            crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
+                "",
+                ""
+            )
+        );
 
         assert_eq!(got, expected);
     }

@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, transforms::capitalize, validations::check_vec_len},
+    utils::{ errors::TextForgeError, transforms::capitalize, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -42,16 +42,20 @@ impl InstructionMethods for Jpsc {
         "jpsc;\n".into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         let v = input.split_whitespace().collect::<Vec<_>>();
 
-        let processed = v.iter().map(|w| capitalize(w)).collect::<Vec<_>>().join("");
+        let result = v
+            .iter()
+            .map(|w| capitalize(w))
+            .collect::<Vec<_>>()
+            .join("");
 
-        Ok(processed)
+        Ok(result.into())
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

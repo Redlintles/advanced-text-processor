@@ -4,7 +4,7 @@
 mod tests {
     use crate::context::execution_context::GlobalExecutionContext;
     use crate::parser::params::TextForgeParamTypes;
-    use crate::tokens::{InstructionMethods, transforms::tla::Tla};
+    use crate::tokens::{ InstructionMethods, transforms::tla::Tla };
     use crate::utils::errors::TextForgeErrorCode;
 
     #[test]
@@ -24,7 +24,7 @@ mod tests {
         let t = Tla::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("BANANA", Some(&mut ctx)).unwrap(), "banana");
+        assert_eq!(t.transform("BANANA".into(), Some(&mut ctx)).unwrap().to_string(), "banana");
     }
 
     #[test]
@@ -33,7 +33,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("BA-NA_NA 123!", Some(&mut ctx)).unwrap(),
+            t.transform("BA-NA_NA 123!".into(), Some(&mut ctx)).unwrap().to_string(),
             "ba-na_na 123!"
         );
     }
@@ -43,7 +43,7 @@ mod tests {
         let t = Tla::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", Some(&mut ctx)).unwrap(), "");
+        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]
@@ -52,7 +52,7 @@ mod tests {
         let t = Tla::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ÁÉÍÓÚ Ç", Some(&mut ctx)).unwrap(), "áéíóú ç");
+        assert_eq!(t.transform("ÁÉÍÓÚ Ç".into(), Some(&mut ctx)).unwrap().to_string(), "áéíóú ç");
     }
 
     #[test]
@@ -69,10 +69,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

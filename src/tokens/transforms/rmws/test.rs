@@ -5,7 +5,7 @@ mod tests {
     use crate::{
         context::execution_context::GlobalExecutionContext,
         parser::params::TextForgeParamTypes,
-        tokens::{InstructionMethods, transforms::rmws::Rmws},
+        tokens::{ InstructionMethods, transforms::rmws::Rmws },
     };
 
     #[test]
@@ -26,8 +26,10 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja cheia de canja", Some(&mut ctx))
-                .unwrap(),
+            t
+                .transform("banana laranja cheia de canja".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
             "bananalaranjacheiadecanja"
         );
     }
@@ -38,7 +40,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("  a\tb\nc\r\nd  ", Some(&mut ctx)).unwrap(),
+            t.transform("  a\tb\nc\r\nd  ".into(), Some(&mut ctx)).unwrap().to_string(),
             "abcd"
         );
     }
@@ -48,7 +50,7 @@ mod tests {
         let t = Rmws::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", Some(&mut ctx)).unwrap(), "");
+        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]
@@ -56,7 +58,7 @@ mod tests {
         let t = Rmws::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(" \t\n\r  ", Some(&mut ctx)).unwrap(), "");
+        assert_eq!(t.transform(" \t\n\r  ".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]
@@ -68,7 +70,7 @@ mod tests {
         let input = format!("a\u{2003}b\u{2003}c");
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(&input, Some(&mut ctx)).unwrap(), "abc");
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), "abc");
     }
 
     #[test]

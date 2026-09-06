@@ -1,12 +1,17 @@
+use std::borrow::Cow;
+
 use crate::{
     context::execution_context::{
-        GlobalContextMethods, GlobalExecutionContext, VarEntry, VarValues,
+        GlobalContextMethods,
+        GlobalExecutionContext,
+        VarEntry,
+        VarValues,
     },
     parse_args,
     parser::params::TextForgeParamTypes,
     tokens::InstructionMethods,
     utils::{
-        errors::{TextForgeError, TextForgeErrorCode::RequiredContextError},
+        errors::{ TextForgeError, TextForgeErrorCode::RequiredContextError },
         validations::check_vec_len,
     },
 };
@@ -27,7 +32,7 @@ impl Default for Var {
             var_value: TextForgeParamTypes::String("".to_string()),
             params: vec![
                 TextForgeParamTypes::String("x".to_string()),
-                TextForgeParamTypes::String("".to_string()),
+                TextForgeParamTypes::String("".to_string())
             ],
         }
     }
@@ -49,16 +54,16 @@ impl InstructionMethods for Var {
         format!("var {} = {};\n", self.var_name, self.var_value.to_string()).into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        context: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, crate::utils::errors::TextForgeError> {
+        input: Cow<'a, str>,
+        context: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         let context = context.ok_or_else(|| {
             TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("var"),
-                std::borrow::Cow::Borrowed(""),
+                std::borrow::Cow::Borrowed("")
             )
         })?;
         let value = match &self.var_value {
@@ -66,20 +71,17 @@ impl InstructionMethods for Var {
             other => VarValues::try_from(other.clone())?,
         };
 
-        context.add_var(
-            &self.var_name,
-            VarEntry {
-                value,
-                mutable: true,
-            },
-        )?;
+        context.add_var(&self.var_name, VarEntry {
+            value,
+            mutable: true,
+        })?;
 
-        Ok(input.to_string())
+        Ok(input)
     }
 
     fn from_params(
         &mut self,
-        params: &Vec<crate::parser::params::TextForgeParamTypes>,
+        params: &Vec<crate::parser::params::TextForgeParamTypes>
     ) -> Result<(), crate::utils::errors::TextForgeError> {
         check_vec_len(params, 2, "var", "param parsing error, invalid vec len")?;
 
@@ -94,13 +96,10 @@ impl InstructionMethods for Var {
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
 
-        let result = to_bytecode!(
-            self.get_opcode(),
-            [
-                TextForgeParamTypes::String(self.var_name.clone()),
-                self.var_value.clone(),
-            ]
-        );
+        let result = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::String(self.var_name.clone()),
+            self.var_value.clone(),
+        ]);
         Ok(result)
     }
 }

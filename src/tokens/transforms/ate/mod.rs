@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, validations::check_vec_len},
+    utils::{ errors::TextForgeError, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -46,14 +46,13 @@ impl InstructionMethods for Ate {
         format!("ate {};\n", self.text).into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        let mut s = String::from(input);
-        s.push_str(&self.text);
-        Ok(s)
+        mut input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        input.to_mut().push_str(&self.text);
+        Ok(input)
     }
 
     fn get_string_repr(&self) -> &'static str {
@@ -79,10 +78,9 @@ impl InstructionMethods for Ate {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(
-            self.get_opcode(),
-            [TextForgeParamTypes::String(self.text.clone()),]
-        );
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::String(self.text.clone()),
+        ]);
         Ok(result)
     }
 }

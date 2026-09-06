@@ -25,10 +25,7 @@ mod tests {
         let t = Dll::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("banana", Some(&mut ctx)),
-            Ok("banan".to_string())
-        );
+        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "banan");
     }
 
     #[test]
@@ -36,7 +33,7 @@ mod tests {
         let t = Dll::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
+        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]
@@ -44,7 +41,7 @@ mod tests {
         let t = Dll::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a", Some(&mut ctx)), Ok("".to_string()));
+        assert_eq!(t.transform("a".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]
@@ -52,7 +49,7 @@ mod tests {
         let t = Dll::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("abá", Some(&mut ctx)), Ok("ab".to_string()));
+        assert_eq!(t.transform("abá".into(), Some(&mut ctx)).unwrap().to_string(), "ab");
     }
 
     #[test]
@@ -60,10 +57,7 @@ mod tests {
         let t = Dll::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("boom💥", Some(&mut ctx)),
-            Ok("boom".to_string())
-        );
+        assert_eq!(t.transform("boom💥".into(), Some(&mut ctx)).unwrap().to_string(), "boom");
     }
 
     #[test]
@@ -81,10 +75,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

@@ -26,8 +26,11 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("&lt;div&gt;banana&lt;/div&gt;", Some(&mut ctx)),
-            Ok("<div>banana</div>".to_string())
+            t
+                .transform("&lt;div&gt;banana&lt;/div&gt;".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "<div>banana</div>"
         );
     }
 
@@ -37,8 +40,11 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("&lt;a href=&quot;x&amp;y&quot;&gt;", Some(&mut ctx)),
-            Ok(r#"<a href="x&y">"#.to_string())
+            t
+                .transform("&lt;a href=&quot;x&amp;y&quot;&gt;".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            r#"<a href="x&y">"#
         );
     }
 
@@ -47,10 +53,7 @@ mod tests {
         let t = Htmlu::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("banana", Some(&mut ctx)),
-            Ok("banana".to_string())
-        );
+        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "banana");
     }
 
     #[test]
@@ -59,8 +62,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("maçã &amp; pão", Some(&mut ctx)),
-            Ok("maçã & pão".to_string())
+            t.transform("maçã &amp; pão".into(), Some(&mut ctx)).unwrap().to_string(),
+            "maçã & pão"
         );
     }
 
@@ -71,8 +74,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("a&lt;b&amp;c&gt;d", Some(&mut ctx)),
-            Ok("a<b&c>d".to_string())
+            t.transform("a&lt;b&amp;c&gt;d".into(), Some(&mut ctx)).unwrap().to_string(),
+            "a<b&c>d"
         );
     }
 
@@ -91,10 +94,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

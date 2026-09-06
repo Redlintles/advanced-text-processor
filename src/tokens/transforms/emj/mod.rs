@@ -1,13 +1,12 @@
+use std::borrow::Cow;
+
 use regex::Regex;
 
 use crate::{
     parse_args,
     parser::params::TextForgeParamTypes,
     tokens::InstructionMethods,
-    utils::{
-        errors::{TextForgeError, TextForgeErrorCode},
-        validations::check_vec_len,
-    },
+    utils::{ errors::{ TextForgeError, TextForgeErrorCode }, validations::check_vec_len },
 };
 
 #[cfg(feature = "test_access")]
@@ -76,15 +75,12 @@ impl InstructionMethods for Emj {
             TextForgeError::new(
                 TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
                 "emj",
-                pattern_payload.clone(),
+                pattern_payload.clone()
             )
         })?;
 
         self.separator = parse_args!(params, 1, String, "separator should be of type String");
-        self.params = vec![
-            self.pattern.to_string().clone().into(),
-            self.separator.clone().into(),
-        ];
+        self.params = vec![self.pattern.to_string().clone().into(), self.separator.clone().into()];
         Ok(())
     }
 
@@ -108,30 +104,27 @@ impl InstructionMethods for Emj {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(
-            self.get_opcode(),
-            [
-                TextForgeParamTypes::String(self.pattern.to_string()),
-                TextForgeParamTypes::String(self.separator.clone()),
-            ]
-        );
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::String(self.pattern.to_string()),
+            TextForgeParamTypes::String(self.separator.clone()),
+        ]);
         Ok(result)
     }
 
     /// Collects every non-overlapping match of `self.pattern` in `input`, in order,
     /// and joins them with `self.separator`. Everything that did not match is dropped.
     /// Does not use the execution context.
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut crate::context::execution_context::GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
+        input: Cow<'a, str>,
+        _: Option<&mut crate::context::execution_context::GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         let mut result: Vec<String> = vec![];
 
-        for m in self.pattern.find_iter(input) {
+        for m in self.pattern.find_iter(input.as_ref()) {
             result.push(m.as_str().to_string());
         }
 
-        Ok(result.join(&self.separator))
+        Ok(result.join(&self.separator).into())
     }
 }

@@ -27,8 +27,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("{banana: '10'}", Some(&mut ctx)),
-            Ok(expected_output)
+            t.transform("{banana: '10'}".into(), Some(&mut ctx)).unwrap().to_string(),
+            expected_output
         );
     }
 
@@ -43,7 +43,7 @@ mod tests {
         let expected = "\"a \\\"quote\\\" and a \\\\ slash\"".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
     }
 
     #[test]
@@ -54,7 +54,7 @@ mod tests {
         let expected = "\"line1\\nline2\\tend\\r\"".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
     }
 
     #[test]
@@ -62,7 +62,7 @@ mod tests {
         let t = Jsone::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", Some(&mut ctx)), Ok("\"\"".to_string()));
+        assert_eq!(t.transform("".into(), Some(&mut ctx)).unwrap().to_string(), "\"\"");
     }
 
     #[test]
@@ -74,7 +74,7 @@ mod tests {
         let expected = "\"maçã 🍎\"".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
     }
 
     #[test]
@@ -92,10 +92,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

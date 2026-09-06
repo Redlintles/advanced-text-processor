@@ -37,11 +37,11 @@ impl InstructionMethods for Rev {
         "rev;\n".into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
+        input: Cow<'a, str>,
         _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
+    ) -> Result<Cow<'a,str>, TextForgeError> {
         Ok(input.chars().rev().collect())
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

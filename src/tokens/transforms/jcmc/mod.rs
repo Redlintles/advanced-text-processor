@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, transforms::capitalize, validations::check_vec_len},
+    utils::{ errors::TextForgeError, transforms::capitalize, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -42,21 +42,21 @@ impl InstructionMethods for Jcmc {
         "jcmc;\n".into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         let v = input.split_whitespace().collect::<Vec<_>>();
 
-        let processed = v
+        let result = v
             .iter()
             .enumerate()
             .map(|(i, w)| if i >= 1 { capitalize(w) } else { w.to_string() })
             .collect::<Vec<_>>()
             .join("");
 
-        Ok(processed)
+        Ok(result.into())
     }
 
     #[cfg(feature = "bytecode")]

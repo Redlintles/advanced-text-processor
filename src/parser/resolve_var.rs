@@ -1,12 +1,12 @@
-use std::ops::Deref;
+use std::{ borrow::Cow, ops::Deref };
 
 use crate::{
-    context::execution_context::{GlobalContextMethods, GlobalExecutionContext},
-    globals::table::{QuerySource, QueryTarget, SyntaxDef, SyntaxToken, TOKEN_TABLE, TargetValue},
+    context::execution_context::{ GlobalContextMethods, GlobalExecutionContext },
+    globals::table::{ QuerySource, QueryTarget, SyntaxDef, SyntaxToken, TOKEN_TABLE, TargetValue },
     parser::params::TextForgeParamTypes,
-    tokens::{InstructionMethods, instructions::null::Null},
+    tokens::{ InstructionMethods, instructions::null::Null },
     utils::{
-        errors::{TextForgeError, TextForgeErrorCode},
+        errors::{ TextForgeError, TextForgeErrorCode },
         expr::interpolate,
         regexes::VAR_REF_RE,
     },
@@ -101,10 +101,11 @@ impl TokenWrapper {
     }
     pub fn new(token: Box<dyn InstructionMethods>, params: Option<Vec<ValType>>) -> Self {
         match params {
-            Some(param_vec) => TokenWrapper {
-                params: param_vec,
-                token,
-            },
+            Some(param_vec) =>
+                TokenWrapper {
+                    params: param_vec,
+                    token,
+                },
             None => {
                 let token_params = token
                     .get_params()
@@ -119,23 +120,23 @@ impl TokenWrapper {
             }
         }
     }
-    pub fn apply_token(
+    pub fn apply_token<'a>(
         &self,
-        input: &str,
-        context: &mut GlobalExecutionContext,
-    ) -> Result<String, TextForgeError> {
+        input: Cow<'a, str>,
+        context: &mut GlobalExecutionContext
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         let parsed_params = ValType::resolve_variables(&self.token, &self.params, &mut *context)?;
+
         let mut t = self.token.clone();
+
         t.from_params(&parsed_params)?;
 
-        let result = t.transform(input, Some(context))?;
-
-        Ok(result)
+        t.transform(input, Some(context))
     }
 
     pub fn to_text_line_resolved(
         &self,
-        context: &mut GlobalExecutionContext,
+        context: &mut GlobalExecutionContext
     ) -> Result<String, TextForgeError> {
         let parsed_params = ValType::resolve_variables(&self.token, &self.params, &mut *context)?;
         let mut t = self.token.clone();
@@ -151,10 +152,9 @@ impl TokenWrapper {
             match param {
                 ValType::Literal(x) => parsed_params.push(x.clone()),
                 ValType::VarRef(var_name) => {
-                    parsed_params.push(TextForgeParamTypes::String(format!(
-                        "{{{{{}}}}}",
-                        var_name.clone()
-                    )));
+                    parsed_params.push(
+                        TextForgeParamTypes::String(format!("{{{{{}}}}}", var_name.clone()))
+                    );
                 }
             }
         }
@@ -168,7 +168,7 @@ impl TokenWrapper {
     #[cfg(feature = "bytecode")]
     pub fn to_bytecode_resolved(
         &self,
-        context: &mut GlobalExecutionContext,
+        context: &mut GlobalExecutionContext
     ) -> Result<Vec<u8>, TextForgeError> {
         let parsed_params = ValType::resolve_variables(&self.token, &self.params, &mut *context)?;
         let mut t = self.token.clone();
@@ -197,9 +197,11 @@ impl TokenWrapper {
 pub fn get_effective_param_types(expected: &[SyntaxDef]) -> Vec<SyntaxToken> {
     expected
         .iter()
-        .filter_map(|ip| match ip.token {
-            SyntaxToken::Literal(_) => None,
-            other => Some(other),
+        .filter_map(|ip| {
+            match ip.token {
+                SyntaxToken::Literal(_) => None,
+                other => Some(other),
+            }
         })
         .collect()
 }
@@ -208,7 +210,7 @@ impl ValType {
     fn coerce_param(
         value: TextForgeParamTypes,
         expected: SyntaxToken,
-        context_label: &str,
+        context_label: &str
     ) -> Result<TextForgeParamTypes, TextForgeError> {
         match (value, expected) {
             (TextForgeParamTypes::String(v), SyntaxToken::String) => {
@@ -222,22 +224,23 @@ impl ValType {
             }
 
             // Coerção elástica: string <-> número
-            (TextForgeParamTypes::String(s), SyntaxToken::Usize) => s
-                .parse::<usize>()
-                .map(TextForgeParamTypes::Usize)
-                .map_err(|_| {
-                    TextForgeError::new(
-                        TextForgeErrorCode::IncompatibleTypeError(
-                            format!(
-                                "'{}' contém \"{}\", que não é um número válido",
-                                context_label, s
-                            )
-                            .into(),
-                        ),
-                        "resolve_variables()",
-                        "",
-                    )
-                }),
+            (TextForgeParamTypes::String(s), SyntaxToken::Usize) =>
+                s
+                    .parse::<usize>()
+                    .map(TextForgeParamTypes::Usize)
+                    .map_err(|_| {
+                        TextForgeError::new(
+                            TextForgeErrorCode::IncompatibleTypeError(
+                                format!(
+                                    "'{}' contém \"{}\", que não é um número válido",
+                                    context_label,
+                                    s
+                                ).into()
+                            ),
+                            "resolve_variables()",
+                            ""
+                        )
+                    }),
             (TextForgeParamTypes::Usize(n), SyntaxToken::String) => {
                 Ok(TextForgeParamTypes::String(n.to_string()))
             }
@@ -245,23 +248,26 @@ impl ValType {
             // Token não tem conversão sensata a partir de String/Usize, e cobre
             // também o caso degenerado de um TextForgeParamTypes::VarRef não resolvido
             // chegando aqui (não deveria acontecer, mas é um catch-all seguro).
-            (_, expected) => Err(TextForgeError::new(
-                TextForgeErrorCode::IncompatibleTypeError(
-                    format!(
-                        "'{}' não pode ser usado como {:?} aqui",
-                        context_label, expected
+            (_, expected) =>
+                Err(
+                    TextForgeError::new(
+                        TextForgeErrorCode::IncompatibleTypeError(
+                            format!(
+                                "'{}' não pode ser usado como {:?} aqui",
+                                context_label,
+                                expected
+                            ).into()
+                        ),
+                        "resolve_variables()",
+                        ""
                     )
-                    .into(),
                 ),
-                "resolve_variables()",
-                "",
-            )),
         }
     }
     fn resolve_variables(
         t: &Box<dyn InstructionMethods>,
         values: &Vec<ValType>,
-        context: &mut GlobalExecutionContext,
+        context: &mut GlobalExecutionContext
     ) -> Result<Vec<TextForgeParamTypes>, TextForgeError> {
         let mut result = Vec::new();
 
@@ -274,49 +280,54 @@ impl ValType {
             &(match query_result {
                 TargetValue::Syntax(x) => x,
                 _ => unreachable!("Unreachable Code"),
-            }),
+            })
         );
 
         if values.len() != expected_params.len() {
-            return Err(TextForgeError::new(
-                TextForgeErrorCode::InvalidParameters("Param count mismatch".into()),
-                "resolve_variables",
-                format!(
-                    "token={}, expected={}, got={}",
-                    t.get_string_repr(),
-                    expected_params.len(),
-                    values.len()
-                ),
-            ));
+            return Err(
+                TextForgeError::new(
+                    TextForgeErrorCode::InvalidParameters("Param count mismatch".into()),
+                    "resolve_variables",
+                    format!(
+                        "token={}, expected={}, got={}",
+                        t.get_string_repr(),
+                        expected_params.len(),
+                        values.len()
+                    )
+                )
+            );
         }
 
         for (i, value) in values.iter().enumerate() {
             match value {
-                ValType::Literal(literal) => match (literal, expected_params[i]) {
-                    // Único braço que muda: uma string literal passa pela
-                    // interpolação antes de virar o parâmetro final. Isso
-                    // cobre tanto o caso comum (nenhum {{}}/[[]] presente —
-                    // interpolate() devolve a string inalterada pelo
-                    // fast-path) quanto strings com N marcadores misturados.
-                    (TextForgeParamTypes::String(s), SyntaxToken::String) => {
-                        result.push(TextForgeParamTypes::String(interpolate(s, context)?));
-                    }
+                ValType::Literal(literal) =>
+                    match (literal, expected_params[i]) {
+                        // Único braço que muda: uma string literal passa pela
+                        // interpolação antes de virar o parâmetro final. Isso
+                        // cobre tanto o caso comum (nenhum {{}}/[[]] presente —
+                        // interpolate() devolve a string inalterada pelo
+                        // fast-path) quanto strings com N marcadores misturados.
+                        (TextForgeParamTypes::String(s), SyntaxToken::String) => {
+                            result.push(TextForgeParamTypes::String(interpolate(s, context)?));
+                        }
 
-                    (TextForgeParamTypes::Usize(_), SyntaxToken::Usize)
-                    | (TextForgeParamTypes::Token(_), SyntaxToken::Token) => {
-                        result.push(literal.clone());
-                    }
+                        | (TextForgeParamTypes::Usize(_), SyntaxToken::Usize)
+                        | (TextForgeParamTypes::Token(_), SyntaxToken::Token) => {
+                            result.push(literal.clone());
+                        }
 
-                    _ => {
-                        return Err(TextForgeError::new(
-                            TextForgeErrorCode::IncompatibleTypeError(
-                                "Literal type and required param type are different".into(),
-                            ),
-                            "resolve_variables()",
-                            "",
-                        ));
+                        _ => {
+                            return Err(
+                                TextForgeError::new(
+                                    TextForgeErrorCode::IncompatibleTypeError(
+                                        "Literal type and required param type are different".into()
+                                    ),
+                                    "resolve_variables()",
+                                    ""
+                                )
+                            );
+                        }
                     }
-                },
 
                 ValType::VarRef(name) => {
                     let variable = context.get_var(name)?;
@@ -324,7 +335,7 @@ impl ValType {
                     let coerced = Self::coerce_param(
                         variable.value.clone().into(),
                         expected_params[i],
-                        name,
+                        name
                     )?;
 
                     result.push(coerced);

@@ -6,7 +6,7 @@ mod tests {
     use crate::parser::params::TextForgeParamTypes;
     use crate::tokens::InstructionMethods;
     use crate::tokens::transforms::urld::Urld;
-    use crate::utils::errors::{TextForgeError, TextForgeErrorCode};
+    use crate::utils::errors::{ TextForgeError, TextForgeErrorCode };
 
     #[test]
     fn get_string_repr_is_urld() {
@@ -26,8 +26,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana%20laranja", Some(&mut ctx)),
-            Ok("banana laranja".to_string())
+            t.transform("banana%20laranja".into(), Some(&mut ctx)).unwrap().to_string(),
+            "banana laranja"
         );
     }
 
@@ -39,7 +39,7 @@ mod tests {
         let expected = "a?b=c&d/e:f".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
     }
 
     #[test]
@@ -53,7 +53,7 @@ mod tests {
 
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
     }
 
     #[test]
@@ -61,7 +61,7 @@ mod tests {
         let t = Urld::default();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("", Some(&mut ctx)), Ok("".to_string()));
+        assert_eq!(t.transform(r"[a-z\sA-Z0-9]*".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]
@@ -72,7 +72,7 @@ mod tests {
         let expected = "maçã 🍎".to_string();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform(input, Some(&mut ctx)), Ok(expected));
+        assert_eq!(t.transform(input.into(), Some(&mut ctx)).unwrap().to_string(), expected);
     }
 
     #[test]
@@ -83,13 +83,15 @@ mod tests {
         let input = "banana%2Glaranja";
         let mut ctx = GlobalExecutionContext::new();
 
-        let got = t.transform(input, Some(&mut ctx));
+        let got = t.transform(input.into(), Some(&mut ctx));
 
-        let expected = Err(TextForgeError::new(
-            TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
-            "urld",
-            input.to_string(),
-        ));
+        let expected = Err(
+            TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed parsing URL string".into()),
+                "urld",
+                input.to_string()
+            )
+        );
 
         assert_eq!(got, expected);
     }
@@ -104,8 +106,8 @@ mod tests {
         let original = "banana \"laranja\" \\ canja\n\tfim\rmaçã 🍎 ?&=/:";
         let mut ctx = GlobalExecutionContext::new();
 
-        let encoded = enc.transform(original, Some(&mut ctx)).unwrap();
-        let decoded = dec.transform(&encoded, Some(&mut ctx)).unwrap();
+        let encoded = enc.transform(original.into(), Some(&mut ctx)).unwrap();
+        let decoded = dec.transform(encoded, Some(&mut ctx)).unwrap();
 
         assert_eq!(decoded, original.to_string());
     }
@@ -125,10 +127,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     // ============================

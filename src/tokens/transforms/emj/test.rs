@@ -40,8 +40,11 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("banana laranja banana laranja", Some(&mut ctx)),
-            Ok("laranja,laranja".to_string())
+            t
+                .transform("banana laranja banana laranja".into(), Some(&mut ctx))
+                .unwrap()
+                .to_string(),
+            "laranja,laranja"
         );
     }
 
@@ -51,8 +54,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("a1 b22 c333", Some(&mut ctx)),
-            Ok("1-22-333".to_string())
+            t.transform("a1 b22 c333".into(), Some(&mut ctx)).unwrap().to_string(),
+            "1-22-333"
         );
     }
 
@@ -62,7 +65,7 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         // No match -> the whole input is discarded, not returned unchanged.
-        assert_eq!(t.transform("banana", Some(&mut ctx)), Ok("".to_string()));
+        assert_eq!(t.transform("aaaa*".into(), Some(&mut ctx)).unwrap().to_string(), "");
     }
 
     #[test]
@@ -70,10 +73,7 @@ mod tests {
         let t = Emj::new("[A-Z]+", "").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("aXXbYYc", Some(&mut ctx)),
-            Ok("XXYY".to_string())
-        );
+        assert_eq!(t.transform("aXXbYYc".into(), Some(&mut ctx)).unwrap().to_string(), "XXYY");
     }
 
     #[test]
@@ -83,10 +83,7 @@ mod tests {
         let t = Emj::new(r"\d+", ",").unwrap();
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("b22 a1", Some(&mut ctx)),
-            Ok("22,1".to_string())
-        );
+        assert_eq!(t.transform("b22 a1".into(), Some(&mut ctx)).unwrap().to_string(), "22,1");
     }
 
     #[test]
@@ -95,8 +92,8 @@ mod tests {
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(
-            t.transform("a1 b22 c333", Some(&mut ctx)),
-            Ok("122333".to_string())
+            t.transform("a1 b22 c333".into(), Some(&mut ctx)).unwrap().to_string(),
+            "122333"
         );
     }
 
@@ -106,14 +103,14 @@ mod tests {
 
         let params = vec![
             TextForgeParamTypes::String(r"\d+".to_string()),
-            TextForgeParamTypes::String("-".to_string()),
+            TextForgeParamTypes::String("-".to_string())
         ];
         let mut ctx = GlobalExecutionContext::new();
 
         assert_eq!(t.from_params(&params), Ok(()));
         assert_eq!(t.pattern.as_str(), r"\d+");
         assert_eq!(t.separator, "-".to_string());
-        assert_eq!(t.transform("a1 b2", Some(&mut ctx)), Ok("1-2".to_string()));
+        assert_eq!(t.transform("a12".into(), Some(&mut ctx)).unwrap().to_string(), "1-2");
     }
 
     #[test]
@@ -124,10 +121,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
@@ -137,16 +131,18 @@ mod tests {
         // first param should be String(pattern)
         let params = vec![
             TextForgeParamTypes::Usize(7),
-            TextForgeParamTypes::String(",".to_string()),
+            TextForgeParamTypes::String(",".to_string())
         ];
 
         let got = t.from_params(&params);
 
-        let expected = Err(crate::utils::errors::TextForgeError::new(
-            TextForgeErrorCode::InvalidParameters("Pattern should be of string type".into()),
-            "",
-            "",
-        ));
+        let expected = Err(
+            crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters("Pattern should be of string type".into()),
+                "",
+                ""
+            )
+        );
 
         assert_eq!(got, expected);
     }
@@ -157,16 +153,18 @@ mod tests {
 
         let params = vec![
             TextForgeParamTypes::String("(".to_string()),
-            TextForgeParamTypes::String(",".to_string()),
+            TextForgeParamTypes::String(",".to_string())
         ];
 
         let got = t.from_params(&params);
 
-        let expected = Err(crate::utils::errors::TextForgeError::new(
-            TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
-            "emj",
-            "(".to_string(),
-        ));
+        let expected = Err(
+            crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::TextParsingError("Failed to create regex".into()),
+                "emj",
+                "(".to_string()
+            )
+        );
 
         assert_eq!(got, expected);
     }

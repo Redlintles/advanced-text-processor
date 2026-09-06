@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, validations::check_vec_len},
+    utils::{ errors::TextForgeError, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -37,14 +37,14 @@ impl InstructionMethods for Dlf {
         "dlf;\n".into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         // Se a string é vazia, não há o que deletar.
         if input.is_empty() {
-            return Ok(String::new());
+            return Ok(String::new().into());
         }
 
         // Encontra o byte-index do início do 2º caractere (se existir).
@@ -55,7 +55,7 @@ impl InstructionMethods for Dlf {
             .map(|(byte_idx, _)| byte_idx)
             .unwrap_or(input.len());
 
-        Ok(input[cut..].to_string())
+        Ok(input[cut..].to_owned().into())
     }
 
     fn get_string_repr(&self) -> &'static str {

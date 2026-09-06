@@ -4,17 +4,17 @@ use evalexpr::eval_with_context;
 
 use crate::{
     context::execution_context::{
-        GlobalContextMethods, GlobalExecutionContext, VarEntry, VarValues,
+        GlobalContextMethods,
+        GlobalExecutionContext,
+        VarEntry,
+        VarValues,
     },
     parse_args,
     parser::params::TextForgeParamTypes,
     tokens::InstructionMethods,
     utils::{
-        errors::{
-            TextForgeError,
-            TextForgeErrorCode::{InvalidExprError, RequiredContextError},
-        },
-        expr::{build_eval_context, value_to_plain_string},
+        errors::{ TextForgeError, TextForgeErrorCode::{ InvalidExprError, RequiredContextError } },
+        expr::{ build_eval_context, value_to_plain_string },
         validations::check_vec_len,
     },
 };
@@ -46,16 +46,16 @@ impl InstructionMethods for Eval {
         Cow::from(format!("eval {} in {};\n", self.expr, self.target))
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        context: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
+        input: Cow<'a, str>,
+        context: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         let context = context.ok_or_else(|| {
             TextForgeError::new(
                 RequiredContextError("Context required for proper working!".into()),
                 std::borrow::Cow::Borrowed("val"),
-                std::borrow::Cow::Borrowed(""),
+                std::borrow::Cow::Borrowed("")
             )
         })?;
 
@@ -68,7 +68,7 @@ impl InstructionMethods for Eval {
             TextForgeError::new(
                 InvalidExprError(Cow::from(e.to_string())),
                 Cow::from("eval.transform"),
-                Cow::from(self.expr.to_string()),
+                Cow::from(self.expr.to_string())
             )
         })?;
 
@@ -80,20 +80,17 @@ impl InstructionMethods for Eval {
             }
             Err(e) => {
                 if e.error_code.get_error_code() == 9u16 {
-                    context.add_var(
-                        &self.target,
-                        VarEntry {
-                            value: VarValues::String(value_to_plain_string(&result)),
-                            mutable: true,
-                        },
-                    )?;
+                    context.add_var(&self.target, VarEntry {
+                        value: VarValues::String(value_to_plain_string(&result)),
+                        mutable: true,
+                    })?;
                 } else {
                     return Err(e);
                 }
             }
         }
 
-        Ok(input.to_string())
+        Ok(input.into())
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {

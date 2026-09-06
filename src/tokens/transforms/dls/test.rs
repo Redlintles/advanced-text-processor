@@ -32,10 +32,7 @@ mod tests {
         let t = Dls::new(3);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("banana", Some(&mut ctx)),
-            Ok("banna".to_string())
-        );
+        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "banna");
     }
 
     #[test]
@@ -43,10 +40,7 @@ mod tests {
         let t = Dls::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("banana", Some(&mut ctx)),
-            Ok("anana".to_string())
-        );
+        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "anana");
     }
 
     #[test]
@@ -54,10 +48,7 @@ mod tests {
         let t = Dls::new(5);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(
-            t.transform("banana", Some(&mut ctx)),
-            Ok("banan".to_string())
-        );
+        assert_eq!(t.transform("banana".into(), Some(&mut ctx)).unwrap().to_string(), "banan");
     }
 
     #[test]
@@ -66,7 +57,7 @@ mod tests {
         let t = Dls::new(0);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("ábc", Some(&mut ctx)), Ok("bc".to_string()));
+        assert_eq!(t.transform("ábc".into(), Some(&mut ctx)).unwrap().to_string(), "bc");
     }
 
     #[test]
@@ -75,7 +66,7 @@ mod tests {
         let t = Dls::new(1);
         let mut ctx = GlobalExecutionContext::new();
 
-        assert_eq!(t.transform("a💥b", Some(&mut ctx)), Ok("ab".to_string()));
+        assert_eq!(t.transform("a💥b".into(), Some(&mut ctx)).unwrap().to_string(), "ab");
     }
 
     #[test]
@@ -83,7 +74,7 @@ mod tests {
         let t = Dls::new(999);
         let mut ctx = GlobalExecutionContext::new();
 
-        let got = t.transform("abc", Some(&mut ctx));
+        let got = t.transform("abc".into(), Some(&mut ctx));
         assert!(got.is_err());
     }
 
@@ -94,10 +85,7 @@ mod tests {
 
         let err = t.from_params(&params).unwrap_err();
 
-        assert!(matches!(
-            err.error_code,
-            TextForgeErrorCode::InvalidArgumentNumber(_)
-        ));
+        assert!(matches!(err.error_code, TextForgeErrorCode::InvalidArgumentNumber(_)));
     }
 
     #[test]
@@ -116,11 +104,13 @@ mod tests {
 
         let got = t.from_params(&params);
 
-        let expected = Err(crate::utils::errors::TextForgeError::new(
-            TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
-            "",
-            "",
-        ));
+        let expected = Err(
+            crate::utils::errors::TextForgeError::new(
+                TextForgeErrorCode::InvalidParameters("Index should be of usize type".into()),
+                "",
+                ""
+            )
+        );
 
         assert_eq!(got, expected);
     }

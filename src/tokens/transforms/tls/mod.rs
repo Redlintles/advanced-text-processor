@@ -38,12 +38,15 @@ impl InstructionMethods for Tls {
         "tls;\n".into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        Ok(String::from(input.trim_start()))
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        if input.is_empty() {
+            return Ok(input);
+        }
+        Ok(String::from(input.trim_start()).into())
     }
 
     fn get_string_repr(&self) -> &'static str {

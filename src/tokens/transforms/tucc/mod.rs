@@ -6,10 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{
-        errors::TextForgeError,
-        validations::{check_chunk_bound_indexes, check_vec_len},
-    },
+    utils::{ errors::TextForgeError, validations::{ check_chunk_bound_indexes, check_vec_len } },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -56,12 +53,12 @@ impl InstructionMethods for Tucc {
     fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("tucc {} {};\n", self.start_index, self.end_index).into()
     }
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        check_chunk_bound_indexes(self.start_index, self.end_index, Some(input))?;
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        check_chunk_bound_indexes(self.start_index, self.end_index, Some(input.as_ref()))?;
 
         // Since the user will probably not know the length of the string in the middle of the processing
         // Better simply adjust end_index to input.len() if its bigger. instead of throwing an "hard to debug" error
@@ -82,7 +79,7 @@ impl InstructionMethods for Tucc {
                 }
             })
             .collect();
-        Ok(result)
+        Ok(result.into())
     }
 
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
@@ -103,13 +100,10 @@ impl InstructionMethods for Tucc {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(
-            self.get_opcode(),
-            [
-                TextForgeParamTypes::Usize(self.start_index),
-                TextForgeParamTypes::Usize(self.end_index),
-            ]
-        );
+        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::Usize(self.start_index),
+            TextForgeParamTypes::Usize(self.end_index),
+        ]);
         Ok(result)
     }
 }

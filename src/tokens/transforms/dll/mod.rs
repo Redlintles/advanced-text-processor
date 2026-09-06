@@ -6,7 +6,7 @@ use std::borrow::Cow;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, validations::check_vec_len},
+    utils::{ errors::TextForgeError, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -38,18 +38,18 @@ impl InstructionMethods for Dll {
         "dll;\n".into()
     }
 
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        let mut s = String::from(input);
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        let mut s = String::from(input.as_ref());
 
         if let Some((x, _)) = s.char_indices().next_back() {
             s.drain(x..);
+            return Ok(s.into());
         }
-
-        Ok(s)
+        Ok(input)
     }
 
     fn get_string_repr(&self) -> &'static str {

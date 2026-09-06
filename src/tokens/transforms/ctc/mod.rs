@@ -7,7 +7,8 @@ use crate::context::execution_context::GlobalExecutionContext;
 use crate::utils::errors::TextForgeError;
 use crate::utils::validations::check_vec_len;
 use crate::{
-    tokens::InstructionMethods, utils::transforms::capitalize,
+    tokens::InstructionMethods,
+    utils::transforms::capitalize,
     utils::validations::check_chunk_bound_indexes,
 };
 
@@ -55,11 +56,11 @@ impl InstructionMethods for Ctc {
     fn get_string_repr(&self) -> &'static str {
         "ctc"
     }
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
         let len = input.chars().count();
 
         let mut end = self.end_index;
@@ -68,7 +69,7 @@ impl InstructionMethods for Ctc {
             end = len - 1;
         }
 
-        check_chunk_bound_indexes(self.start_index, end, Some(input))?;
+        check_chunk_bound_indexes(self.start_index, end, Some(&input))?;
 
         // Convert char indices to byte indices
         let start_byte = input
@@ -119,7 +120,7 @@ impl InstructionMethods for Ctc {
 
         let result = format!("{}{}{}", prefix, capitalized_chunk, suffix);
 
-        Ok(result)
+        Ok(result.into())
     }
     fn to_textforge_line(&self) -> Cow<'static, str> {
         format!("ctc {} {};\n", self.start_index, self.end_index).into()
@@ -143,13 +144,10 @@ impl InstructionMethods for Ctc {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result = to_bytecode!(
-            self.get_opcode(),
-            [
-                TextForgeParamTypes::Usize(self.start_index),
-                TextForgeParamTypes::Usize(self.end_index),
-            ]
-        );
+        let result = to_bytecode!(self.get_opcode(), [
+            TextForgeParamTypes::Usize(self.start_index),
+            TextForgeParamTypes::Usize(self.end_index),
+        ]);
         Ok(result)
     }
 }

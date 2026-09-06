@@ -8,7 +8,7 @@ use html_escape::encode_safe;
 use crate::{
     context::execution_context::GlobalExecutionContext,
     tokens::InstructionMethods,
-    utils::{errors::TextForgeError, validations::check_vec_len},
+    utils::{ errors::TextForgeError, validations::check_vec_len },
 };
 
 use crate::parser::params::TextForgeParamTypes;
@@ -44,12 +44,16 @@ impl InstructionMethods for Htmle {
     fn to_textforge_line(&self) -> Cow<'static, str> {
         "htmle;\n".into()
     }
-    fn transform(
+    fn transform<'a>(
         &self,
-        input: &str,
-        _: Option<&mut GlobalExecutionContext>,
-    ) -> Result<String, TextForgeError> {
-        Ok(encode_safe(input).to_string())
+        input: Cow<'a, str>,
+        _: Option<&mut GlobalExecutionContext>
+    ) -> Result<Cow<'a, str>, TextForgeError> {
+        match input {
+            Cow::Borrowed(s) => { Ok(encode_safe(s)) }
+
+            Cow::Owned(s) => { Ok(Cow::Owned(encode_safe(&s).into_owned())) }
+        }
     }
     fn from_params(&mut self, params: &Vec<TextForgeParamTypes>) -> Result<(), TextForgeError> {
         check_vec_len(params, 0, "dlf", "")?;
