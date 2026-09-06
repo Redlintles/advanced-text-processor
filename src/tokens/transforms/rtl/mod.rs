@@ -8,7 +8,7 @@ use crate::parser::params::TextForgeParamTypes;
 use crate::tokens::InstructionMethods;
 use crate::utils::validations::check_vec_len;
 
-use crate::utils::errors::{ TextForgeError };
+use crate::utils::errors::TextForgeError;
 
 /// RTL - Rotate Left
 ///
@@ -46,7 +46,7 @@ impl InstructionMethods for Rtl {
     fn transform<'a>(
         &self,
         input: Cow<'a, str>,
-        _: Option<&mut GlobalExecutionContext>
+        _: Option<&mut GlobalExecutionContext>,
     ) -> Result<Cow<'a, str>, TextForgeError> {
         if input.is_empty() {
             return Ok(input);
@@ -56,13 +56,11 @@ impl InstructionMethods for Rtl {
         let len = chars.len();
         let times = self.times % len;
 
-        Ok(
-            chars[times..]
-                .iter()
-                .chain(&chars[..times])
-                .collect::<String>()
-                .into()
-        )
+        Ok(chars[times..]
+            .iter()
+            .chain(&chars[..times])
+            .collect::<String>()
+            .into())
     }
 
     fn to_textforge_line(&self) -> Cow<'static, str> {
@@ -89,9 +87,8 @@ impl InstructionMethods for Rtl {
     #[cfg(feature = "bytecode")]
     fn to_bytecode(&self) -> Result<Vec<u8>, TextForgeError> {
         use crate::to_bytecode;
-        let result: Vec<u8> = to_bytecode!(self.get_opcode(), [
-            TextForgeParamTypes::Usize(self.times),
-        ]);
+        let result: Vec<u8> =
+            to_bytecode!(self.get_opcode(), [TextForgeParamTypes::Usize(self.times),]);
         Ok(result)
     }
 }
