@@ -4,5 +4,30 @@
     "bytecode",
     "test_access",
     "watchers"
-  ]
+  ],
+  "replacerules.rules": {
+    "TextForge - Remove Ok to_string": {
+      "find": "Ok\\((\"?[^,]*\"?).to_string\\(\\)\\)",
+      "replace": "$1"
+    },
+    "TextForge - Remove Ok": {
+      "find": "Ok\\((\"?[^,)]*\"?)\\)",
+      "replace": "$1"
+    },
+
+    "TextForge - Transform into Cow": {
+      "find": "t\\.transform\\((\"?[^,]*\"?),",
+      "replace": "t.transform($1.into(),"
+    }
+  },
+
+  "replacerules.rulesets": {
+    "TextForge - Cow Migration": {
+      "rules": [
+        "TextForge - Remove Ok to_string",
+        "TextForge - Transform into Cow",
+        "TextForge - Remove Ok"
+      ]
+    }
+  }
 }
